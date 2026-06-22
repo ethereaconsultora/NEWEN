@@ -26,10 +26,10 @@
 
 **Archivos previstos**: +30 archivos (estructura base completa).
 
-**Resultado**: (en ejecución)
+**Resultado**: Éxito. 32 archivos creados en commit inicial. Estructura base completa.
 
-**Archivos tocados**: (COMPLETAR al finalizar)
+**Archivos tocados**: 32 archivos (15 docs raíz + 16 spec + 1 manifest + package.json + .gitignore + logs).
 
-**Commit**: (COMPLETAR al finalizar)
+**Commit**: `298f724`
 
 **Próximo paso**: Paso 2 — ARCHITECTURE.md + BACKLOG.md + SECURITY.md + AGENTS.md
