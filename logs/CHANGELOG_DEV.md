@@ -50,10 +50,10 @@
 - `app/privacidad/page.tsx` (NUEVO)
 - `app/terminos/page.tsx` (NUEVO)
 
-**Resultado**: (en ejecución)
+**Resultado**: Éxito. 18 archivos creados. Login/registro con card centrada + toggle + Google OAuth. Privacidad (10 secciones) y Términos (11 secciones) adaptados del espíritu Lex-AR.
 
-**Archivos tocados**: (COMPLETAR al finalizar)
+**Archivos tocados**: 18 archivos (8 pages/components + 5 config + 2 lib + 1 types + 1 log + .env.example).
 
-**Commit**: (COMPLETAR al finalizar)
+**Commit**: `676c976`
 
-**Próximo paso**: Sprint 1 — Supabase + middleware de auth
+**Próximo paso**: Sprint 1 — Configurar Supabase + ejecutar init_schema.sql + middleware de auth
