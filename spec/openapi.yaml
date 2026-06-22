@@ -1,0 +1,161 @@
+openapi: "3.0.3"
+info:
+  title: Newen API
+  description: API de la plataforma Newen — counselors, sesiones, pagos, videollamadas.
+  version: "0.1.0"
+  contact:
+    name: Clr. Ari Mangini
+    email: ari@etherea.com.ar
+
+servers:
+  - url: https://app.buscanos.com.ar/api
+    description: Producción
+  - url: http://localhost:3000/api
+    description: Desarrollo local
+
+paths:
+  /counselors:
+    get:
+      summary: Listar counselors
+      description: Búsqueda pública con filtros opcionales.
+      parameters:
+        - name: especialidad
+          in: query
+          schema:
+            type: string
+        - name: modalidad
+          in: query
+          schema:
+            type: string
+            enum: [presencial, online, ambas]
+        - name: provincia
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Listado de counselors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Counselor"
+
+  /counselors/{id}:
+    get:
+      summary: Perfil de counselor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Perfil completo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Counselor"
+
+  /sesiones:
+    post:
+      summary: Crear reserva de sesión
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [counselor_id, fecha_hora, modalidad]
+              properties:
+                counselor_id:
+                  type: string
+                  format: uuid
+                fecha_hora:
+                  type: string
+                  format: date-time
+                modalidad:
+                  type: string
+                  enum: [online, presencial]
+      responses:
+        "201":
+          description: Sesión creada
+        "401":
+          description: No autenticado
+        "403":
+          description: Evaluación pendiente
+
+  /pagos:
+    post:
+      summary: Webhook de Mercado Pago
+      description: Recibe notificaciones de pago.
+      responses:
+        "200":
+          description: OK
+
+  /evaluaciones:
+    post:
+      summary: Crear evaluación post-sesión
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sesion_id, estrellas]
+              properties:
+                sesion_id:
+                  type: string
+                  format: uuid
+                estrellas:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comentario:
+                  type: string
+      responses:
+        "201":
+          description: Evaluación registrada
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Counselor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        bio:
+          type: string
+        enfoque:
+          type: string
+        especialidades:
+          type: array
+          items:
+            type: string
+        modalidad:
+          type: string
+          enum: [presencial, online, ambas]
+        provincia:
+          type: string
+        promedio_estrellas:
+          type: number
+        total_sesiones:
+          type: integer
+        aac_verificado:
+          type: boolean
