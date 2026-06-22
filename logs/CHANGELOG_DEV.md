@@ -33,3 +33,27 @@
 **Commit**: `298f724`
 
 **Próximo paso**: Paso 2 — ARCHITECTURE.md + BACKLOG.md + SECURITY.md + AGENTS.md
+
+### [2026-06-21] — Auth: login, registro, privacidad y términos
+
+**Prompt**: Crear pantallas de login y registro estilo Anima/Lex-AR adaptadas a Newen. Elaborar políticas de privacidad y términos y condiciones tomados de Lex-AR y adaptados.
+
+**Acción esperada**: Crear `globals.css` con paleta Newen, `layout.tsx` con fuentes, pantallas de login/registro con card centrada, callback OAuth, políticas legales, home consultante.
+
+**Archivos previstos**:
+- `app/globals.css` (NUEVO)
+- `app/layout.tsx` (NUEVO)
+- `app/page.tsx` (NUEVO)
+- `app/auth/login/page.tsx` (NUEVO)
+- `app/auth/registro/page.tsx` (NUEVO)
+- `app/auth/callback/route.ts` (NUEVO)
+- `app/privacidad/page.tsx` (NUEVO)
+- `app/terminos/page.tsx` (NUEVO)
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Sprint 1 — Supabase + middleware de auth

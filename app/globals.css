@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+/* ============================================================
+   NEWEN — Design Tokens
+   Paleta: oscura, terrosa, mapuche-humanista
+   Fuentes: DM Serif Display (display) + DM Sans (body)
+   ============================================================ */
+
+:root {
+  /* ── Paleta Newen ── */
+  --nv-bg-base:       #0c1810;
+  --nv-bg-surface:    #111e15;
+  --nv-bg-card:       #162019;
+  --nv-bg-card-hover: #1a261d;
+  --nv-bg-overlay:    rgba(125,186,143,0.06);
+  --nv-bg-input:      #0f1c13;
+
+  --nv-text-primary:   #e8e2d4;
+  --nv-text-secondary: #6a7a65;
+  --nv-text-muted:     #4a5a45;
+  --nv-text-inverse:   #0c1810;
+
+  --nv-accent:         #7dba8f;
+  --nv-accent-hover:   #8fcca0;
+  --nv-accent-soft:    rgba(125,186,143,0.10);
+  --nv-accent-border:  rgba(125,186,143,0.25);
+
+  --nv-tierra:         #c4a882;
+  --nv-tierra-soft:    rgba(196,168,130,0.10);
+  --nv-tierra-border:  rgba(196,168,130,0.20);
+
+  --nv-verde-o:        #2e4a35;
+  --nv-verde-oo:       #1e3525;
+
+  --nv-border:         #243329;
+  --nv-border-strong:  #2f3e33;
+
+  --nv-state-success:  #7dba8f;
+  --nv-state-error:    #e57373;
+  --nv-state-warning:  #d4a030;
+  --nv-state-info:     #7dba8f;
+
+  /* ── Sombras ── */
+  --nv-shadow:         0 4px 24px rgba(0,0,0,0.50);
+  --nv-shadow-card:    0 2px 12px rgba(0,0,0,0.35);
+  --nv-shadow-glow:    0 0 40px rgba(125,186,143,0.08);
+
+  /* ── Radios ── */
+  --nv-radius-sm:   8px;
+  --nv-radius-md:   12px;
+  --nv-radius-lg:   16px;
+  --nv-radius-xl:   20px;
+  --nv-radius-full: 9999px;
+
+  /* ── Espaciado ── */
+  --nv-gap-xs:  4px;
+  --nv-gap-sm:  8px;
+  --nv-gap-md:  12px;
+  --nv-gap-lg:  16px;
+  --nv-gap-xl:  24px;
+  --nv-gap-2xl: 32px;
+
+  /* ── Fuentes ── */
+  --nv-font-display: 'DM Serif Display', serif;
+  --nv-font-body:    'DM Sans', sans-serif;
+}
+
+/* ── Reset base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--nv-bg-base);
+  color: var(--nv-text-primary);
+  font-family: var(--nv-font-body);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Tipografía ── */
+h1, h2, h3, h4 {
+  font-family: var(--nv-font-display);
+  color: var(--nv-text-primary);
+  line-height: 1.2;
+}
+
+/* ── Scrollbar sutil ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--nv-bg-base); }
+::-webkit-scrollbar-thumb { background: var(--nv-border); border-radius: 3px; }
+
+/* ── Selección ── */
+::selection {
+  background: var(--nv-accent-soft);
+  color: var(--nv-text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════
+   COMPONENTES BASE — Estilo Etherea adaptado a Newen
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Botón primario ── */
+.btn-primary {
+  background: var(--nv-accent);
+  color: var(--nv-text-inverse);
+  border: none;
+  border-radius: var(--nv-radius-md);
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--nv-font-body);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+.btn-primary:hover  { background: var(--nv-accent-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Botón secundario ── */
+.btn-secondary {
+  background: transparent;
+  color: var(--nv-accent);
+  border: 1.5px solid var(--nv-accent);
+  border-radius: var(--nv-radius-md);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--nv-font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { background: var(--nv-accent-soft); }
+.btn-secondary:active { transform: scale(0.98); }
+
+/* ── Botón ghost ── */
+.btn-ghost {
+  background: var(--nv-bg-overlay);
+  color: var(--nv-text-secondary);
+  border: 1px solid var(--nv-border);
+  border-radius: var(--nv-radius-md);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--nv-font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { background: var(--nv-bg-card-hover); }
+
+/* ── Input ── */
+.input {
+  width: 100%;
+  background: var(--nv-bg-input);
+  color: var(--nv-text-primary);
+  border: 1px solid var(--nv-border);
+  border-radius: var(--nv-radius-md);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--nv-font-body);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder { color: var(--nv-text-muted); }
+.input:focus {
+  border-color: var(--nv-accent);
+  box-shadow: 0 0 0 3px var(--nv-accent-soft);
+}
+
+/* ── Label ── */
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nv-text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ── Tag / Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--nv-radius-full);
+  border: 1px solid var(--nv-verde-o);
+  color: var(--nv-accent);
+  background: var(--nv-verde-oo);
+}
+
+/* ── Separador ── */
+.separator {
+  width: 100%;
+  height: 1px;
+  background: var(--nv-border);
+  border: none;
+  margin: var(--nv-gap-lg) 0;
+}
+
+/* ── Link ── */
+.link {
+  color: var(--nv-accent);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.link:hover { color: var(--nv-accent-hover); text-decoration: underline; }
+
+/* ── Error message ── */
+.error-text {
+  color: var(--nv-state-error);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ── Card genérica ── */
+.card {
+  background: var(--nv-bg-card);
+  border: 1px solid var(--nv-border);
+  border-radius: var(--nv-radius-lg);
+  padding: 20px;
+  box-shadow: var(--nv-shadow-card);
+}
+
+/* ── Page container ── */
+.page-container {
+  padding: 0 16px;
+  padding-bottom: 80px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Loading spinner ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--nv-border);
+  border-top-color: var(--nv-accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAILWIND LAYER (para utilidades si se necesitan)
+   ═══════════════════════════════════════════════════════ */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
