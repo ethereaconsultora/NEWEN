@@ -73,3 +73,21 @@
 **Commit**: `ab39abf` + `cdc4556`
 
 **Próximo paso**: Sprint 1 — Ejecutar init_schema.sql en Supabase + Google OAuth + middleware de auth
+
+### [2026-06-28] — Sprint 1: DB + Auth (Supabase schema + middleware)
+
+**Prompt**: Ejecutar init_schema.sql v0.2.0 en Supabase, configurar Google OAuth, crear middleware.ts de protección por rol.
+
+**Acción esperada**: Crear 10 tablas en Supabase, índices, RLS, políticas. Google OAuth provider. Middleware con redirección por rol (consultante/counselor/admin).
+
+**Archivos previstos**:
+- Supabase: ejecutar `spec/init_schema.sql` (NO es archivo del repo)
+- `middleware.ts` (NUEVO)
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Test de auth + inicio de pantallas de consultante
