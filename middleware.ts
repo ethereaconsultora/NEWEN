@@ -44,13 +44,18 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // ── Rutas públicas (sin auth requerida) ──
+  // Home, búsqueda y perfiles de counselors son públicos.
+  // El consultante explora sin registrarse. Solo reserva pide auth.
   const PUBLIC = [
+    "/",
+    "/buscar",
+    "/counselor",
     "/auth",
     "/privacidad",
     "/terminos",
     "/api/dolar",
   ];
-  const isPublic = PUBLIC.some((p) => path.startsWith(p));
+  const isPublic = PUBLIC.some((p) => path === p || (p !== "/" && path.startsWith(p)));
 
   // ── Recursos estáticos ──
   const isStatic =

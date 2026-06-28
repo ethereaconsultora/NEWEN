@@ -91,3 +91,19 @@
 **Commit**: (COMPLETAR al finalizar)
 
 **Próximo paso**: Test de auth + inicio de pantallas de consultante
+
+### [2026-06-28] — Ecosistema: acceso sin fricción + Magic Link + rutas públicas
+
+**Prompt**: Actualizar según spec de ecosistema Newen + Espacio Crítico. Home y búsqueda de counselors públicos. Magic Link en vez de password. Sin barreras de acceso.
+
+**Acción esperada**: Middleware con más rutas públicas. Auth con Magic Link. Home pública con buscador. Guardar spec de ecosistema.
+
+**Archivos previstos**: `middleware.ts` (MOD), `app/auth/login/page.tsx` (MOD), `app/page.tsx` (MOD), `spec/ECOSISTEMA.md` (NUEVO)
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Pantallas de consultante (buscar, perfil counselor)
