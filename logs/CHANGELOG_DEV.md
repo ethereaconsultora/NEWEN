@@ -123,3 +123,19 @@
 **Commit**: (COMPLETAR al finalizar)
 
 **Próximo paso**: Pantallas públicas: buscar, perfil counselor
+
+### [2026-06-28] — Pantallas públicas: buscar counselors + perfil + API
+
+**Prompt**: Seguir con el desarrollo. Crear /buscar y /counselor/[id] públicos, API de counselors, componentes visuales.
+
+**Acción esperada**: API GET /api/counselors con filtros. Páginas buscar y perfil con diseño Newen. Componentes CounselorCard, Stars, CounselorListado.
+
+**Archivos previstos**: 7 archivos nuevos (3 pages, 1 API, 3 components)
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Reserva de sesión + pago Mercado Pago
