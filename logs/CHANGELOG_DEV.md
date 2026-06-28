@@ -139,3 +139,19 @@
 **Commit**: (COMPLETAR al finalizar)
 
 **Próximo paso**: Reserva de sesión + pago Mercado Pago
+
+### [2026-06-28] — Sprint 3: Reserva + Pago Mercado Pago + disponibilidad
+
+**Prompt**: Crear flujo completo de reserva: calendario, creación de sesión, checkout Mercado Pago, webhook de confirmación.
+
+**Acción esperada**: Página /reservar/[id] con calendario y slots. API sesiones. API pagos (preferencia + webhook). Tabla disponibilidad. Lib Mercado Pago.
+
+**Archivos previstos**: 6 archivos nuevos + SQL
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Videollamada Daily.co + evaluación post-sesión

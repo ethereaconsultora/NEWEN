@@ -130,6 +130,23 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 11. DISPONIBILIDAD (horarios semanales del counselor)
+CREATE TABLE IF NOT EXISTS disponibilidad (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  counselor_id UUID REFERENCES counselors(id) ON DELETE CASCADE,
+  dia_semana INT CHECK (dia_semana BETWEEN 0 AND 6), -- 0=dom, 1=lun, ...
+  hora_inicio TIME NOT NULL,
+  hora_fin TIME NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(counselor_id, dia_semana)
+);
+
+-- Insertar disponibilidad default para counselors (lun-vie 9-18)
+INSERT INTO disponibilidad (counselor_id, dia_semana, hora_inicio, hora_fin)
+SELECT id, dia, '09:00', '18:00'
+FROM counselors, generate_series(1, 5) AS dia
+ON CONFLICT (counselor_id, dia_semana) DO NOTHING;
+
 -- ============================================================
 -- RLS — Row Level Security
 -- ============================================================
@@ -144,6 +161,16 @@ ALTER TABLE talleres ENABLE ROW LEVEL SECURITY;
 ALTER TABLE postulaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE waitlist_consultantes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE disponibilidad ENABLE ROW LEVEL SECURITY;
+
+-- Disponibilidad: lectura pública para counselors activos
+CREATE POLICY "Disponibilidad visible públicamente"
+  ON disponibilidad FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM counselors
+    WHERE counselors.id = disponibilidad.counselor_id
+    AND counselors.estado = 'activo'
+  ));
 
 -- Políticas básicas (refinar por tabla en iteraciones futuras)
 
@@ -188,3 +215,17 @@ CREATE INDEX IF NOT EXISTS idx_sesiones_estado ON sesiones(estado);
 CREATE INDEX IF NOT EXISTS idx_evaluaciones_counselor ON evaluaciones(counselor_id);
 CREATE INDEX IF NOT EXISTS idx_postulaciones_estado ON postulaciones(estado);
 CREATE INDEX IF NOT EXISTS idx_counselors_activo ON counselors(activo);
+
+-- ============================================================
+-- FUNCIONES
+-- ============================================================
+
+-- Incrementar contador de sesiones de un counselor
+CREATE OR REPLACE FUNCTION increment_counselor_sessions(counselor_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE counselors
+  SET total_sesiones = total_sesiones + 1
+  WHERE id = counselor_id;
+END;
+$$ LANGUAGE plpgsql;
