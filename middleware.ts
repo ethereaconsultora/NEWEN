@@ -50,6 +50,7 @@ export async function middleware(request: NextRequest) {
     "/",
     "/buscar",
     "/counselor",
+    "/explorar",
     "/auth",
     "/privacidad",
     "/terminos",
@@ -68,7 +69,7 @@ export async function middleware(request: NextRequest) {
 
   // ── Sin sesión → solo rutas públicas ──
   if (!user && !isPublic) {
-    const loginUrl = new URL("/auth/login", request.url);
+    const loginUrl = new URL("/auth/magic-link", request.url);
     loginUrl.searchParams.set("redirect", path);
     return NextResponse.redirect(loginUrl);
   }

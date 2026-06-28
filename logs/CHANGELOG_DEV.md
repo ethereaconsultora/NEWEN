@@ -107,3 +107,19 @@
 **Commit**: (COMPLETAR al finalizar)
 
 **Próximo paso**: Pantallas de consultante (buscar, perfil counselor)
+
+### [2026-06-28] — Prompt v3: Magic Link dedicado + /explorar + WA link
+
+**Prompt**: Leer NEWEN_PROMPT_EJECUTIVO_v3.md. Crear página Magic Link dedicada, actualizar middleware con /explorar, agregar WA link.
+
+**Acción esperada**: `/auth/magic-link` (solo email), middleware +/explorar, .env +NEXT_PUBLIC_WA_LINK.
+
+**Archivos previstos**: `app/auth/magic-link/page.tsx` (NUEVO), `middleware.ts` (MOD), `.env.local.example` (MOD)
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Pantallas públicas: buscar, perfil counselor
