@@ -10,7 +10,7 @@
 - [ ] Inicializar Git + primer commit + push
 
 ## Sprint 1 — Base de datos y autenticación
-- [ ] Script SQL completo → ejecutar en Supabase
+- [ ] Script SQL completo → ejecutar en Supabase (v0.2.0 con tope 10 + dólar)
 - [ ] Google OAuth + email/pass configurado en Supabase
 - [ ] Middleware de autenticación por rol (`middleware.ts`)
 - [ ] Cliente Supabase SSR en `lib/supabase/`
@@ -25,7 +25,7 @@
 
 ## Sprint 3 — Reserva de sesiones + pagos
 - [ ] Calendario de disponibilidad del counselor
-- [ ] Flujo de reserva (`reservar/[id]/`)
+- [ ] Flujo de reserva ($18 USD + equivalente ARS) (`reservar/[id]/`)
 - [ ] Integración Mercado Pago (Checkout Pro)
 - [ ] Webhook de confirmación de pago (`api/pagos/`)
 - [ ] Creación automática de sala Daily.co
@@ -52,7 +52,7 @@
 - [ ] Gestión de empresas (`admin/empresas/`)
 
 ## Sprint 7 — PWA y producción
-- [ ] PWA manifest + service worker
+- [ ] PWA manifest + service worker + DolarBadge
 - [ ] Rate limiting en endpoints sensibles
 - [ ] Validación de esquema en todos los inputs
 - [ ] Tests de contrato contra `openapi.yaml`

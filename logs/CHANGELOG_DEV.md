@@ -57,3 +57,19 @@
 **Commit**: `676c976`
 
 **Próximo paso**: Sprint 1 — Configurar Supabase + ejecutar init_schema.sql + middleware de auth
+
+### [2026-06-28] — v0.2.0: migración a spec v2 (precios, dólar blue, tope 10)
+
+**Prompt**: Revisar NEWEN_PROMPT_EJECUTIVO_v2.md y newen_spec_negocio_v2.html. Aplicar todos los cambios de la spec v2 al código existente.
+
+**Acción esperada**: Actualizar precios ($22→$18), schema SQL (+3 columnas, default 18, tope 10), crear integración dólar blue (lib/dolar.ts, hook, badge, API proxy), actualizar 14 archivos de documentación.
+
+**Archivos previstos**: 18 archivos (4 nuevos, 14 modificados).
+
+**Resultado**: (en ejecución)
+
+**Archivos tocados**: (COMPLETAR al finalizar)
+
+**Commit**: (COMPLETAR al finalizar)
+
+**Próximo paso**: Configurar Supabase + ejecutar init_schema.sql + middleware

@@ -35,7 +35,7 @@
 1. Ve calendario con días/horarios disponibles del counselor.
 2. Selecciona día y hora.
 3. Elige modalidad (online/presencial).
-4. Ve precio: $22 USD.
+4. Ve precio: $18 USD.
 5. Redirige a Mercado Pago (Checkout Pro).
 6. Pago exitoso → webhook confirma → sesión cambia a "confirmada".
 7. Se crea sala de Daily.co.
@@ -108,7 +108,7 @@
 **Precondición**: Empresa interesada.
 **Flujo principal**:
 1. Admin da de alta empresa: nombre, contacto, cantidad empleados.
-2. Sistema calcula precio: $200 base + $20 por empleado extra.
+2. Sistema calcula precio: $230 base + $46 por empleado extra.
 3. Empresa recibe link de pago o factura (manual por ahora).
 4. Admin activa empresa.
 5. Empleados se registran con email corporativo → vinculados a la empresa.

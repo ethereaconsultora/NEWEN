@@ -18,7 +18,7 @@
 ## AC-03 — Reserva de sesión
 - [ ] Calendario muestra solo días/horarios disponibles.
 - [ ] No se puede reservar un horario ya tomado.
-- [ ] Precio visible: $22 USD.
+- [ ] Precio visible: $18 USD (con equivalente ARS vía DolarBadge).
 - [ ] Redirección a Mercado Pago funciona.
 - [ ] Sesión cambia a "confirmada" tras webhook exitoso.
 - [ ] Consultante ve confirmación con fecha, hora, counselor, link.

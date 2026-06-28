@@ -24,6 +24,7 @@ export interface Counselor {
   promedio_estrellas: number;
   total_sesiones: number;
   fee_pagado: boolean;
+  activo: boolean;
   created_at: string;
   // Joined fields
   nombre?: string;
@@ -41,6 +42,7 @@ export interface Sesion {
   estado: "reservada" | "confirmada" | "en_curso" | "finalizada" | "cancelada";
   tipo: "individual" | "corporativa";
   precio_usd: number;
+  precio_empresa_usd: number | null;
   daily_room_url: string | null;
   evaluacion_enviada: boolean;
   created_at: string;
@@ -85,6 +87,7 @@ export interface Empresa {
   contacto_email: string | null;
   cantidad_empleados: number;
   precio_mensual_usd: number | null;
+  ganancia_newen_usd: number | null;
   estado: "activa" | "pausada" | "cancelada";
   created_at: string;
 }

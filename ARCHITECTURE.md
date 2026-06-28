@@ -15,6 +15,7 @@ Describir la arquitectura completa de Newen: componentes frontend y backend, flu
 | Videollamada | Daily.co | SDK React |
 | Pagos | Mercado Pago | Checkout Pro |
 | Email | Resend | API |
+| Dólar blue | dolarapi.com | API pública |
 | Deploy | Vercel | Hobby/Pro |
 | PWA | next-pwa + Web Manifest | — |
 
@@ -81,6 +82,7 @@ app/
     ├── pagos/              ← Webhook Mercado Pago
     ├── evaluaciones/
     ├── daily/              ← Crear sala Daily.co
+    ├── dolar/              ← Proxy dolarapi.com (evita CORS)
     └── admin/
 ```
 
@@ -95,7 +97,7 @@ El middleware (`middleware.ts`) es la única puerta de entrada. Responsabilidade
 ## Flujo de sesión
 
 ```
-Consultante → Reserva ($22 USD) → Mercado Pago → Webhook confirma
+Consultante → Reserva ($18 USD) → Mercado Pago → Webhook confirma
   → Crea sala Daily.co → Sesión en vivo (50 min)
   → Evaluación obligatoria (1-5 ★) → Libera próxima reserva
 ```
@@ -103,9 +105,9 @@ Consultante → Reserva ($22 USD) → Mercado Pago → Webhook confirma
 ## Flujo corporativo
 
 ```
-Empresa → Membresía mensual → Empleados acceden
-  → Sesión corporativa ($35 USD al counselor)
-  → Newen retiene $13 USD/sesión
+Empresa → Membresía mensual ($230/mes base 5 emp. + $46/emp extra)
+  → Empleados acceden → Sesión ($18 USD al counselor)
+  → Newen retiene $50/mes base + $10/emp extra
   → Counselor no sabe que es corporativa
 ```
 

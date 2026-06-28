@@ -35,3 +35,4 @@
 | US-08: Postularse | UC-08 | POST /postulaciones | AC-08 |
 | US-09: Admin gestiona | UC-09 | GET/POST /admin/* | AC-09 |
 | US-10: Empresa corporate | UC-10 | POST /empresas | AC-10 |
+| US-11: Ver precios en ARS | — | GET /api/dolar | — |

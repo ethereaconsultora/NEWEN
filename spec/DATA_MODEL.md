@@ -46,6 +46,7 @@ empleados_empresa ─── users (N:1)
 | promedio_estrellas | DECIMAL(3,2) | |
 | total_sesiones | INT | |
 | fee_pagado | BOOLEAN | |
+| activo | BOOLEAN | Default: false. Solo true si está dentro del tope de 10 |
 | created_at | TIMESTAMPTZ | |
 
 ### sesiones
@@ -59,7 +60,8 @@ empleados_empresa ─── users (N:1)
 | modalidad | enum(presencial, online) | |
 | estado | enum(reservada, confirmada, en_curso, finalizada, cancelada) | |
 | tipo | enum(individual, corporativa) | |
-| precio_usd | DECIMAL(8,2) | |
+| precio_usd | DECIMAL(8,2) | Default: 18 |
+| precio_empresa_usd | DECIMAL(8,2) | Lo que pagó la empresa (si aplica). No se expone al counselor |
 | daily_room_url | TEXT | |
 | evaluacion_enviada | BOOLEAN | Default: false |
 | created_at | TIMESTAMPTZ | |
@@ -83,7 +85,8 @@ empleados_empresa ─── users (N:1)
 | contacto_nombre | TEXT | |
 | contacto_email | TEXT | |
 | cantidad_empleados | INT | Default: 5 |
-| precio_mensual_usd | DECIMAL(8,2) | |
+| precio_mensual_usd | DECIMAL(8,2) | Calculado: 230 + adicionales × 46 |
+| ganancia_newen_usd | DECIMAL(8,2) | Calculado: 50 + adicionales × 10 |
 | estado | enum(activa, pausada, cancelada) | |
 | created_at | TIMESTAMPTZ | |
 

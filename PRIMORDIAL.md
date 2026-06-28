@@ -10,16 +10,17 @@ Newen (mapuche: "fuerza, espíritu, energía vital") es una plataforma que conec
 Las personas en crisis emocional o psicológica necesitan encontrar ayuda profesional verificada de forma rápida, segura y sin fricción. Los counselors necesitan una plataforma ética donde ejercer sin comisiones abusivas ni intermediarios que lucren con la salud mental.
 
 ## Usuarios principales
-- **Consultante individual**: busca acompañamiento profesional. Acceso gratuito a búsqueda. Paga $22 USD por sesión.
-- **Counselor verificado**: profesional con verificación AAC. Fee único de ingreso ($22 USD). Gratuidad de por vida.
+- **Consultante individual**: busca acompañamiento profesional. Acceso gratuito a búsqueda. Paga $18 USD por sesión.
+- **Counselor verificado**: profesional con verificación AAC. Fee único de ingreso ($18 USD). Gratuidad de por vida. Tope inicial de 10.
 - **Admin (Clr. Ari Mangini)**: fundador. Único con acceso total. Aprueba counselors, sponsors y gestiona la plataforma.
-- **Empresa (Newen Workplace)**: ofrece Newen como beneficio a empleados. Membresía desde $200 USD/mes.
+- **Empresa (Newen Workplace)**: ofrece Newen como beneficio a empleados. Membresía desde $230 USD/mes (base 5 empleados).
 
 ## Qué hace la app
 - Búsqueda de counselors por situación, especialidad, enfoque y modalidad.
 - Perfiles completos de counselors con verificación AAC y promedio de estrellas.
 - Reserva de sesiones con pago integrado (Mercado Pago).
 - Videollamada integrada (Daily.co).
+- Precios en USD con equivalente ARS en tiempo real (dolarapi.com).
 - Evaluación obligatoria post-sesión (1-5 estrellas).
 - Panel profesional para counselors (agenda, métricas, espacio colaborativo).
 - Panel admin para gestión de postulaciones, entrevistas y métricas globales.
@@ -32,7 +33,7 @@ Las personas en crisis emocional o psicológica necesitan encontrar ayuda profes
 - Videollamada: Daily.co SDK
 - Pagos: Mercado Pago (Checkout Pro + Webhooks)
 - Email: Resend (transaccional)
-- IA (v2): OpenAI API (matching counselor-consultante)
+- Dólar blue: dolarapi.com (cotización en tiempo real)
 - Deploy: Vercel
 - PWA: Distribución sin stores (Android + iOS)
 
@@ -50,6 +51,7 @@ Las personas en crisis emocional o psicológica necesitan encontrar ayuda profes
 - Las API keys NUNCA se exponen al frontend.
 - Datos de salud: manejo ético extremo. Encriptación + RLS + auditoría.
 - Verificación AAC obligatoria para counselors. Sin excepción.
+- Tope máximo de 10 counselors activos en fase inicial.
 - Evaluación post-sesión obligatoria para reservar la próxima.
 - Sponsors: solo con aprobación del fundador. Prohibidos religión, política, farmacéuticas, pseudociencia.
 - El espíritu de Newen no se vende. Se auspicias.

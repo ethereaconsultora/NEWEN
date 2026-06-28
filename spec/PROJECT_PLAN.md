@@ -47,8 +47,9 @@
 - Counselors + empresas
 - Duración estimada: 1-2 sesiones
 
-### Sprint 7 — PWA + Producción
+### Sprint 7 — PWA + Dólar + Producción
 - PWA manifest + SW
+- DolarBadge en todos los precios
 - Rate limiting
 - Tests + deploy Vercel
 - Landing page
@@ -61,7 +62,7 @@
 | MVP interno (Sprints 0-4) | Julio 2026 |
 | Panel counselor (Sprint 5) | Julio 2026 |
 | Panel admin (Sprint 6) | Julio 2026 |
-| Producción (Sprint 7) | Agosto 2026 |
+| Dólar + PWA (Sprint 7) | Agosto 2026 |
 
 ## Riesgos
 
@@ -72,3 +73,5 @@
 | Carga de counselors lenta | Alto | Waitlist + campaña de difusión |
 | Evaluaciones falsas | Bajo | Solo consultantes con sesión real |
 | iOS PWA limitaciones | Medio | Guía visual en landing |
+| DolarAPI caída | Bajo | Fallback $1515 ARS hardcodeado |
+| Tope 10 counselors lleno | Medio | Lista de espera + revisión trimestral |

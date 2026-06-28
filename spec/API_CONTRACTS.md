@@ -46,6 +46,11 @@ Todas las rutas protegidas requieren sesión de Supabase. El middleware (`middle
 | POST | `/api/evaluaciones` | Sí | consultante | Crear evaluación post-sesión |
 | GET | `/api/evaluaciones/[id]` | Sí | todos | Ver evaluación |
 
+### Dólar blue
+| Método | Ruta | Auth | Descripción |
+|---|---|---|---|
+| GET | `/api/dolar` | No | Cotización dólar blue (proxy dolarapi.com) |
+
 ### Admin
 | Método | Ruta | Auth | Rol | Descripción |
 |---|---|---|---|---|

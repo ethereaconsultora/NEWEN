@@ -1,7 +1,7 @@
 -- ============================================================
 -- NEWEN — Schema inicial de base de datos
 -- Ejecutar en: SQL Editor de Supabase (Database → SQL Editor)
--- Versión: v0.1.0 — 2026-06-21
+-- Versión: v0.2.0 — 2026-06-28
 -- ============================================================
 
 -- 1. USUARIOS
@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS counselors (
   promedio_estrellas DECIMAL(3,2) DEFAULT 0,
   total_sesiones INT DEFAULT 0,
   fee_pagado BOOLEAN DEFAULT FALSE,
+  activo BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -40,7 +41,8 @@ CREATE TABLE IF NOT EXISTS sesiones (
   modalidad TEXT CHECK (modalidad IN ('presencial','online')),
   estado TEXT CHECK (estado IN ('reservada','confirmada','en_curso','finalizada','cancelada')) DEFAULT 'reservada',
   tipo TEXT CHECK (tipo IN ('individual','corporativa')) DEFAULT 'individual',
-  precio_usd DECIMAL(8,2) NOT NULL,
+  precio_usd DECIMAL(8,2) DEFAULT 18,
+  precio_empresa_usd DECIMAL(8,2),
   daily_room_url TEXT,
   evaluacion_enviada BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -65,6 +67,7 @@ CREATE TABLE IF NOT EXISTS empresas (
   contacto_email TEXT,
   cantidad_empleados INT DEFAULT 5,
   precio_mensual_usd DECIMAL(8,2),
+  ganancia_newen_usd DECIMAL(8,2),
   estado TEXT CHECK (estado IN ('activa','pausada','cancelada')) DEFAULT 'activa',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -184,3 +187,4 @@ CREATE INDEX IF NOT EXISTS idx_sesiones_fecha ON sesiones(fecha_hora);
 CREATE INDEX IF NOT EXISTS idx_sesiones_estado ON sesiones(estado);
 CREATE INDEX IF NOT EXISTS idx_evaluaciones_counselor ON evaluaciones(counselor_id);
 CREATE INDEX IF NOT EXISTS idx_postulaciones_estado ON postulaciones(estado);
+CREATE INDEX IF NOT EXISTS idx_counselors_activo ON counselors(activo);
