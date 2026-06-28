@@ -66,10 +66,10 @@
 
 **Archivos previstos**: 18 archivos (4 nuevos, 14 modificados).
 
-**Resultado**: (en ejecución)
+**Resultado**: Éxito. 20 archivos actualizados/creados. Push a github.com/ethereaconsultora/NEWEN exitoso.
 
-**Archivos tocados**: (COMPLETAR al finalizar)
+**Archivos tocados**: 20 archivos (4 nuevos + 16 modificados).
 
-**Commit**: (COMPLETAR al finalizar)
+**Commit**: `ab39abf` + `cdc4556`
 
-**Próximo paso**: Configurar Supabase + ejecutar init_schema.sql + middleware
+**Próximo paso**: Sprint 1 — Ejecutar init_schema.sql en Supabase + Google OAuth + middleware de auth
