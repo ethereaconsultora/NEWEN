@@ -13,12 +13,12 @@ export default function HomePage() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#F0EBE0",
+      background: "var(--nv-bg-base)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       padding: "56px 24px 44px",
-      fontFamily: "'DM Sans', sans-serif",
+      fontFamily: "var(--nv-font-body)",
     }}>
       {/* HEADER */}
       <h1 style={{
