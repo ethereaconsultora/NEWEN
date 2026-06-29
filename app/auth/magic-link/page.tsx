@@ -280,15 +280,8 @@ export default function MagicLinkPage() {
             </Link>
             .
           </p>
-          <Link
-            href="/auth/login"
-            style={{
-              fontSize: 11,
-              color: "var(--nv-text-muted)",
-              textDecoration: "none",
-            }}
-          >
-            ¿Sos counselor? Ingresá acá
+          <Link href="/auth/login" style={{ fontSize: 11, color: "var(--nv-text-muted)", textDecoration: "none" }}>
+            ¿Sos counselor? Ingresá con contraseña
           </Link>
         </div>
       </div>
