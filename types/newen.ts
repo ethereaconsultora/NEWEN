@@ -25,6 +25,7 @@ export interface Counselor {
   total_sesiones: number;
   fee_pagado: boolean;
   activo: boolean;
+  mp_access_token: string | null; // Server-only, never exposed to frontend
   created_at: string;
   // Joined fields
   nombre?: string;

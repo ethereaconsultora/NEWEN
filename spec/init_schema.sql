@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS counselors (
   total_sesiones INT DEFAULT 0,
   fee_pagado BOOLEAN DEFAULT FALSE,
   activo BOOLEAN DEFAULT FALSE,
+  mp_access_token TEXT,  -- Token de Mercado Pago del counselor. NUNCA se expone al frontend.
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

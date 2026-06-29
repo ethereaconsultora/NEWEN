@@ -53,10 +53,10 @@ export async function POST(request: Request) {
     );
   }
 
-  // Verificar que el counselor existe y está activo
+  // Verificar que el counselor existe, está activo y tiene MP configurado
   const { data: counselor, error: counselorError } = await supabase
     .from("counselors")
-    .select("id, users!inner(nombre)")
+    .select("id, mp_access_token, users!inner(nombre)")
     .eq("id", counselor_id)
     .eq("estado", "activo")
     .single();
@@ -65,6 +65,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Counselor no encontrado." },
       { status: 404 }
+    );
+  }
+
+  if (!counselor.mp_access_token) {
+    return NextResponse.json(
+      { error: "Este counselor aún no configuró sus pagos. Volvé a intentar más tarde." },
+      { status: 400 }
     );
   }
 
@@ -134,7 +141,7 @@ export async function POST(request: Request) {
 
   const counselorUser = counselor.users as { nombre: string } | null;
 
-  // Crear preferencia de pago
+  // Crear preferencia de pago con el token del counselor
   try {
     const { initPoint } = await crearPreferenciaPago({
       sesionId: sesion.id,
@@ -142,6 +149,7 @@ export async function POST(request: Request) {
       precioUsd: 18,
       consultanteEmail: userData?.email ?? user.email ?? "",
       consultanteNombre: userData?.nombre ?? "Consultante",
+      mpAccessToken: counselor.mp_access_token,
     });
 
     return NextResponse.json(

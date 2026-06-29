@@ -2,12 +2,18 @@ import { MercadoPagoConfig, Preference } from "mercadopago";
 
 /**
  * Helper de Mercado Pago para Newen.
- * Centraliza la configuración y creación de preferencias de pago.
+ * Cada counselor tiene su propio token de MP.
+ * Las sesiones se pagan directo al counselor. Newen no retiene.
+ *
+ * Para planes corporativos y fees de ingreso, se usa el token de Newen.
  */
 
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN ?? "",
-});
+/**
+ * Crea un cliente MP con un token específico.
+ */
+function getClient(accessToken: string): MercadoPagoConfig {
+  return new MercadoPagoConfig({ accessToken });
+}
 
 export interface CrearPreferenciaInput {
   sesionId: string;
@@ -15,15 +21,19 @@ export interface CrearPreferenciaInput {
   precioUsd: number;
   consultanteEmail: string;
   consultanteNombre: string;
+  /** Token de Mercado Pago del counselor (dueño del dinero) */
+  mpAccessToken: string;
 }
 
 /**
  * Crea una preferencia de pago en Mercado Pago.
+ * El pago va DIRECTO a la cuenta del counselor (usando su token).
  * Retorna la URL de checkout (init_point).
  */
 export async function crearPreferenciaPago(
   input: CrearPreferenciaInput
 ): Promise<{ initPoint: string; preferenceId: string }> {
+  const client = getClient(input.mpAccessToken);
   const preference = new Preference(client);
 
   const result = await preference.create({
