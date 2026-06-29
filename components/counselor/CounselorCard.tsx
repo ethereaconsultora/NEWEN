@@ -92,22 +92,23 @@ export default function CounselorCard({ id, nombre, especialidades, modalidad, p
             marginTop: 10,
             padding: "8px 0",
             fontSize: 12, fontWeight: 700, letterSpacing: 1,
-            color: "var(--nv-accent)",
-            border: "1.5px solid rgba(125,186,143,0.4)",
+            background: "#6aa87c",
+            color: "#FFFFFF",
+            border: "none",
             borderRadius: 10,
             textDecoration: "none",
             textTransform: "uppercase",
-            boxShadow: "0 2px 8px rgba(125,186,143,0.15)",
+            boxShadow: "0 2px 12px rgba(106,168,124,0.28)",
             transition: "all 0.2s",
             width: "100%",
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(125,186,143,0.06)";
-            e.currentTarget.style.boxShadow = "0 4px 16px rgba(125,186,143,0.25)";
+            e.currentTarget.style.background = "#5c9a6e";
+            e.currentTarget.style.boxShadow = "0 4px 18px rgba(106,168,124,0.38)";
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.boxShadow = "0 2px 8px rgba(125,186,143,0.15)";
+            e.currentTarget.style.background = "#6aa87c";
+            e.currentTarget.style.boxShadow = "0 2px 12px rgba(106,168,124,0.28)";
           }}
         >
           VER PERFIL

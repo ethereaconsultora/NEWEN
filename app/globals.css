@@ -84,14 +84,14 @@ h1, h2, h3, h4 { font-family: var(--nv-font-display); color: var(--nv-text-prima
 /* ═══ COMPONENTES ═══ */
 
 .btn-primary {
-  background: var(--nv-accent); color: var(--nv-text-inverse);
-  border: 1.5px solid rgba(125,186,143,0.4); border-radius: var(--nv-radius-md);
+  background: #6aa87c; color: #FFFFFF;
+  border: 1.5px solid rgba(106,168,124,0.35); border-radius: var(--nv-radius-md);
   padding: 13px 20px; font-size: 14px; font-weight: 600;
   font-family: var(--nv-font-body); cursor: pointer;
   transition: all 0.2s; letter-spacing: 0.01em;
-  box-shadow: 0 2px 12px rgba(125,186,143,0.25);
+  box-shadow: 0 2px 14px rgba(106,168,124,0.30);
 }
-.btn-primary:hover  { background: var(--nv-accent-hover); box-shadow: 0 4px 16px rgba(125,186,143,0.35); }
+.btn-primary:hover  { background: #5c9a6e; box-shadow: 0 4px 20px rgba(106,168,124,0.40); }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 

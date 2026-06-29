@@ -190,7 +190,7 @@ export default function HomePage() {
           style={{
             width: "100%",
             padding: "16px 0",
-            background: "#7dba8f",
+            background: "#6aa87c",
             border: "none",
             borderRadius: 12,
             color: "#FFFFFF",
@@ -205,6 +205,7 @@ export default function HomePage() {
             justifyContent: "center",
             gap: 8,
             marginTop: 6,
+            boxShadow: "0 2px 14px rgba(106,168,124,0.28)",
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -214,6 +215,25 @@ export default function HomePage() {
           Buscar Counselors
         </button>
       </form>
+
+      {/* Counselor / Admin entry */}
+      <div style={{ marginTop: 28, textAlign: "center" }}>
+        <span style={{ fontSize: 10, color: "var(--nv-text-muted)", letterSpacing: "0.04em" }}>
+          ¿Sos counselor o admin?{" "}
+        </span>
+        <a
+          href="/auth/login"
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: "var(--nv-text-secondary)",
+            textDecoration: "underline",
+            textUnderlineOffset: 3,
+          }}
+        >
+          Ingresá acá
+        </a>
+      </div>
     </div>
   );
 }
