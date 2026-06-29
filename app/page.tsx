@@ -1,60 +1,53 @@
 import Link from "next/link";
 
-/**
- * Home pública — estilo Anima adaptado a Newen.
- * Header con inicial "N", saludo, buscador, chips.
- */
-export default function HomePage() {
-  const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+const CATEGORIAS = [
+  { label: "Crisis Vitales", icon: "🌊", q: "Crisis" },
+  { label: "Duelo y Pérdidas", icon: "🍂", q: "Duelo" },
+  { label: "Estrés y Ansiedad", icon: "💭", q: "Ansiedad" },
+  { label: "Autoestima y Crecimiento", icon: "🌱", q: "Crecimiento personal" },
+  { label: "Pareja y Vínculos", icon: "💞", q: "Pareja" },
+  { label: "Trabajo y Vocación", icon: "💼", q: "Trabajo" },
+];
 
+export default function HomePage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)" }}>
-      {/* ── HEADER ANIMA ── */}
-      <header style={{ background: "var(--nv-bg-surface)", borderBottom: "1px solid var(--nv-border)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 40 }}>
-        <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--nv-accent-soft)", border: "1.5px solid var(--nv-accent-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "var(--nv-accent)", fontFamily: "var(--nv-font-display)" }}>N</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--nv-text-primary)", fontFamily: "var(--nv-font-display)", letterSpacing: -0.3 }}>Buen día</div>
-          <div style={{ fontSize: 10, color: "var(--nv-text-muted)", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 1 }}>Newen · {hoy}</div>
-        </div>
-        <Link href="/mi-cuenta" style={{ fontSize: 11, color: "var(--nv-text-muted)", textDecoration: "none", fontWeight: 500 }}>Mi cuenta</Link>
+      <header style={{ padding: "20px 20px 0", maxWidth: 480, margin: "0 auto" }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 2, color: "var(--nv-accent)", textTransform: "uppercase", marginBottom: 12 }}>Newen</div>
+        <h1 style={{ fontSize: 30, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", lineHeight: 1.15, letterSpacing: -0.5, marginBottom: 6 }}>
+          Búsqueda por<br />situación
+        </h1>
+        <p style={{ fontSize: 13, color: "var(--nv-text-secondary)", lineHeight: 1.6, marginBottom: 28 }}>
+          Elegí qué te está pasando y encontrá al counselor adecuado.
+        </p>
       </header>
 
-      {/* ── CONTENIDO ── */}
-      <div style={{ padding: "24px 16px 80px", maxWidth: 480, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 32, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", lineHeight: 1.15, marginBottom: 10, letterSpacing: -0.5 }}>
-          ¿Qué te está<br />pasando?
-        </h1>
-        <p style={{ fontSize: 14, color: "var(--nv-text-secondary)", maxWidth: 320, lineHeight: 1.6, marginBottom: 24 }}>
-          Explorá perfiles, elegí un counselor, reservá tu espacio. Sin registro previo.
-        </p>
-
-        {/* Buscador */}
-        <form action="/buscar" method="GET" style={{ marginBottom: 20 }}>
-          <div style={{ position: "relative" }}>
-            <input name="q" className="input" type="text" placeholder='Escribí cómo te sentís, ej: "estoy atravesando un duelo"...' style={{ paddingRight: 52, fontSize: 14, height: 48 }} />
-            <button type="submit" className="btn-primary" style={{ position: "absolute", right: 4, top: 4, bottom: 4, padding: "0 16px", fontSize: 13, borderRadius: "var(--nv-radius-sm)" }}>Buscar</button>
-          </div>
-        </form>
-
-        {/* Chips */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {["Ansiedad", "Duelo", "Pareja", "Trabajo", "Familia", "Crisis", "Crecimiento personal", "Soledad"].map(tag => (
-            <Link key={tag} href={`/buscar?q=${encodeURIComponent(tag)}`}
-              style={{ fontSize: 13, padding: "8px 16px", border: "1px solid var(--nv-border)", background: "var(--nv-bg-card)", color: "var(--nv-text-primary)", borderRadius: "var(--nv-radius-full)", fontFamily: "var(--nv-font-body)", textDecoration: "none", transition: "all 0.15s" }}>
-              {tag}
+      <div style={{ padding: "0 20px 100px", maxWidth: 480, margin: "0 auto" }}>
+        {/* Cards de categoría */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+          {CATEGORIAS.map(cat => (
+            <Link key={cat.q} href={`/buscar?q=${encodeURIComponent(cat.q)}`}
+              style={{
+                display: "flex", alignItems: "center", gap: 14, padding: "18px 20px",
+                background: "var(--nv-bg-card)", border: "1px solid var(--nv-border)",
+                borderRadius: "var(--nv-radius-lg)", textDecoration: "none",
+                transition: "border-color 0.2s, background 0.2s",
+              }}>
+              <span style={{ fontSize: 28, flexShrink: 0 }}>{cat.icon}</span>
+              <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "var(--nv-text-primary)", fontFamily: "var(--nv-font-body)" }}>{cat.label}</span>
+              <span style={{ fontSize: 16, color: "var(--nv-text-muted)" }}>→</span>
             </Link>
           ))}
         </div>
-      </div>
 
-      {/* BottomNav */}
-      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--nv-bg-surface)", borderTop: "1px solid var(--nv-border)", display: "flex", justifyContent: "space-around", padding: "8px 0 12px", zIndex: 50 }}>
-        {[{ href: "/", icon: "🔍", label: "Explorar", active: true }, { href: "/mi-cuenta", icon: "👤", label: "Cuenta" }].map(n => (
-          <Link key={n.href} href={n.href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, textDecoration: "none", fontSize: 10, color: n.active ? "var(--nv-accent)" : "var(--nv-text-muted)", fontWeight: n.active ? 600 : 500 }}>
-            <span style={{ fontSize: 18 }}>{n.icon}</span> {n.label}
-          </Link>
-        ))}
-      </nav>
+        {/* Búsqueda libre */}
+        <form action="/buscar" method="GET">
+          <div style={{ position: "relative", marginBottom: 10 }}>
+            <input name="q" className="input" type="text" placeholder='O escribí cómo te sentís...' style={{ paddingRight: 48, height: 46, fontSize: 14 }} />
+            <button type="submit" className="btn-primary" style={{ position: "absolute", right: 4, top: 4, bottom: 4, padding: "0 14px", fontSize: 12, borderRadius: "var(--nv-radius-sm)" }}>Buscar</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
