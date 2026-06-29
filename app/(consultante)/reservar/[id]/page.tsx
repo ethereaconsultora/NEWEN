@@ -319,6 +319,31 @@ export default function ReservarPage({ params }: PageProps) {
               )}
             </p>
 
+            {/* Política de flexibilidad */}
+            <div
+              style={{
+                background: "var(--nv-accent-soft)",
+                border: "1px solid var(--nv-accent-border)",
+                borderRadius: "var(--nv-radius-md)",
+                padding: "12px 14px",
+                marginBottom: 16,
+                textAlign: "left",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "var(--nv-text-secondary)",
+                  lineHeight: 1.6,
+                  margin: 0,
+                }}
+              >
+                💡 <strong style={{ color: "var(--nv-text-primary)" }}>¿Surgió un imprevisto?</strong>
+                <br />
+                Tenés hasta 24 horas antes de la sesión para reprogramar tu turno sin perder el pago.
+              </p>
+            </div>
+
             <button
               onClick={handleReservar}
               className="btn-primary"

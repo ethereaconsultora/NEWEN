@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createDailyRoom } from "@/lib/daily";
+import { enviarConfirmacionConsultante, enviarConfirmacionCounselor } from "@/lib/resend";
 
 /**
  * POST /api/pagos
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
     // Incrementar contador de sesiones del counselor
     const { data: sesion } = await supabase
       .from("sesiones")
-      .select("counselor_id")
+      .select("counselor_id, consultante_id, fecha_hora, modalidad")
       .eq("id", sesionId)
       .single();
 
@@ -96,6 +97,45 @@ export async function POST(request: Request) {
       await supabase.rpc("increment_counselor_sessions", {
         counselor_id: sesion.counselor_id,
       });
+
+      // Enviar emails de confirmación
+      try {
+        const { data: consultante } = await supabase
+          .from("users")
+          .select("email, nombre")
+          .eq("id", sesion.consultante_id)
+          .single();
+
+        const { data: counselor } = await supabase
+          .from("counselors")
+          .select("id, users!inner(email, nombre)")
+          .eq("id", sesion.counselor_id)
+          .single();
+
+        const counselorUser = counselor?.users as { email: string; nombre: string } | null;
+
+        if (consultante?.email) {
+          await enviarConfirmacionConsultante({
+            email: consultante.email,
+            nombre: consultante.nombre ?? "Consultante",
+            counselorNombre: counselorUser?.nombre ?? "Counselor",
+            fechaHora: sesion.fecha_hora,
+            sesionId,
+          });
+        }
+
+        if (counselorUser?.email) {
+          await enviarConfirmacionCounselor({
+            email: counselorUser.email,
+            nombre: counselorUser.nombre ?? "Counselor",
+            consultanteNombre: consultante?.nombre ?? "Consultante",
+            fechaHora: sesion.fecha_hora,
+            sesionId,
+          });
+        }
+      } catch (emailError) {
+        console.error("Error enviando emails:", emailError);
+      }
     }
   }
 
