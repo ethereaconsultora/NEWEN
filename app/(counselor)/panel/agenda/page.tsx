@@ -6,27 +6,34 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-const HORAS = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+const HORAS = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 type Bloque = { dia_semana: number; hora_inicio: string; hora_fin: string; id?: string };
 type Bloqueo = { id: string; fecha: string; hora_inicio: string; hora_fin: string; motivo: string };
+type SesionAgenda = {
+  id: string;
+  fecha_hora: string;
+  consultante: string;
+  modalidad: string;
+  estado: string;
+};
 
-export default function AgendaCounselorPage() {
+export default function AgendaPage() {
   const router = useRouter();
   const supabase = createClient();
 
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [bloqueos, setBloqueos] = useState<Bloqueo[]>([]);
+  const [sesiones, setSesiones] = useState<SesionAgenda[]>([]);
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
-  // Nuevo bloqueo
   const [nuevaFechaBloqueo, setNuevaFechaBloqueo] = useState("");
   const [nuevoMotivo, setNuevoMotivo] = useState("");
 
-  // Link compartible
   const [counselorId, setCounselorId] = useState<string | null>(null);
   const [linkCopiado, setLinkCopiado] = useState(false);
+  const [mostrarBloqueos, setMostrarBloqueos] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -34,17 +41,14 @@ export default function AgendaCounselorPage() {
       if (!user) { router.push("/auth/login"); return; }
       setCounselorId(user.id);
 
-      // Cargar disponibilidad
       const { data: disp } = await supabase
         .from("disponibilidad")
         .select("*")
         .eq("counselor_id", user.id)
         .order("dia_semana")
         .order("hora_inicio");
-
       if (disp) setBloques(disp);
 
-      // Cargar bloqueos próximos
       const hoy = new Date().toISOString().split("T")[0];
       const { data: bloq } = await supabase
         .from("bloqueos")
@@ -52,8 +56,26 @@ export default function AgendaCounselorPage() {
         .eq("counselor_id", user.id)
         .gte("fecha", hoy)
         .order("fecha");
-
       if (bloq) setBloqueos(bloq);
+
+      // Sesiones próximas
+      const ahora = new Date().toISOString();
+      const { data: sess } = await supabase
+        .from("sesiones")
+        .select("id, fecha_hora, modalidad, estado, consultante:consultante_id(nombre)")
+        .eq("counselor_id", user.id)
+        .gte("fecha_hora", ahora)
+        .in("estado", ["confirmada", "en_curso"])
+        .order("fecha_hora", { ascending: true })
+        .limit(20);
+
+      setSesiones((sess ?? []).map((s: Record<string, unknown>) => ({
+        id: s.id as string,
+        fecha_hora: s.fecha_hora as string,
+        consultante: (s.consultante as unknown as { nombre: string } | null)?.nombre ?? "Consultante",
+        modalidad: s.modalidad as string,
+        estado: s.estado as string,
+      })));
 
       setLoading(false);
     }
@@ -61,84 +83,28 @@ export default function AgendaCounselorPage() {
   }, [supabase, router]);
 
   const toggleBloque = (dia: number, hora: string) => {
-    const existe = bloques.find(
-      (b) => b.dia_semana === dia && b.hora_inicio === hora
-    );
-
+    const existe = bloques.find(b => b.dia_semana === dia && b.hora_inicio === hora);
     if (existe) {
-      setBloques(bloques.filter((b) => b.id !== existe.id));
+      setBloques(bloques.filter(b => b.id !== existe.id));
     } else {
-      // Agregar bloque de 1 hora
-      setBloques([
-        ...bloques,
-        { dia_semana: dia, hora_inicio: hora, hora_fin: hora },
-      ]);
+      setBloques([...bloques, { dia_semana: dia, hora_inicio: hora, hora_fin: hora }]);
     }
   };
 
   const estaSeleccionado = (dia: number, hora: string) =>
-    bloques.some(
-      (b) =>
-        b.dia_semana === dia &&
-        b.hora_inicio <= hora &&
-        // Chequear si está dentro de un bloque continuo
-        bloques.some(
-          (b2) =>
-            b2.dia_semana === dia &&
-            b2.hora_inicio === b.hora_inicio &&
-            b2.hora_fin >= hora
-        )
-    );
+    bloques.some(b => b.dia_semana === dia && b.hora_inicio === hora);
 
   const guardar = async () => {
     setGuardando(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Eliminar disponibilidad actual
-    await supabase
-      .from("disponibilidad")
-      .delete()
-      .eq("counselor_id", user.id);
+    // Borrar lo viejo y grabar lo nuevo
+    await supabase.from("disponibilidad").delete().eq("counselor_id", user.id);
 
-    // Fusionar bloques contiguos del mismo día
-    const fusionados: { dia_semana: number; hora_inicio: string; hora_fin: string }[] = [];
-    const porDia = new Map<number, string[]>();
-
-    bloques.forEach((b) => {
-      const horas = porDia.get(b.dia_semana) ?? [];
-      horas.push(b.hora_inicio);
-      porDia.set(b.dia_semana, horas);
-    });
-
-    porDia.forEach((horas, dia) => {
-      horas.sort();
-      let inicio = horas[0];
-      let fin = horas[0];
-
-      for (let i = 1; i < horas.length; i++) {
-        const hActual = horas[i];
-        const hAnterior = horas[i - 1];
-        // Calcular diferencia en horas
-        const [hhA, mmA] = hAnterior.split(":").map(Number);
-        const [hhC, mmC] = hActual.split(":").map(Number);
-        const diff = (hhC - hhA) + (mmC - mmA) / 60;
-
-        if (diff <= 1.5) {
-          fin = hActual;
-        } else {
-          fusionados.push({ dia_semana: dia, hora_inicio: inicio, hora_fin: fin });
-          inicio = hActual;
-          fin = hActual;
-        }
-      }
-      fusionados.push({ dia_semana: dia, hora_inicio: inicio, hora_fin: fin });
-    });
-
-    // Insertar nuevos bloques
-    if (fusionados.length > 0) {
+    if (bloques.length > 0) {
       await supabase.from("disponibilidad").insert(
-        fusionados.map((b) => ({
+        bloques.map(b => ({
           counselor_id: user.id,
           dia_semana: b.dia_semana,
           hora_inicio: b.hora_inicio,
@@ -146,39 +112,54 @@ export default function AgendaCounselorPage() {
         }))
       );
     }
-
     setGuardando(false);
-    window.location.reload();
   };
 
   const agregarBloqueo = async () => {
-    if (!nuevaFechaBloqueo) return;
+    if (!nuevaFechaBloqueo || !nuevoMotivo.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase.from("bloqueos").insert({
-      counselor_id: user.id,
-      fecha: nuevaFechaBloqueo,
-      hora_inicio: "00:00",
-      hora_fin: "23:59",
-      motivo: nuevoMotivo || "Bloqueo manual",
-    });
+    const { data, error } = await supabase
+      .from("bloqueos")
+      .insert({
+        counselor_id: user.id,
+        fecha: nuevaFechaBloqueo,
+        hora_inicio: "08:00",
+        hora_fin: "20:00",
+        motivo: nuevoMotivo,
+      })
+      .select()
+      .single();
 
-    setNuevaFechaBloqueo("");
-    setNuevoMotivo("");
-    window.location.reload();
+    if (!error && data) {
+      setBloqueos([...bloqueos, data as Bloqueo]);
+      setNuevaFechaBloqueo("");
+      setNuevoMotivo("");
+    }
+    setMostrarBloqueos(false);
   };
 
   const eliminarBloqueo = async (id: string) => {
     await supabase.from("bloqueos").delete().eq("id", id);
-    setBloqueos(bloqueos.filter((b) => b.id !== id));
+    setBloqueos(bloqueos.filter(b => b.id !== id));
   };
 
   const copiarLink = () => {
+    if (!counselorId) return;
     const link = `${window.location.origin}/agenda/${counselorId}`;
     navigator.clipboard.writeText(link);
     setLinkCopiado(true);
     setTimeout(() => setLinkCopiado(false), 2000);
+  };
+
+  const fechaBloqueada = (dia: number) => {
+    // Simple: check if any bloqueo covers this day of the week
+    const hoy = new Date();
+    const inicioSemana = new Date(hoy);
+    inicioSemana.setDate(hoy.getDate() - hoy.getDay() + dia);
+    const fechaStr = inicioSemana.toISOString().split("T")[0];
+    return bloqueos.some(b => b.fecha === fechaStr);
   };
 
   if (loading) {
@@ -190,127 +171,164 @@ export default function AgendaCounselorPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", padding: "24px 16px 80px", maxWidth: 640, margin: "0 auto" }}>
-      <Link href="/panel" style={{ fontSize: 13, color: "var(--nv-accent)", textDecoration: "none", fontWeight: 500, display: "inline-block", marginBottom: 24 }}>
-        ← Panel
-      </Link>
-
-      <h1 style={{ fontSize: 28, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", marginBottom: 24 }}>
-        Mi Agenda
-      </h1>
-
-      {/* Link compartible */}
-      <div className="card" style={{ padding: 16, marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <p style={{ fontSize: 12, color: "var(--nv-text-muted)", marginBottom: 2 }}>Link público de tu agenda</p>
-          <p style={{ fontSize: 13, color: "var(--nv-text-primary)", wordBreak: "break-all" }}>
-            {typeof window !== "undefined" ? `${window.location.origin}/agenda/${counselorId}` : ""}
-          </p>
-        </div>
-        <button onClick={copiarLink} className="btn-ghost" style={{ fontSize: 12, padding: "6px 14px" }}>
-          {linkCopiado ? "✓ Copiado" : "Copiar link"}
-        </button>
-      </div>
-
-      {/* Disponibilidad semanal */}
-      <h2 style={{ fontSize: 15, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", marginBottom: 12 }}>
-        Disponibilidad semanal
-      </h2>
-      <p style={{ fontSize: 12, color: "var(--nv-text-muted)", marginBottom: 16, lineHeight: 1.5 }}>
-        Clickeá las horas para activarlas o desactivarlas. Se guardan como bloques.
-      </p>
-
-      <div className="card" style={{ padding: 16, marginBottom: 24, overflowX: "auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "60px repeat(7, 1fr)", gap: 2, minWidth: 500 }}>
-          {/* Header días */}
-          <div />
-          {DIAS.map((d) => (
-            <div key={d} style={{ fontSize: 10, color: "var(--nv-text-muted)", textAlign: "center", padding: "4px 0" }}>
-              {d}
-            </div>
-          ))}
-
-          {/* Grid de horas */}
-          {HORAS.map((h) => (
-            <div key={h} style={{ display: "contents" }}>
-              <div style={{ fontSize: 10, color: "var(--nv-text-muted)", textAlign: "right", padding: "2px 6px" }}>
-                {h}
-              </div>
-              {DIAS.map((_, idx) => {
-                const sel = bloques.some(
-                  (b) => b.dia_semana === idx && b.hora_inicio <= h && h < (() => {
-                    const [hh, mm] = b.hora_fin.split(":").map(Number);
-                    const nextH = hh + (h < b.hora_fin ? 0 : 1);
-                    return `${String(nextH).padStart(2, "0")}:00`;
-                  })()
-                );
-                // Simplificado: chequear si la hora está cubierta
-                const cubierto = bloques.some(
-                  (b) => b.dia_semana === idx && b.hora_inicio <= h && b.hora_fin >= h
-                );
-                return (
-                  <button
-                    key={`${idx}-${h}`}
-                    onClick={() => toggleBloque(idx, h)}
-                    style={{
-                      height: 28,
-                      background: cubierto ? "var(--nv-accent)" : "var(--nv-bg-input)",
-                      border: cubierto ? "1px solid var(--nv-accent-hover)" : "1px solid var(--nv-border)",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      transition: "all 0.1s",
-                    }}
-                    title={`${DIAS[idx]} ${h}`}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button onClick={guardar} className="btn-primary" disabled={guardando} style={{ width: "100%", marginBottom: 32 }}>
-        {guardando ? "Guardando..." : "Guardar disponibilidad"}
-      </button>
-
-      {/* Bloqueos */}
-      <h2 style={{ fontSize: 15, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", marginBottom: 12 }}>
-        Días bloqueados
-      </h2>
-      <p style={{ fontSize: 12, color: "var(--nv-text-muted)", marginBottom: 16, lineHeight: 1.5 }}>
-        Bloqueá días completos (vacaciones, feriados, eventos externos).
-      </p>
-
-      <div className="card" style={{ padding: 16, marginBottom: 24 }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-          <input type="date" value={nuevaFechaBloqueo} onChange={(e) => setNuevaFechaBloqueo(e.target.value)} className="input" style={{ width: "auto", flex: 1, padding: "8px 12px", fontSize: 12 }} />
-          <input type="text" value={nuevoMotivo} onChange={(e) => setNuevoMotivo(e.target.value)} placeholder="Motivo (opcional)" className="input" style={{ width: "auto", flex: 2, padding: "8px 12px", fontSize: 12 }} />
-          <button onClick={agregarBloqueo} className="btn-primary" style={{ fontSize: 12, padding: "8px 16px" }} disabled={!nuevaFechaBloqueo}>
-            Bloquear
+    <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", paddingBottom: 80, fontFamily: "var(--nv-font-body)" }}>
+      {/* HEADER */}
+      <div style={{
+        background: "#FFFFFF",
+        borderBottom: "1px solid rgba(0,0,0,0.05)",
+        padding: "14px 18px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6aa87c", textTransform: "uppercase", margin: 0 }}>
+          Mi Agenda
+        </h1>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={copiarLink}
+            style={{
+              fontSize: 10, fontWeight: 600, color: "#6aa87c",
+              background: "rgba(106,168,124,0.08)", border: "none",
+              padding: "5px 10px", borderRadius: 6, cursor: "pointer",
+            }}
+          >
+            {linkCopiado ? "¡Copiado!" : "Copiar link"}
+          </button>
+          <button
+            onClick={() => setMostrarBloqueos(!mostrarBloqueos)}
+            style={{
+              fontSize: 10, fontWeight: 600, color: "var(--nv-text-muted)",
+              background: "rgba(0,0,0,0.04)", border: "none",
+              padding: "5px 10px", borderRadius: 6, cursor: "pointer",
+            }}
+          >
+            Bloqueos
           </button>
         </div>
+      </div>
 
-        {bloqueos.length === 0 && (
-          <p style={{ fontSize: 12, color: "var(--nv-text-muted)" }}>No tenés días bloqueados.</p>
-        )}
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {bloqueos.map((b) => (
-            <div key={b.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid var(--nv-border)" }}>
-              <div>
-                <span style={{ fontSize: 12, color: "var(--nv-text-primary)" }}>
-                  {new Date(b.fecha + "T00:00:00").toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
-                </span>
-                {b.motivo && b.motivo !== "Bloqueo manual" && (
-                  <span style={{ fontSize: 11, color: "var(--nv-text-muted)", marginLeft: 8 }}>— {b.motivo}</span>
-                )}
-              </div>
-              <button onClick={() => eliminarBloqueo(b.id)} style={{ fontSize: 11, color: "var(--nv-state-error)", background: "transparent", border: "none", cursor: "pointer" }}>
-                Quitar
+      <div style={{ padding: "16px", maxWidth: 500, margin: "0 auto" }}>
+        {/* Bloqueos panel */}
+        {mostrarBloqueos && (
+          <div className="card" style={{ padding: 16, marginBottom: 16 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", marginBottom: 10 }}>Bloqueos (vacaciones / feriados)</h3>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+              <input type="date" value={nuevaFechaBloqueo} onChange={e => setNuevaFechaBloqueo(e.target.value)}
+                className="input" style={{ flex: 1, fontSize: 12, padding: "8px 10px" }} />
+              <input type="text" placeholder="Motivo" value={nuevoMotivo} onChange={e => setNuevoMotivo(e.target.value)}
+                className="input" style={{ flex: 1, fontSize: 12, padding: "8px 10px" }} />
+              <button onClick={agregarBloqueo} className="btn-primary" style={{ fontSize: 11, padding: "8px 14px" }}>
+                +
               </button>
             </div>
-          ))}
+            {bloqueos.map(b => (
+              <div key={b.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, padding: "4px 0" }}>
+                <span style={{ color: "var(--nv-text-secondary)" }}>
+                  {new Date(b.fecha + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short" })} — {b.motivo}
+                </span>
+                <button onClick={() => eliminarBloqueo(b.id)}
+                  style={{ background: "none", border: "none", color: "var(--nv-state-error)", cursor: "pointer", fontSize: 14 }}>
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Sesiones próximas */}
+        {sesiones.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#6aa87c", textTransform: "uppercase", marginBottom: 8 }}>
+              Próximas sesiones
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {sesiones.map(s => (
+                <Link key={s.id} href={`/panel/sesion/${s.id}`}
+                  style={{ textDecoration: "none", color: "inherit" }}>
+                  <div className="card" style={{
+                    padding: "10px 14px",
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                  }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", margin: 0 }}>
+                        {s.consultante}
+                      </p>
+                      <p style={{ fontSize: 11, color: "var(--nv-text-muted)", margin: "2px 0 0" }}>
+                        {new Date(s.fecha_hora).toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    <span style={{ fontSize: 10, color: "#6aa87c" }}>
+                      {s.modalidad === "online" ? "💻" : "📍"}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Grilla semanal */}
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#6aa87c", textTransform: "uppercase", marginBottom: 10 }}>
+          Disponibilidad semanal
+        </h3>
+        <p style={{ fontSize: 11, color: "var(--nv-text-muted)", marginBottom: 12 }}>
+          Tocá los bloques para marcar tu horario disponible.
+        </p>
+
+        <div style={{ overflowX: "auto", marginBottom: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: `50px repeat(7, 1fr)`, gap: 2, minWidth: 360 }}>
+            {/* Header: días */}
+            <div />
+            {DIAS.map((d, i) => (
+              <div key={d} style={{
+                textAlign: "center", fontSize: 10, fontWeight: 600,
+                color: fechaBloqueada(i) ? "var(--nv-state-error)" : "var(--nv-text-muted)",
+                padding: "4px 0",
+              }}>
+                {d}
+              </div>
+            ))}
+
+            {/* Filas: horas */}
+            {HORAS.map(hora => (
+              <div key={hora} style={{ display: "contents" }}>
+                <div style={{ fontSize: 10, color: "var(--nv-text-muted)", padding: "6px 4px", textAlign: "right" }}>
+                  {hora}
+                </div>
+                {DIAS.map((_, dia) => {
+                  const sel = estaSeleccionado(dia, hora);
+                  const bloq = fechaBloqueada(dia);
+                  return (
+                    <button
+                      key={`${dia}-${hora}`}
+                      onClick={() => !bloq && toggleBloque(dia, hora)}
+                      disabled={bloq}
+                      style={{
+                        background: bloq ? "rgba(192,57,43,0.06)" : sel ? "#6aa87c" : "#FFFFFF",
+                        border: `1px solid ${bloq ? "rgba(192,57,43,0.15)" : sel ? "#6aa87c" : "rgba(0,0,0,0.06)"}`,
+                        borderRadius: 4,
+                        padding: "6px 0",
+                        cursor: bloq ? "not-allowed" : "pointer",
+                        transition: "all 0.15s",
+                        fontSize: 0,
+                      }}
+                      title={bloq ? "Bloqueado" : sel ? "Disponible" : "No disponible"}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
+
+        <button onClick={guardar} disabled={guardando} className="btn-primary" style={{ width: "100%" }}>
+          {guardando ? "Guardando…" : "Guardar disponibilidad"}
+        </button>
+
+        <p style={{ fontSize: 10, color: "var(--nv-text-muted)", textAlign: "center", marginTop: 12 }}>
+          Compartí tu link de agenda para que los consultantes reserven.
+        </p>
       </div>
     </div>
   );
