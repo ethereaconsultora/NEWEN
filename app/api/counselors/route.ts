@@ -74,7 +74,7 @@ export async function GET(request: Request) {
 
   // Aplanar la relación users(nombre)
   const counselors = (data ?? []).map((c: Record<string, unknown>) => {
-    const user = c.users as { nombre: string } | null;
+    const user = c.users as unknown as { nombre: string } | null;
     return {
       ...c,
       nombre: user?.nombre ?? "Sin nombre",

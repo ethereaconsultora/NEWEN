@@ -1,6 +1,13 @@
 /**
  * Muestra estrellas (1-5) con el estilo visual de Newen.
  */
+
+interface StarsProps {
+  rating: number;
+  size?: "sm" | "md";
+  showNumber?: boolean;
+}
+
 export default function Stars({ rating, size = "sm", showNumber = true }: StarsProps) {
   const starSize = size === "sm" ? 14 : 18;
   const full = Math.floor(rating);

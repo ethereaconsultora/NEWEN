@@ -139,7 +139,7 @@ export async function POST(request: Request) {
     .eq("id", user.id)
     .single();
 
-  const counselorUser = counselor.users as { nombre: string } | null;
+  const counselorUser = counselor.users as unknown as { nombre: string } | null;
 
   // Crear preferencia de pago con el token del counselor
   try {

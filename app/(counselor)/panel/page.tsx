@@ -44,7 +44,7 @@ export default function PanelCounselorPage() {
         proximas: proximas.map((s: Record<string, unknown>) => ({
           id: s.id as string,
           fecha_hora: s.fecha_hora as string,
-          consultante: (s.consultante as { nombre: string } | null)?.nombre ?? "Consultante",
+          consultante: (s.consultante as unknown as { nombre: string } | null)?.nombre ?? "Consultante",
         })),
       });
       setLoading(false);

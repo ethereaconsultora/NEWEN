@@ -50,7 +50,7 @@ export default function MiCuentaPage() {
           data.map((s: Record<string, unknown>) => ({
             ...s,
             counselor: s.counselor
-              ? ((s.counselor as { users: { nombre: string }[] }).users?.[0] ?? null)
+              ? ((s.counselor as unknown as { users: { nombre: string }[] }).users?.[0] ?? null)
               : null,
           })) as SesionData[]
         );

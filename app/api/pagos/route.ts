@@ -112,7 +112,7 @@ export async function POST(request: Request) {
           .eq("id", sesion.counselor_id)
           .single();
 
-        const counselorUser = counselor?.users as { email: string; nombre: string } | null;
+        const counselorUser = counselor?.users as unknown as { email: string; nombre: string } | null;
 
         if (consultante?.email) {
           await enviarConfirmacionConsultante({

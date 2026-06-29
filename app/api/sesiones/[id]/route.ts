@@ -113,7 +113,7 @@ export async function PATCH(
         .eq("id", sesion.counselor_id)
         .single();
 
-      const cUser = counselor?.users as { email: string; nombre: string } | null;
+      const cUser = counselor?.users as unknown as { email: string; nombre: string } | null;
 
       if (consultante?.email) {
         await enviarConfirmacionConsultante({

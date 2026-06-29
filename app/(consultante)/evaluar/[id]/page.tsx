@@ -43,7 +43,7 @@ export default function EvaluarPage({ params }: PageProps) {
         return;
       }
 
-      const counselorData = s.counselor as { users: { nombre: string }[] } | null;
+      const counselorData = s.counselor as unknown as { users: { nombre: string }[] } | null;
       const counselorNombre = counselorData?.users?.[0]?.nombre ?? "Counselor";
 
       setSesion({

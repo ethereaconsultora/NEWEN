@@ -37,10 +37,22 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
     notFound();
   }
 
-  const counselor = data as Record<string, unknown>;
-  const user = counselor.users as { nombre: string } | null;
-  const nombre = user?.nombre ?? "Sin nombre";
-  const especialidades = (counselor.especialidades as string[]) ?? [];
+  const counselor = data as {
+    id: string;
+    bio: string | null;
+    enfoque: string | null;
+    especialidades: string[] | null;
+    modalidad: string | null;
+    provincia: string | null;
+    experiencia_anios: number | null;
+    aac_verificado: boolean;
+    promedio_estrellas: number;
+    total_sesiones: number;
+    users: { nombre: string }[] | null;
+  };
+  const userData = counselor.users?.[0];
+  const nombre = userData?.nombre ?? "Sin nombre";
+  const especialidades = counselor.especialidades ?? [];
   const iniciales = nombre
     .split(" ")
     .map((w: string) => w[0])
@@ -116,7 +128,7 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
             >
               {nombre}
             </h1>
-            <Stars rating={counselor.promedio_estrellas as number} size="md" />
+            <Stars rating={counselor.promedio_estrellas} size="md" />
             {counselor.aac_verificado && (
               <span className="badge" style={{ marginTop: 6 }}>
                 AAC Verificado
@@ -136,11 +148,11 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
             color: "var(--nv-text-secondary)",
           }}
         >
-          {counselor.provincia && <span>📍 {(counselor.provincia as string)}</span>}
+          {counselor.provincia && <span>📍 {counselor.provincia}</span>}
           {counselor.experiencia_anios && (
-            <span>📅 {(counselor.experiencia_anios as number)} años de experiencia</span>
+            <span>📅 {counselor.experiencia_anios} años de experiencia</span>
           )}
-          <span>🎯 {(counselor.total_sesiones as number) || 0} sesiones</span>
+          <span>🎯 {counselor.total_sesiones || 0} sesiones</span>
           <span>
             {counselor.modalidad === "online"
               ? "💻 Online"
@@ -166,7 +178,7 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
               Enfoque
             </h2>
             <p style={{ fontSize: 13, color: "var(--nv-text-secondary)", lineHeight: 1.6 }}>
-              {counselor.enfoque as string}
+              {counselor.enfoque}
             </p>
           </div>
         )}
@@ -185,7 +197,7 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
               Sobre mí
             </h2>
             <p style={{ fontSize: 13, color: "var(--nv-text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
-              {counselor.bio as string}
+              {counselor.bio}
             </p>
           </div>
         )}
@@ -204,7 +216,7 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
               Especialidades
             </h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {especialidades.map((tag: string) => (
+              {especialidades.map((tag) => (
                 <span
                   key={tag}
                   style={{

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CounselorCard from "@/components/counselor/CounselorCard";
@@ -8,7 +8,7 @@ import type { Counselor } from "@/types/newen";
 
 type CounselorWithNombre = Counselor & { nombre: string };
 
-export default function BuscarPage() {
+function BuscarContent() {
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") ?? "";
 
@@ -160,5 +160,17 @@ export default function BuscarPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BuscarPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span className="spinner" />
+      </div>
+    }>
+      <BuscarContent />
+    </Suspense>
   );
 }
