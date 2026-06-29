@@ -13,14 +13,14 @@ export default function HomePage() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0c1810",
+      background: "#F0EBE0",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       padding: "56px 24px 44px",
       fontFamily: "'DM Sans', sans-serif",
     }}>
-      {/* ── HEADER ── */}
+      {/* HEADER */}
       <h1 style={{
         fontSize: 12,
         fontWeight: 700,
@@ -35,7 +35,7 @@ export default function HomePage() {
         Búsqueda por Situación
       </h1>
 
-      {/* ── 2x2 GRID ── */}
+      {/* 2x2 GRID */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
@@ -54,18 +54,19 @@ export default function HomePage() {
               alignItems: "center",
               justifyContent: "center",
               aspectRatio: "1",
-              background: "#111e15",
-              border: "0.5px solid rgba(125,186,143,0.10)",
+              background: "#FFFFFF",
+              border: "1px solid rgba(125,186,143,0.12)",
               borderRadius: 14,
               textDecoration: "none",
               padding: "20px 14px",
-              gap: 12,
-              transition: "border-color 0.25s, background 0.25s",
+              gap: 14,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              transition: "border-color 0.25s, box-shadow 0.25s",
             }}
           >
             <span style={{
               fontSize: 22,
-              color: "rgba(125,186,143,0.30)",
+              color: "rgba(125,186,143,0.25)",
               lineHeight: 1,
               fontWeight: 300,
               fontFamily: "'DM Serif Display', serif",
@@ -75,7 +76,7 @@ export default function HomePage() {
             <span style={{
               fontSize: 13,
               fontWeight: 600,
-              color: "#e8e2d4",
+              color: "#1C1208",
               textAlign: "center",
               letterSpacing: "0.04em",
               lineHeight: 1.3,
@@ -87,7 +88,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* ── FORM ── */}
+      {/* FORM */}
       <form
         action="/buscar"
         method="GET"
@@ -105,7 +106,7 @@ export default function HomePage() {
             display: "block",
             fontSize: 10,
             fontWeight: 600,
-            color: "#6a7a65",
+            color: "rgba(28,18,8,0.45)",
             letterSpacing: "0.12em",
             textTransform: "uppercase",
             marginBottom: 8,
@@ -118,10 +119,10 @@ export default function HomePage() {
             style={{
               width: "100%",
               padding: "14px 16px",
-              background: "#111e15",
-              border: "0.5px solid #243329",
+              background: "#FFFFFF",
+              border: "1px solid rgba(125,186,143,0.15)",
               borderRadius: 10,
-              color: "#e8e2d4",
+              color: "#1C1208",
               fontSize: 13,
               fontFamily: "'DM Sans', sans-serif",
               outline: "none",
@@ -142,7 +143,7 @@ export default function HomePage() {
             display: "block",
             fontSize: 10,
             fontWeight: 600,
-            color: "#6a7a65",
+            color: "rgba(28,18,8,0.45)",
             letterSpacing: "0.12em",
             textTransform: "uppercase",
             marginBottom: 8,
@@ -155,10 +156,10 @@ export default function HomePage() {
             style={{
               width: "100%",
               padding: "14px 16px",
-              background: "#111e15",
-              border: "0.5px solid #243329",
+              background: "#FFFFFF",
+              border: "1px solid rgba(125,186,143,0.15)",
               borderRadius: 10,
-              color: "#e8e2d4",
+              color: "#1C1208",
               fontSize: 13,
               fontFamily: "'DM Sans', sans-serif",
               outline: "none",
@@ -176,7 +177,7 @@ export default function HomePage() {
           </select>
         </div>
 
-        {/* BUSCAR */}
+        {/* BUTTON */}
         <button
           type="submit"
           onClick={(e) => {
@@ -192,7 +193,7 @@ export default function HomePage() {
             background: "#7dba8f",
             border: "none",
             borderRadius: 12,
-            color: "#0c1810",
+            color: "#FFFFFF",
             fontSize: 13,
             fontWeight: 700,
             fontFamily: "'DM Sans', sans-serif",
