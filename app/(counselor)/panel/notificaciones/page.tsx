@@ -89,7 +89,7 @@ export default function NotificacionesPage() {
         padding: "14px 18px",
         textAlign: "center",
       }}>
-        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6aa87c", textTransform: "uppercase", margin: 0 }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>
           Notificaciones
         </h1>
       </div>

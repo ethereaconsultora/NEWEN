@@ -95,7 +95,7 @@ export default function VideoRoom({ roomUrl, onLeave }: VideoRoomProps) {
           }}
         >
           <div style={{ textAlign: "center" }}>
-            <span className="spinner" style={{ borderTopColor: "#7dba8f" }} />
+            <span className="spinner" style={{ borderTopColor: "var(--nv-accent)" }} />
             <p
               style={{
                 marginTop: 16,

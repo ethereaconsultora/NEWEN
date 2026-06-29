@@ -181,15 +181,15 @@ export default function AgendaPage() {
         alignItems: "center",
         justifyContent: "space-between",
       }}>
-        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6aa87c", textTransform: "uppercase", margin: 0 }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>
           Mi Agenda
         </h1>
         <div style={{ display: "flex", gap: 10 }}>
           <button
             onClick={copiarLink}
             style={{
-              fontSize: 10, fontWeight: 600, color: "#6aa87c",
-              background: "rgba(106,168,124,0.08)", border: "none",
+              fontSize: 10, fontWeight: 600, color: "var(--nv-accent)",
+              background: "rgba(27,67,50,0.08)", border: "none",
               padding: "5px 10px", borderRadius: 6, cursor: "pointer",
             }}
           >
@@ -239,7 +239,7 @@ export default function AgendaPage() {
         {/* Sesiones próximas */}
         {sesiones.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#6aa87c", textTransform: "uppercase", marginBottom: 8 }}>
+            <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--nv-accent)", textTransform: "uppercase", marginBottom: 8 }}>
               Próximas sesiones
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -258,7 +258,7 @@ export default function AgendaPage() {
                         {new Date(s.fecha_hora).toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
-                    <span style={{ fontSize: 10, color: "#6aa87c" }}>
+                    <span style={{ fontSize: 10, color: "var(--nv-accent)" }}>
                       {s.modalidad === "online" ? "💻" : "📍"}
                     </span>
                   </div>
@@ -269,7 +269,7 @@ export default function AgendaPage() {
         )}
 
         {/* Grilla semanal */}
-        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#6aa87c", textTransform: "uppercase", marginBottom: 10 }}>
+        <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--nv-accent)", textTransform: "uppercase", marginBottom: 10 }}>
           Disponibilidad semanal
         </h3>
         <p style={{ fontSize: 11, color: "var(--nv-text-muted)", marginBottom: 12 }}>
@@ -305,8 +305,8 @@ export default function AgendaPage() {
                       onClick={() => !bloq && toggleBloque(dia, hora)}
                       disabled={bloq}
                       style={{
-                        background: bloq ? "rgba(192,57,43,0.06)" : sel ? "#6aa87c" : "#FFFFFF",
-                        border: `1px solid ${bloq ? "rgba(192,57,43,0.15)" : sel ? "#6aa87c" : "rgba(0,0,0,0.06)"}`,
+                        background: bloq ? "rgba(192,57,43,0.06)" : sel ? "var(--nv-accent)" : "#FFFFFF",
+                        border: `1px solid ${bloq ? "rgba(192,57,43,0.15)" : sel ? "var(--nv-accent)" : "rgba(0,0,0,0.06)"}`,
                         borderRadius: 4,
                         padding: "6px 0",
                         cursor: bloq ? "not-allowed" : "pointer",

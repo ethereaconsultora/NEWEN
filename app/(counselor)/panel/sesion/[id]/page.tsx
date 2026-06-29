@@ -79,7 +79,7 @@ export default function SesionCounselorPage({ params }: PageProps) {
           justifyContent: "center",
         }}
       >
-        <span className="spinner" style={{ borderTopColor: "#7dba8f" }} />
+        <span className="spinner" style={{ borderTopColor: "var(--nv-accent)" }} />
       </div>
     );
   }

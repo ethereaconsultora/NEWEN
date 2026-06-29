@@ -70,7 +70,7 @@ export default function MuroPage() {
         alignItems: "center",
         justifyContent: "space-between",
       }}>
-        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6aa87c", textTransform: "uppercase", margin: 0 }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>
           Muro
         </h1>
         <span style={{ fontSize: 11, color: "var(--nv-text-muted)" }}>
@@ -98,8 +98,8 @@ export default function MuroPage() {
                     </p>
                   </div>
                   <span className="badge" style={{
-                    background: s.estado === "en_curso" ? "rgba(106,168,124,0.12)" : "rgba(0,0,0,0.04)",
-                    color: s.estado === "en_curso" ? "#6aa87c" : "var(--nv-text-secondary)",
+                    background: s.estado === "en_curso" ? "rgba(27,67,50,0.12)" : "rgba(0,0,0,0.04)",
+                    color: s.estado === "en_curso" ? "var(--nv-accent)" : "var(--nv-text-secondary)",
                     border: "none",
                   }}>
                     {s.estado === "confirmada" ? "Próxima" : "En curso"}

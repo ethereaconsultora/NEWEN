@@ -11,8 +11,8 @@ const TABS = [
 ];
 
 function Icon({ name, active }: { name: string; active: boolean }) {
-  const color = active ? "#6aa87c" : "rgba(28,18,8,0.35)";
-  const stroke = active ? "#6aa87c" : "rgba(28,18,8,0.35)";
+  const color = active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)";
+  const stroke = active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)";
 
   switch (name) {
     case "user":
@@ -86,7 +86,7 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
                 textDecoration: "none",
                 fontSize: 10,
                 fontWeight: active ? 600 : 500,
-                color: active ? "#6aa87c" : "rgba(28,18,8,0.35)",
+                color: active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)",
                 minWidth: 60,
               }}
             >
@@ -95,7 +95,7 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
               {active && (
                 <span style={{
                   width: 4, height: 4, borderRadius: "50%",
-                  background: "#6aa87c", marginTop: -2,
+                  background: "var(--nv-accent)", marginTop: -2,
                 }} />
               )}
             </Link>

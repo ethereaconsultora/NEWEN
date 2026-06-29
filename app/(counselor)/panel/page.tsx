@@ -94,7 +94,7 @@ export default function PerfilPage() {
         padding: "14px 18px",
         textAlign: "center",
       }}>
-        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6aa87c", textTransform: "uppercase", margin: 0 }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>
           Mi Perfil
         </h1>
       </div>
@@ -132,17 +132,17 @@ export default function PerfilPage() {
           {/* Stats row */}
           <div style={{ display: "flex", justifyContent: "center", gap: 28, marginBottom: 16 }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "#6aa87c" }}>{profile?.total_sesiones ?? 0}</div>
+              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "var(--nv-accent)" }}>{profile?.total_sesiones ?? 0}</div>
               <div style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>Sesiones</div>
             </div>
             <div style={{ width: 1, background: "var(--nv-border)" }} />
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "#6aa87c" }}>{profile?.experiencia_anios ?? "—"}</div>
+              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "var(--nv-accent)" }}>{profile?.experiencia_anios ?? "—"}</div>
               <div style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>Años exp.</div>
             </div>
             <div style={{ width: 1, background: "var(--nv-border)" }} />
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "#6aa87c" }}>{profile?.aac_verificado ? "✓" : "—"}</div>
+              <div style={{ fontSize: 22, fontFamily: "var(--nv-font-display)", color: "var(--nv-accent)" }}>{profile?.aac_verificado ? "✓" : "—"}</div>
               <div style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>AAC</div>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function PerfilPage() {
 
         {/* PUBLICACIONES */}
         <h3 style={{
-          fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#6aa87c",
+          fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--nv-accent)",
           textTransform: "uppercase", marginBottom: 12, paddingLeft: 4,
         }}>
           Publicaciones
@@ -176,7 +176,7 @@ export default function PerfilPage() {
         {publicaciones.length === 0 ? (
           <div className="card" style={{ padding: 28, textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "var(--nv-text-muted)", marginBottom: 12 }}>Todavía no hiciste publicaciones.</p>
-            <Link href="/panel/perfil/editar" style={{ fontSize: 12, fontWeight: 600, color: "#6aa87c" }}>
+            <Link href="/panel/perfil/editar" style={{ fontSize: 12, fontWeight: 600, color: "var(--nv-accent)" }}>
               Crear primera publicación →
             </Link>
           </div>

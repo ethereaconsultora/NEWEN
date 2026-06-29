@@ -27,7 +27,7 @@ export default function CounselorCard({ id, nombre, especialidades, modalidad, p
         position: "absolute", top: 14, right: 14,
         fontSize: 9, fontWeight: 700, letterSpacing: 1.2,
         color: "var(--nv-accent)", textTransform: "uppercase",
-        background: "rgba(125,186,143,0.10)",
+        background: "rgba(27,67,50,0.08)",
         padding: "3px 8px", borderRadius: 999,
       }}>
         AGENDA ABIERTA
@@ -92,23 +92,23 @@ export default function CounselorCard({ id, nombre, especialidades, modalidad, p
             marginTop: 10,
             padding: "8px 0",
             fontSize: 12, fontWeight: 700, letterSpacing: 1,
-            background: "#6aa87c",
+            background: "var(--nv-accent)",
             color: "#FFFFFF",
             border: "none",
             borderRadius: 10,
             textDecoration: "none",
             textTransform: "uppercase",
-            boxShadow: "0 2px 12px rgba(106,168,124,0.28)",
+            boxShadow: "0 2px 12px rgba(27,67,50,0.28)",
             transition: "all 0.2s",
             width: "100%",
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = "#5c9a6e";
-            e.currentTarget.style.boxShadow = "0 4px 18px rgba(106,168,124,0.38)";
+            e.currentTarget.style.boxShadow = "0 4px 18px rgba(27,67,50,0.38)";
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = "#6aa87c";
-            e.currentTarget.style.boxShadow = "0 2px 12px rgba(106,168,124,0.28)";
+            e.currentTarget.style.background = "var(--nv-accent)";
+            e.currentTarget.style.boxShadow = "0 2px 12px rgba(27,67,50,0.28)";
           }}
         >
           VER PERFIL

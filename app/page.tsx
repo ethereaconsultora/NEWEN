@@ -25,7 +25,7 @@ export default function HomePage() {
         fontSize: 12,
         fontWeight: 700,
         letterSpacing: "0.22em",
-        color: "#7dba8f",
+        color: "var(--nv-accent)",
         textTransform: "uppercase",
         textAlign: "center",
         margin: 0,
@@ -55,7 +55,7 @@ export default function HomePage() {
               justifyContent: "center",
               aspectRatio: "1",
               background: "#FFFFFF",
-              border: "1px solid rgba(125,186,143,0.12)",
+              border: "1px solid rgba(27,67,50,0.10)",
               borderRadius: 14,
               textDecoration: "none",
               padding: "20px 14px",
@@ -66,7 +66,7 @@ export default function HomePage() {
           >
             <span style={{
               fontSize: 22,
-              color: "rgba(125,186,143,0.25)",
+              color: "rgba(27,67,50,0.20)",
               lineHeight: 1,
               fontWeight: 300,
               fontFamily: "'DM Serif Display', serif",
@@ -120,7 +120,7 @@ export default function HomePage() {
               width: "100%",
               padding: "14px 16px",
               background: "#FFFFFF",
-              border: "1px solid rgba(125,186,143,0.15)",
+              border: "1px solid rgba(27,67,50,0.10)",
               borderRadius: 10,
               color: "#1C1208",
               fontSize: 13,
@@ -157,7 +157,7 @@ export default function HomePage() {
               width: "100%",
               padding: "14px 16px",
               background: "#FFFFFF",
-              border: "1px solid rgba(125,186,143,0.15)",
+              border: "1px solid rgba(27,67,50,0.10)",
               borderRadius: 10,
               color: "#1C1208",
               fontSize: 13,
@@ -190,7 +190,7 @@ export default function HomePage() {
           style={{
             width: "100%",
             padding: "16px 0",
-            background: "#6aa87c",
+            background: "var(--nv-accent)",
             border: "none",
             borderRadius: 12,
             color: "#FFFFFF",
@@ -205,7 +205,7 @@ export default function HomePage() {
             justifyContent: "center",
             gap: 8,
             marginTop: 6,
-            boxShadow: "0 2px 14px rgba(106,168,124,0.28)",
+            boxShadow: "0 2px 14px rgba(27,67,50,0.28)",
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
