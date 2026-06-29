@@ -19,7 +19,7 @@ function BuscarContent() {
   const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
 
   useEffect(() => {
-    async function fetch() {
+    async function load() {
       setLoading(true);
       const p = new URLSearchParams();
       if (query) p.set("q", query);
@@ -29,7 +29,7 @@ function BuscarContent() {
       if (res.ok) setCounselors(await res.json());
       setLoading(false);
     }
-    fetch();
+    load();
   }, [query, modalidad, provincia]);
 
   return (
