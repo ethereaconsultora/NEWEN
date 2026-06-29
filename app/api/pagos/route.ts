@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createDailyRoom } from "@/lib/daily";
 
 /**
  * POST /api/pagos
@@ -61,17 +62,27 @@ export async function POST(request: Request) {
     // Actualizar sesión a confirmada
     const { error } = await supabase
       .from("sesiones")
-      .update({
-        estado: "confirmada",
-      })
+      .update({ estado: "confirmada" })
       .eq("id", sesionId)
-      .eq("estado", "reservada"); // solo si sigue en reservada
+      .eq("estado", "reservada");
 
     if (error) {
       return NextResponse.json(
         { error: "Error al actualizar sesión." },
         { status: 500 }
       );
+    }
+
+    // Crear sala de videollamada
+    try {
+      const roomUrl = await createDailyRoom(sesionId);
+      await supabase
+        .from("sesiones")
+        .update({ daily_room_url: roomUrl })
+        .eq("id", sesionId);
+    } catch (dailyError) {
+      console.error("Error creando sala Daily.co:", dailyError);
+      // No bloqueamos: la sesión sigue confirmada, la sala se puede crear después
     }
 
     // Incrementar contador de sesiones del counselor
