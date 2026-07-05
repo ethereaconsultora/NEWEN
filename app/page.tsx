@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 const CATEGORIAS = [
-  { label: "Crisis Vitales", q: "Crisis", icon: "🌱", color: "#4A7C59", bg: "rgba(74,124,89,0.08)" },
-  { label: "Duelo y Pérdidas", q: "Duelo", icon: "🕊️", color: "#6B8F71", bg: "rgba(107,143,113,0.08)" },
-  { label: "Estrés y Ansiedad", q: "Ansiedad", icon: "🧘", color: "#5A7A64", bg: "rgba(90,122,100,0.08)" },
-  { label: "Autoestima y Crecimiento", q: "Crecimiento personal", icon: "🌿", color: "#3D6B4F", bg: "rgba(61,107,79,0.08)" },
+  { label: "Crisis Vitales", q: "Crisis", color: "#4A7C59", bg: "rgba(74,124,89,0.08)" },
+  { label: "Duelo y Pérdidas", q: "Duelo", color: "#6B8F71", bg: "rgba(107,143,113,0.08)" },
+  { label: "Estrés y Ansiedad", q: "Ansiedad", color: "#5A7A64", bg: "rgba(90,122,100,0.08)" },
+  { label: "Autoestima y Crecimiento", q: "Crecimiento personal", color: "#3D6B4F", bg: "rgba(61,107,79,0.08)" },
 ];
 
 export default function HomePage() {
@@ -104,10 +104,13 @@ export default function HomePage() {
               width: 48, height: 48, borderRadius: "50%",
               background: cat.bg,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 24, lineHeight: 1,
+              fontSize: 20,
+              color: cat.color,
+              fontWeight: 300,
+              fontFamily: "var(--nv-font-display)",
               transition: "transform 0.25s ease",
             }}>
-              {cat.icon}
+              {cat.q === "Crisis" ? "◇" : cat.q === "Duelo" ? "○" : cat.q === "Ansiedad" ? "△" : "□"}
             </div>
             <span style={{
               fontSize: 12,

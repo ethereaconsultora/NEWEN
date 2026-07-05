@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * GET /api/counselors/[id]/slots?fecha=YYYY-MM-DD
@@ -21,7 +21,7 @@ export async function GET(
     );
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Verificar que el counselor existe y está activo
   const { data: counselor } = await supabase
