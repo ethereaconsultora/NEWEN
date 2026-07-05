@@ -178,13 +178,14 @@ export default function PerfilPage() {
         {publicaciones.length === 0 ? (
           <div className="card" style={{ padding: 28, textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "var(--nv-text-muted)", marginBottom: 12 }}>Todavía no hiciste publicaciones.</p>
-            <Link href="/panel/publicaciones/crear" style={{ fontSize: 12, fontWeight: 600, color: "var(--nv-accent)" }}>
-              Crear primera publicación →
+            <Link href="/panel/publicaciones/crear" className="btn-primary" style={{ display: "inline-block", textDecoration: "none", padding: "8px 20px", fontSize: 11 }}>
+              Crear primera publicación
             </Link>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {publicaciones.map(p => {
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {publicaciones.map(p => {
               const isVideo = /\.(mp4|mov|webm|avi)(\?.*)?$/i.test(p.contenido) || p.contenido.includes("/storage/v1/object/public/publicaciones/");
               return (
                 <div key={p.id} className="card" style={{ padding: 16 }}>
@@ -199,7 +200,13 @@ export default function PerfilPage() {
                 </div>
               );
             })}
-          </div>
+            </div>
+            <div style={{ textAlign: "center", marginTop: 14 }}>
+              <Link href="/panel/publicaciones/crear" className="btn-primary" style={{ display: "inline-block", textDecoration: "none", padding: "8px 20px", fontSize: 11 }}>
+                + Nueva publicación
+              </Link>
+            </div>
+          </>
         )}
       </div>
     </div>
