@@ -43,7 +43,7 @@ export default function LoginPage() {
         if (!nombre.trim()) { setError("El nombre es obligatorio."); setLoading(false); return; }
         if (password !== confirmPassword) { setError("Las contraseñas no coinciden."); setLoading(false); return; }
         if (password.length < 6) { setError("La contraseña debe tener al menos 6 caracteres."); setLoading(false); return; }
-        const { error } = await supabase.auth.signUp({ email, password, options: { data: { nombre } } });
+        const { error } = await supabase.auth.signUp({ email, password, options: { data: { nombre, rol: "counselor" } } });
         if (error) throw error;
         setSuccess("Cuenta creada. Revisá tu email para confirmar.");
       }
