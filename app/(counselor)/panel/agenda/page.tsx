@@ -6,17 +6,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-const HORAS = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+const HORAS = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
 
 type Bloque = { dia_semana: number; hora_inicio: string; hora_fin: string; id?: string };
 type Bloqueo = { id: string; fecha: string; hora_inicio: string; hora_fin: string; motivo: string };
-type SesionAgenda = {
-  id: string;
-  fecha_hora: string;
-  consultante: string;
-  modalidad: string;
-  estado: string;
-};
+type SesionAgenda = { id: string; fecha_hora: string; consultante: string; modalidad: string; estado: string };
 
 export default function AgendaPage() {
   const router = useRouter();
@@ -27,13 +21,16 @@ export default function AgendaPage() {
   const [sesiones, setSesiones] = useState<SesionAgenda[]>([]);
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  const [nuevaFechaBloqueo, setNuevaFechaBloqueo] = useState("");
-  const [nuevoMotivo, setNuevoMotivo] = useState("");
+  // Bloqueos: rango de fechas
+  const [bloqueoDesde, setBloqueoDesde] = useState("");
+  const [bloqueoHasta, setBloqueoHasta] = useState("");
+  const [bloqueoMotivo, setBloqueoMotivo] = useState("");
+  const [mostrarBloqueos, setMostrarBloqueos] = useState(false);
 
   const [counselorId, setCounselorId] = useState<string | null>(null);
   const [linkCopiado, setLinkCopiado] = useState(false);
-  const [mostrarBloqueos, setMostrarBloqueos] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -41,13 +38,14 @@ export default function AgendaPage() {
       if (!user) { router.push("/auth/login"); return; }
       setCounselorId(user.id);
 
-      const { data: disp } = await supabase
+      const { data: disp, error: errDisp } = await supabase
         .from("disponibilidad")
         .select("*")
         .eq("counselor_id", user.id)
         .order("dia_semana")
         .order("hora_inicio");
       if (disp) setBloques(disp);
+      if (errDisp) console.error("Error cargando disponibilidad:", errDisp.message);
 
       const hoy = new Date().toISOString().split("T")[0];
       const { data: bloq } = await supabase
@@ -58,7 +56,6 @@ export default function AgendaPage() {
         .order("fecha");
       if (bloq) setBloqueos(bloq);
 
-      // Sesiones próximas
       const ahora = new Date().toISOString();
       const { data: sess } = await supabase
         .from("sesiones")
@@ -76,7 +73,6 @@ export default function AgendaPage() {
         modalidad: s.modalidad as string,
         estado: s.estado as string,
       })));
-
       setLoading(false);
     }
     load();
@@ -95,15 +91,15 @@ export default function AgendaPage() {
     bloques.some(b => b.dia_semana === dia && b.hora_inicio === hora);
 
   const guardar = async () => {
-    setGuardando(true);
+    setGuardando(true); setMsg("");
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Borrar lo viejo y grabar lo nuevo
-    await supabase.from("disponibilidad").delete().eq("counselor_id", user.id);
+    const { error: delErr } = await supabase.from("disponibilidad").delete().eq("counselor_id", user.id);
+    if (delErr) { setMsg("Error al limpiar horarios: " + delErr.message); setGuardando(false); return; }
 
     if (bloques.length > 0) {
-      await supabase.from("disponibilidad").insert(
+      const { error: insErr } = await supabase.from("disponibilidad").insert(
         bloques.map(b => ({
           counselor_id: user.id,
           dia_semana: b.dia_semana,
@@ -111,32 +107,53 @@ export default function AgendaPage() {
           hora_fin: b.hora_fin,
         }))
       );
+      if (insErr) { setMsg("Error al guardar: " + insErr.message); setGuardando(false); return; }
     }
+
+    setMsg("✅ Disponibilidad guardada.");
     setGuardando(false);
+    setTimeout(() => setMsg(""), 3000);
   };
 
-  const agregarBloqueo = async () => {
-    if (!nuevaFechaBloqueo || !nuevoMotivo.trim()) return;
+  // Generar array de fechas entre desde y hasta
+  const getDateRange = (desde: string, hasta: string): string[] => {
+    const dates: string[] = [];
+    const start = new Date(desde + "T00:00:00");
+    const end = new Date(hasta + "T00:00:00");
+    const cur = new Date(start);
+    while (cur <= end) {
+      dates.push(cur.toISOString().split("T")[0]);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const agregarBloqueos = async () => {
+    if (!bloqueoDesde || !bloqueoHasta) { setMsg("Seleccioná Desde y Hasta."); return; }
+    if (!bloqueoMotivo.trim()) { setMsg("Poné un motivo."); return; }
+    setMsg("");
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    const fechas = getDateRange(bloqueoDesde, bloqueoHasta);
+    const inserts = fechas.map(fecha => ({
+      counselor_id: user.id,
+      fecha,
+      hora_inicio: "08:00",
+      hora_fin: "20:00",
+      motivo: bloqueoMotivo,
+    }));
+
     const { data, error } = await supabase
       .from("bloqueos")
-      .insert({
-        counselor_id: user.id,
-        fecha: nuevaFechaBloqueo,
-        hora_inicio: "08:00",
-        hora_fin: "20:00",
-        motivo: nuevoMotivo,
-      })
-      .select()
-      .single();
+      .insert(inserts)
+      .select();
 
-    if (!error && data) {
-      setBloqueos([...bloqueos, data as Bloqueo]);
-      setNuevaFechaBloqueo("");
-      setNuevoMotivo("");
-    }
+    if (error) { setMsg("Error al crear bloqueos: " + error.message); return; }
+    if (data) { setBloqueos([...bloqueos, ...(data as Bloqueo[])]); }
+
+    setBloqueoDesde(""); setBloqueoHasta(""); setBloqueoMotivo("");
     setMostrarBloqueos(false);
   };
 
@@ -147,14 +164,12 @@ export default function AgendaPage() {
 
   const copiarLink = () => {
     if (!counselorId) return;
-    const link = `${window.location.origin}/agenda/${counselorId}`;
-    navigator.clipboard.writeText(link);
+    navigator.clipboard.writeText(`${window.location.origin}/agenda/${counselorId}`);
     setLinkCopiado(true);
     setTimeout(() => setLinkCopiado(false), 2000);
   };
 
   const fechaBloqueada = (dia: number) => {
-    // Simple: check if any bloqueo covers this day of the week
     const hoy = new Date();
     const inicioSemana = new Date(hoy);
     inicioSemana.setDate(hoy.getDate() - hoy.getDay() + dia);
@@ -173,36 +188,15 @@ export default function AgendaPage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", paddingBottom: 80, fontFamily: "var(--nv-font-body)" }}>
       {/* HEADER */}
-      <div style={{
-        background: "#FFFFFF",
-        borderBottom: "1px solid rgba(0,0,0,0.05)",
-        padding: "14px 18px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}>
-        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>
-          Mi Agenda
-        </h1>
+      <div style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(0,0,0,0.05)", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h1 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "var(--nv-accent)", textTransform: "uppercase", margin: 0 }}>Mi Agenda</h1>
         <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={copiarLink}
-            style={{
-              fontSize: 10, fontWeight: 600, color: "var(--nv-accent)",
-              background: "rgba(27,67,50,0.08)", border: "none",
-              padding: "5px 10px", borderRadius: 6, cursor: "pointer",
-            }}
-          >
+          <button onClick={copiarLink}
+            style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-accent)", background: "rgba(27,67,50,0.08)", border: "none", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
             {linkCopiado ? "¡Copiado!" : "Copiar link"}
           </button>
-          <button
-            onClick={() => setMostrarBloqueos(!mostrarBloqueos)}
-            style={{
-              fontSize: 10, fontWeight: 600, color: "var(--nv-text-muted)",
-              background: "rgba(0,0,0,0.04)", border: "none",
-              padding: "5px 10px", borderRadius: 6, cursor: "pointer",
-            }}
-          >
+          <button onClick={() => setMostrarBloqueos(!mostrarBloqueos)}
+            style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-muted)", background: "rgba(0,0,0,0.04)", border: "none", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
             Bloqueos
           </button>
         </div>
@@ -212,27 +206,45 @@ export default function AgendaPage() {
         {/* Bloqueos panel */}
         {mostrarBloqueos && (
           <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", marginBottom: 10 }}>Bloqueos (vacaciones / feriados)</h3>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-              <input type="date" value={nuevaFechaBloqueo} onChange={e => setNuevaFechaBloqueo(e.target.value)}
-                className="input" style={{ flex: 1, fontSize: 12, padding: "8px 10px" }} />
-              <input type="text" placeholder="Motivo" value={nuevoMotivo} onChange={e => setNuevoMotivo(e.target.value)}
-                className="input" style={{ flex: 1, fontSize: 12, padding: "8px 10px" }} />
-              <button onClick={agregarBloqueo} className="btn-primary" style={{ fontSize: 11, padding: "8px 14px" }}>
-                +
-              </button>
-            </div>
-            {bloqueos.map(b => (
-              <div key={b.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, padding: "4px 0" }}>
-                <span style={{ color: "var(--nv-text-secondary)" }}>
-                  {new Date(b.fecha + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short" })} — {b.motivo}
-                </span>
-                <button onClick={() => eliminarBloqueo(b.id)}
-                  style={{ background: "none", border: "none", color: "var(--nv-state-error)", cursor: "pointer", fontSize: 14 }}>
-                  ×
-                </button>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", marginBottom: 10 }}>Bloquear días (vacaciones / feriados)</h3>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+              <div>
+                <label style={{ fontSize: 10, color: "var(--nv-text-muted)", display: "block", marginBottom: 3 }}>Desde</label>
+                <input type="date" value={bloqueoDesde} onChange={e => setBloqueoDesde(e.target.value)}
+                  className="input" style={{ fontSize: 12, padding: "8px 10px" }} />
               </div>
-            ))}
+              <div>
+                <label style={{ fontSize: 10, color: "var(--nv-text-muted)", display: "block", marginBottom: 3 }}>Hasta</label>
+                <input type="date" value={bloqueoHasta} onChange={e => setBloqueoHasta(e.target.value)}
+                  className="input" style={{ fontSize: 12, padding: "8px 10px" }} />
+              </div>
+            </div>
+
+            <input type="text" placeholder="Motivo (ej: Vacaciones de invierno)" value={bloqueoMotivo} onChange={e => setBloqueoMotivo(e.target.value)}
+              className="input" style={{ fontSize: 12, padding: "8px 10px", marginBottom: 10 }} />
+
+            <button onClick={agregarBloqueos} className="btn-primary" style={{ width: "100%", fontSize: 12, padding: "10px 0" }}>
+              Bloquear días
+            </button>
+
+            {/* Lista de bloqueos */}
+            {bloqueos.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-muted)", marginBottom: 6 }}>Bloqueos activos:</p>
+                {bloqueos.map(b => (
+                  <div key={b.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11, padding: "4px 0" }}>
+                    <span style={{ color: "var(--nv-text-secondary)" }}>
+                      {new Date(b.fecha + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short" })} — {b.motivo}
+                    </span>
+                    <button onClick={() => eliminarBloqueo(b.id)}
+                      style={{ background: "none", border: "none", color: "var(--nv-state-error)", cursor: "pointer", fontSize: 16, padding: 0 }}>
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -244,23 +256,15 @@ export default function AgendaPage() {
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {sesiones.map(s => (
-                <Link key={s.id} href={`/panel/sesion/${s.id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}>
-                  <div className="card" style={{
-                    padding: "10px 14px",
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                  }}>
+                <Link key={s.id} href={`/panel/sesion/${s.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <div className="card" style={{ padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", margin: 0 }}>
-                        {s.consultante}
-                      </p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--nv-text-primary)", margin: 0 }}>{s.consultante}</p>
                       <p style={{ fontSize: 11, color: "var(--nv-text-muted)", margin: "2px 0 0" }}>
                         {new Date(s.fecha_hora).toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
-                    <span style={{ fontSize: 10, color: "var(--nv-accent)" }}>
-                      {s.modalidad === "online" ? "💻" : "📍"}
-                    </span>
+                    <span style={{ fontSize: 10, color: "var(--nv-accent)" }}>{s.modalidad === "online" ? "💻" : "📍"}</span>
                   </div>
                 </Link>
               ))}
@@ -277,41 +281,27 @@ export default function AgendaPage() {
         </p>
 
         <div style={{ overflowX: "auto", marginBottom: 16 }}>
-          <div style={{ display: "grid", gridTemplateColumns: `50px repeat(7, 1fr)`, gap: 2, minWidth: 360 }}>
-            {/* Header: días */}
+          <div style={{ display: "grid", gridTemplateColumns: "50px repeat(7, 1fr)", gap: 2, minWidth: 360 }}>
             <div />
             {DIAS.map((d, i) => (
-              <div key={d} style={{
-                textAlign: "center", fontSize: 10, fontWeight: 600,
-                color: fechaBloqueada(i) ? "var(--nv-state-error)" : "var(--nv-text-muted)",
-                padding: "4px 0",
-              }}>
+              <div key={d} style={{ textAlign: "center", fontSize: 10, fontWeight: 600,
+                color: fechaBloqueada(i) ? "var(--nv-state-error)" : "var(--nv-text-muted)", padding: "4px 0" }}>
                 {d}
               </div>
             ))}
-
-            {/* Filas: horas */}
             {HORAS.map(hora => (
               <div key={hora} style={{ display: "contents" }}>
-                <div style={{ fontSize: 10, color: "var(--nv-text-muted)", padding: "6px 4px", textAlign: "right" }}>
-                  {hora}
-                </div>
+                <div style={{ fontSize: 10, color: "var(--nv-text-muted)", padding: "6px 4px", textAlign: "right" }}>{hora}</div>
                 {DIAS.map((_, dia) => {
                   const sel = estaSeleccionado(dia, hora);
                   const bloq = fechaBloqueada(dia);
                   return (
-                    <button
-                      key={`${dia}-${hora}`}
-                      onClick={() => !bloq && toggleBloque(dia, hora)}
-                      disabled={bloq}
+                    <button key={`${dia}-${hora}`} onClick={() => !bloq && toggleBloque(dia, hora)} disabled={bloq}
                       style={{
                         background: bloq ? "rgba(192,57,43,0.06)" : sel ? "var(--nv-accent)" : "#FFFFFF",
                         border: `1px solid ${bloq ? "rgba(192,57,43,0.15)" : sel ? "var(--nv-accent)" : "rgba(0,0,0,0.06)"}`,
-                        borderRadius: 4,
-                        padding: "6px 0",
-                        cursor: bloq ? "not-allowed" : "pointer",
-                        transition: "all 0.15s",
-                        fontSize: 0,
+                        borderRadius: 4, padding: "6px 0", cursor: bloq ? "not-allowed" : "pointer",
+                        transition: "all 0.15s", fontSize: 0,
                       }}
                       title={bloq ? "Bloqueado" : sel ? "Disponible" : "No disponible"}
                     />
@@ -321,6 +311,14 @@ export default function AgendaPage() {
             ))}
           </div>
         </div>
+
+        {/* Mensaje de feedback */}
+        {msg && (
+          <p style={{
+            fontSize: 12, textAlign: "center", marginBottom: 10,
+            color: msg.startsWith("✅") ? "var(--nv-accent)" : "var(--nv-state-error)",
+          }}>{msg}</p>
+        )}
 
         <button onClick={guardar} disabled={guardando} className="btn-primary" style={{ width: "100%" }}>
           {guardando ? "Guardando…" : "Guardar disponibilidad"}
