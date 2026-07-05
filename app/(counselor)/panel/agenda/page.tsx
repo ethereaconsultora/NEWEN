@@ -95,12 +95,17 @@ export default function AgendaPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Borrar lo viejo
     const { error: delErr } = await supabase.from("disponibilidad").delete().eq("counselor_id", user.id);
-    if (delErr) { setMsg("Error al limpiar horarios: " + delErr.message); setGuardando(false); return; }
+    if (delErr) { setMsg("Error al limpiar: " + delErr.message); setGuardando(false); return; }
 
+    // Insertar los nuevos (sin duplicados por dia+hora)
     if (bloques.length > 0) {
+      const unicos = bloques.filter((b, i, arr) =>
+        arr.findIndex(x => x.dia_semana === b.dia_semana && x.hora_inicio === b.hora_inicio) === i
+      );
       const { error: insErr } = await supabase.from("disponibilidad").insert(
-        bloques.map(b => ({
+        unicos.map(b => ({
           counselor_id: user.id,
           dia_semana: b.dia_semana,
           hora_inicio: b.hora_inicio,
@@ -110,9 +115,9 @@ export default function AgendaPage() {
       if (insErr) { setMsg("Error al guardar: " + insErr.message); setGuardando(false); return; }
     }
 
-    setMsg("✅ Disponibilidad guardada.");
+    setMsg("✅ Disponibilidad guardada. Ya podés compartir el link.");
     setGuardando(false);
-    setTimeout(() => setMsg(""), 3000);
+    setTimeout(() => setMsg(""), 4000);
   };
 
   // Generar array de fechas entre desde y hasta
