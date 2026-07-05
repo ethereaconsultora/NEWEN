@@ -23,12 +23,11 @@ export async function GET(
 
   const supabase = createAdminClient();
 
-  // Verificar que el counselor existe y está activo
+  // Verificar que el counselor existe
   const { data: counselor } = await supabase
     .from("counselors")
-    .select("id")
+    .select("id, estado")
     .eq("id", id)
-    .eq("estado", "activo")
     .single();
 
   if (!counselor) {
