@@ -21,9 +21,24 @@ export default function LoginPage() {
     e.preventDefault(); setError(""); setSuccess(""); setLoading(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/"); router.refresh();
+
+        // Redirección por rol (igual que auth/callback)
+        if (data.user) {
+          const { data: profile } = await supabase
+            .from("users")
+            .select("rol")
+            .eq("id", data.user.id)
+            .single();
+
+          if (profile?.rol === "counselor") { router.push("/panel"); }
+          else if (profile?.rol === "admin") { router.push("/admin"); }
+          else { router.push("/"); }
+          router.refresh();
+        } else {
+          router.push("/"); router.refresh();
+        }
       } else {
         if (!nombre.trim()) { setError("El nombre es obligatorio."); setLoading(false); return; }
         if (password !== confirmPassword) { setError("Las contraseñas no coinciden."); setLoading(false); return; }
