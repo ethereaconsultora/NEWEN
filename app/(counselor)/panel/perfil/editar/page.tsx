@@ -78,9 +78,11 @@ export default function EditarPerfilPage() {
       foto_url = urlData.publicUrl;
     }
 
+    // Upsert: insertar si no existe, actualizar si existe
     const { error } = await supabase
       .from("counselors")
-      .update({
+      .upsert({
+        id: user.id,
         bio: bio || null,
         enfoque: enfoque || null,
         especialidades: especialidades ? especialidades.split(",").map(s => s.trim()).filter(Boolean) : [],
@@ -89,10 +91,9 @@ export default function EditarPerfilPage() {
         experiencia_anios: experiencia ? parseInt(experiencia) : null,
         mp_access_token: mpToken || null,
         foto_url: foto_url || null,
-      })
-      .eq("id", user.id);
+      });
 
-    if (error) { setMensaje("Error al guardar."); }
+    if (error) { setMensaje("Error al guardar: " + error.message); }
     else { setMensaje("✅ Perfil actualizado."); setTimeout(() => router.push("/panel"), 800); }
     setGuardando(false);
   };
