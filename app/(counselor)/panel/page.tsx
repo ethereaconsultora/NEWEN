@@ -18,6 +18,7 @@ interface ProfileData {
   promedio_estrellas: number;
   total_sesiones: number;
   aac_verificado: boolean;
+  foto_url: string | null;
 }
 
 interface Publicacion {
@@ -40,7 +41,7 @@ export default function PerfilPage() {
 
       const { data: c } = await supabase
         .from("counselors")
-        .select("bio, enfoque, especialidades, modalidad, provincia, experiencia_anios, promedio_estrellas, total_sesiones, aac_verificado, users!inner(nombre, email)")
+        .select("bio, enfoque, especialidades, modalidad, provincia, experiencia_anios, promedio_estrellas, total_sesiones, aac_verificado, foto_url, users!inner(nombre, email)")
         .eq("id", user.id)
         .single();
 
@@ -58,6 +59,7 @@ export default function PerfilPage() {
           promedio_estrellas: c.promedio_estrellas,
           total_sesiones: c.total_sesiones,
           aac_verificado: c.aac_verificado,
+          foto_url: c.foto_url ?? null,
         });
       }
 
@@ -105,14 +107,14 @@ export default function PerfilPage() {
           {/* Avatar */}
           <div style={{
             width: 80, height: 80, borderRadius: "50%",
-            background: "linear-gradient(145deg, #c8dccf 0%, #a8c9b0 40%, #8db89a 100%)",
+            background: profile?.foto_url ? `url(${profile.foto_url}) center/cover` : "linear-gradient(145deg, #c8dccf 0%, #a8c9b0 40%, #8db89a 100%)",
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 14px",
-            fontSize: 28, fontWeight: 700, color: "#fff",
+            fontSize: 28, fontWeight: 700, color: profile?.foto_url ? "transparent" : "#fff",
             fontFamily: "var(--nv-font-display)",
-            textShadow: "0 1px 3px rgba(0,0,0,0.12)",
+            textShadow: profile?.foto_url ? "none" : "0 1px 3px rgba(0,0,0,0.12)",
           }}>
-            {iniciales}
+            {!profile?.foto_url && iniciales}
           </div>
 
           <h2 style={{ fontSize: 20, fontWeight: 600, color: "var(--nv-text-primary)", margin: "0 0 2px" }}>
@@ -182,14 +184,21 @@ export default function PerfilPage() {
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {publicaciones.map(p => (
-              <div key={p.id} className="card" style={{ padding: 16 }}>
-                <p style={{ fontSize: 13, color: "var(--nv-text-primary)", lineHeight: 1.6, margin: 0 }}>{p.contenido}</p>
-                <p style={{ fontSize: 10, color: "var(--nv-text-muted)", marginTop: 8 }}>
-                  {new Date(p.created_at).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}
-                </p>
-              </div>
-            ))}
+            {publicaciones.map(p => {
+              const isVideo = /\.(mp4|mov|webm|avi)(\?.*)?$/i.test(p.contenido) || p.contenido.includes("/storage/v1/object/public/publicaciones/");
+              return (
+                <div key={p.id} className="card" style={{ padding: 16 }}>
+                  {isVideo ? (
+                    <video src={p.contenido} controls style={{ width: "100%", maxHeight: 280, borderRadius: 10, background: "#000" }} />
+                  ) : (
+                    <p style={{ fontSize: 13, color: "var(--nv-text-primary)", lineHeight: 1.6, margin: 0 }}>{p.contenido}</p>
+                  )}
+                  <p style={{ fontSize: 10, color: "var(--nv-text-muted)", marginTop: 8 }}>
+                    {new Date(p.created_at).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
