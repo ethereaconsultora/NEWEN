@@ -20,7 +20,7 @@ export default function CrearPublicacionPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("video/")) { setMensaje("Solo se permiten videos."); return; }
-    if (file.size > 100 * 1024 * 1024) { setMensaje("Máximo 100 MB."); return; }
+    if (file.size > 50 * 1024 * 1024) { setMensaje("Máximo 50 MB."); return; }
 
     setVideoFile(file);
     setPreviewUrl(URL.createObjectURL(file));
@@ -108,7 +108,7 @@ export default function CrearPublicacionPage() {
                     Subir video
                   </p>
                   <p style={{ fontSize: 11, color: "var(--nv-text-muted)", margin: 0 }}>
-                    Tocá para seleccionar · MP4, MOV, WebM · Máx 100 MB
+                    Tocá para seleccionar · MP4, MOV, WebM · Máx 50 MB
                   </p>
                 </>
               )}
