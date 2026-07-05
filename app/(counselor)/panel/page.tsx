@@ -176,7 +176,7 @@ export default function PerfilPage() {
         {publicaciones.length === 0 ? (
           <div className="card" style={{ padding: 28, textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "var(--nv-text-muted)", marginBottom: 12 }}>Todavía no hiciste publicaciones.</p>
-            <Link href="/panel/perfil/editar" style={{ fontSize: 12, fontWeight: 600, color: "var(--nv-accent)" }}>
+            <Link href="/panel/publicaciones/crear" style={{ fontSize: 12, fontWeight: 600, color: "var(--nv-accent)" }}>
               Crear primera publicación →
             </Link>
           </div>
