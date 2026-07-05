@@ -53,6 +53,9 @@ export default function CrearPublicacionPage() {
     const { data: urlData } = supabase.storage.from("publicaciones").getPublicUrl(path);
     const videoUrl = urlData.publicUrl;
 
+    // Asegurar que existe la fila en counselors
+    await supabase.from("counselors").upsert({ id: user.id }).select("id").single();
+
     // Guardar en la tabla publicaciones
     const { error: dbError } = await supabase
       .from("publicaciones")
