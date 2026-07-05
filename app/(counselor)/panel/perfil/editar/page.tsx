@@ -72,7 +72,7 @@ export default function EditarPerfilPage() {
       const { error: uploadError } = await supabase.storage
         .from("counselors")
         .upload(path, fotoFile, { upsert: true });
-      if (uploadError) { setMensaje("Error al subir foto."); setGuardando(false); return; }
+      if (uploadError) { setMensaje("Error al subir foto: " + uploadError.message); setGuardando(false); return; }
 
       const { data: urlData } = supabase.storage.from("counselors").getPublicUrl(path);
       foto_url = urlData.publicUrl;
