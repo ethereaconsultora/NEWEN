@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 const CATEGORIAS = [
-  { label: "Crisis Vitales", q: "Crisis", img: "/images/crisis-vitales.jpg" },
+  { label: "Crisis Vitales", q: "Crisis", img: "/images/crisis-vitales.jpeg" },
   { label: "Duelo y Pérdidas", q: "Duelo", img: "/images/duelo-perdidas.jpg" },
   { label: "Estrés y Ansiedad", q: "Ansiedad", img: "/images/estres-ansiedad.jpg" },
   { label: "Autoestima y Crecimiento", q: "Crecimiento personal", img: "/images/autoestima-crecimiento.jpg" },
