@@ -14,7 +14,7 @@ export default function MagicLinkPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setError(""); setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: true } });
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: "https://newen-nu.vercel.app/auth/callback", shouldCreateUser: true } });
       if (error) throw error;
       setSuccess(true);
     } catch (err: unknown) {
