@@ -128,7 +128,7 @@ export default function HomePage() {
           height: 130,
           backgroundImage: "url(/images/taller.jpeg)",
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center bottom",
           border: "1px solid rgba(0,0,0,0.06)",
           borderRadius: 4,
           textDecoration: "none",
