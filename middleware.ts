@@ -52,6 +52,7 @@ export async function middleware(request: NextRequest) {
     "/counselor",
     "/explorar",
     "/agenda",
+    "/talleres",
     "/auth",
     "/privacidad",
     "/terminos",
