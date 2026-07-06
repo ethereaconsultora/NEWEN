@@ -121,33 +121,44 @@ export default function HomePage() {
         href="/talleres"
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10,
+          alignItems: "flex-end",
+          justifyContent: "flex-start",
           width: "100%",
           maxWidth: 390,
-          padding: "18px 0",
-          background: "#FFFFFF",
-          border: "1px solid rgba(0,0,0,0.08)",
+          height: 130,
+          backgroundImage: "url(/images/taller.jpeg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          border: "1px solid rgba(0,0,0,0.06)",
           borderRadius: 4,
           textDecoration: "none",
+          padding: "16px",
           marginBottom: 28,
-          transition: "all 0.2s",
+          transition: "all 0.3s",
+          position: "relative",
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.borderColor = "var(--nv-accent)";
-          e.currentTarget.style.boxShadow = "0 2px 12px rgba(27,67,50,0.08)";
+          e.currentTarget.style.transform = "scale(1.02)";
+          e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.12)";
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)";
+          e.currentTarget.style.transform = "scale(1)";
           e.currentTarget.style.boxShadow = "none";
         }}
       >
-        <span style={{ fontSize: 22 }}>🎓</span>
-        <div>
-          <p style={{ fontSize: 13, fontWeight: 700, color: "var(--nv-text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.04em" }}>Talleres</p>
-          <p style={{ fontSize: 10, color: "var(--nv-text-muted)", margin: "2px 0 0" }}>Workshops y cursos grabados</p>
-        </div>
+        <span style={{
+          fontSize: 14,
+          fontWeight: 700,
+          color: "#FFFFFF",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+          padding: "6px 12px",
+          background: "rgba(0,0,0,0.40)",
+          borderRadius: 2,
+        }}>
+          🎓 Talleres
+        </span>
       </Link>
 
       {/* DIVIDER */}
