@@ -98,15 +98,15 @@ export default function HomePage() {
             }}
           >
             <span style={{
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 700,
               color: "#FFFFFF",
               letterSpacing: "0.06em",
               lineHeight: 1.3,
               textTransform: "uppercase",
               textShadow: "0 1px 6px rgba(0,0,0,0.6)",
-              padding: "5px 10px",
-              background: "rgba(0,0,0,0.35)",
+              padding: "6px 12px",
+              background: "rgba(0,0,0,0.40)",
               borderRadius: 2,
               maxWidth: "100%",
             }}>

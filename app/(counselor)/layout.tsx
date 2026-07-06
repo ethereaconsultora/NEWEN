@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 const TABS = [
   { href: "/panel", label: "Perfil", icon: "user" },
@@ -51,6 +53,16 @@ function Icon({ name, active }: { name: string; active: boolean }) {
 
 export default function CounselorLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+
+  // Auto-logout después de 10 min de inactividad
+  useAutoLogout();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+  };
 
   return (
     <>
@@ -101,6 +113,32 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
             </Link>
           );
         })}
+        {/* Botón salir */}
+        <button
+          onClick={handleLogout}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 3,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 10,
+            fontWeight: 500,
+            color: "rgba(28,18,8,0.35)",
+            minWidth: 60,
+            fontFamily: "var(--nv-font-body)",
+            padding: 0,
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Salir
+        </button>
       </nav>
     </>
   );
