@@ -56,6 +56,10 @@ export async function middleware(request: NextRequest) {
     "/privacidad",
     "/terminos",
     "/api/dolar",
+    "/images",
+    "/icons",
+    "/manifest.json",
+    "/favicon.ico",
   ];
   const isPublic = PUBLIC.some((p) => path === p || (p !== "/" && path.startsWith(p)));
 
