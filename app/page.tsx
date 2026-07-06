@@ -116,6 +116,40 @@ export default function HomePage() {
         ))}
       </div>
 
+      {/* BOTÓN TALLERES */}
+      <Link
+        href="/talleres"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          width: "100%",
+          maxWidth: 390,
+          padding: "18px 0",
+          background: "#FFFFFF",
+          border: "1px solid rgba(0,0,0,0.08)",
+          borderRadius: 4,
+          textDecoration: "none",
+          marginBottom: 28,
+          transition: "all 0.2s",
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.borderColor = "var(--nv-accent)";
+          e.currentTarget.style.boxShadow = "0 2px 12px rgba(27,67,50,0.08)";
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+      >
+        <span style={{ fontSize: 22 }}>🎓</span>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 700, color: "var(--nv-text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.04em" }}>Talleres</p>
+          <p style={{ fontSize: 10, color: "var(--nv-text-muted)", margin: "2px 0 0" }}>Workshops y cursos grabados</p>
+        </div>
+      </Link>
+
       {/* DIVIDER */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", maxWidth: 390, marginBottom: 16 }}>
         <hr style={{ flex: 1, border: "none", borderTop: "1px solid rgba(27,67,50,0.10)" }} />
