@@ -63,6 +63,7 @@ export async function middleware(request: NextRequest) {
   const isStatic =
     path.startsWith("/_next") ||
     path.startsWith("/icons") ||
+    path.startsWith("/images") ||
     path.startsWith("/manifest.json") ||
     path.startsWith("/favicon.ico");
 
