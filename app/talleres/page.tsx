@@ -5,6 +5,75 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useDolar } from "@/hooks/useDolar";
 
+// ── Fondos painterly 16:9 — textura a pincel, tonos tierra, luz suave ──
+
+const bgLuz = `data:image/svg+xml,${encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <radialGradient id="luz" cx="70%" cy="30%" r="70%"><stop offset="0%" stop-color="#F5EDE0" stop-opacity="0.9"/><stop offset="50%" stop-color="#E8DCC8" stop-opacity="0.7"/><stop offset="100%" stop-color="#C4B5A0" stop-opacity="0.9"/></radialGradient>
+    <filter id="textura"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise"/><feColorMatrix type="saturate" values="0" in="noise" result="gray"/><feBlend in="SourceGraphic" in2="gray" mode="multiply" result="textured"/></filter>
+  </defs>
+  <rect width="320" height="180" fill="url(#luz)" filter="url(#textura)"/>
+  <rect x="0" y="0" width="320" height="180" fill="#D4C4AC" opacity="0.08"/>
+  <circle cx="240" cy="50" r="90" fill="#F0E8D5" opacity="0.4"/>
+  <circle cx="260" cy="40" r="60" fill="#FAF3E5" opacity="0.35"/>
+  <path d="M0 130 Q80 100 160 120 Q240 140 320 110" stroke="#8B7D6B" stroke-width="0.5" fill="none" opacity="0.15"/>
+  <path d="M0 150 Q100 130 200 145 Q280 155 320 140" stroke="#9B8D7B" stroke-width="0.4" fill="none" opacity="0.12"/>
+</svg>`)}`;
+
+const bgSendero = `data:image/svg+xml,${encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EDE4D3"/><stop offset="40%" stop-color="#E0D4BE"/><stop offset="100%" stop-color="#B8A88E"/></linearGradient>
+    <filter id="grano"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+  </defs>
+  <rect width="320" height="180" fill="url(#cielo)" filter="url(#grano)"/>
+  <ellipse cx="160" cy="140" rx="140" ry="50" fill="#A89878" opacity="0.5"/>
+  <path d="M120 180 Q140 150 160 145 Q180 140 200 155 L200 180 Z" fill="#9B8B6E" opacity="0.4"/>
+  <path d="M60 160 Q80 170 95 155 Q110 140 125 145 Q140 150 145 160" stroke="#8B7D6B" stroke-width="1.5" fill="none" opacity="0.25"/>
+  <ellipse cx="240" cy="50" rx="25" ry="18" fill="#D4C4A0" opacity="0.3"/>
+  <ellipse cx="250" cy="45" rx="15" ry="10" fill="#E8DCC0" opacity="0.25"/>
+  <ellipse cx="60" cy="70" rx="30" ry="22" fill="#C4B598" opacity="0.2"/>
+  <ellipse cx="70" cy="65" rx="18" ry="13" fill="#D8CCB0" opacity="0.2"/>
+  <rect x="75" y="50" width="2.5" height="25" rx="1" fill="#7A6B58" opacity="0.3"/>
+  <rect x="88" y="55" width="2" height="20" rx="1" fill="#7A6B58" opacity="0.25"/>
+  <rect x="235" y="35" width="2" height="22" rx="1" fill="#8B7D6B" opacity="0.25"/>
+</svg>`)}`;
+
+const bgVeladura = `data:image/svg+xml,${encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <linearGradient id="vel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#EBE0D0"/><stop offset="40%" stop-color="#DDCEB4"/><stop offset="100%" stop-color="#C8B898"/></linearGradient>
+    <filter id="tela"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3"/><feColorMatrix type="saturate" values="0.1"/><feBlend in="SourceGraphic" mode="soft-light"/></filter>
+  </defs>
+  <rect width="320" height="180" fill="url(#vel)" filter="url(#tela)"/>
+  <circle cx="60" cy="120" r="40" fill="#A8B89A" opacity="0.15"/>
+  <circle cx="70" cy="110" r="30" fill="#B8C8A8" opacity="0.12"/>
+  <path d="M200 20 Q230 50 220 90" stroke="#9BA88A" stroke-width="1" fill="none" opacity="0.2"/>
+  <path d="M210 25 Q235 55 225 85" stroke="#8B9B7A" stroke-width="0.8" fill="none" opacity="0.15"/>
+  <circle cx="270" cy="30" r="15" fill="#D4C4A0" opacity="0.18"/>
+  <circle cx="280" cy="25" r="8" fill="#E0D4B0" opacity="0.15"/>
+  <rect x="0" y="0" width="320" height="180" fill="#C8B898" opacity="0.05"/>
+</svg>`)}`;
+
+const bgPapel = `data:image/svg+xml,${encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <filter id="papel"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="5"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="320" height="180" fill="#EDE3D3"/>
+  <rect width="320" height="180" filter="url(#papel)"/>
+  <rect x="0" y="0" width="320" height="180" fill="#D4C4A8" opacity="0.06"/>
+  <ellipse cx="160" cy="140" rx="120" ry="30" fill="#C4B498" opacity="0.12"/>
+  <ellipse cx="160" cy="135" rx="100" ry="20" fill="#D4C8A8" opacity="0.1"/>
+  <circle cx="100" cy="60" r="50" fill="#E8DCC4" opacity="0.2"/>
+  <circle cx="110" cy="55" r="35" fill="#F0E8D5" opacity="0.18"/>
+  <rect x="95" y="30" width="2" height="35" rx="1" fill="#B8A88E" opacity="0.2"/>
+  <rect x="115" y="35" width="1.5" height="28" rx="1" fill="#B8A88E" opacity="0.15"/>
+</svg>`)}`;
+
+const FONDOS = [bgLuz, bgSendero, bgVeladura, bgPapel];
+
 interface Taller {
   id: string;
   titulo: string;
@@ -32,96 +101,138 @@ export default function TalleresPage() {
   }, [supabase]);
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F0EBE0 0%, #E8E0D3 100%)", fontFamily: "var(--nv-font-body)" }}>
-      {/* HERO */}
+    <div style={{
+      minHeight: "100vh",
+      background: "#EBE0D0",
+      fontFamily: "var(--nv-font-body)",
+    }}>
+      {/* HERO — painterly, cálido */}
       <div style={{
-        background: "linear-gradient(135deg, #1B4332 0%, #2D5A3D 50%, #1B4332 100%)",
-        padding: "60px 20px 48px",
+        background: "linear-gradient(180deg, #D4C4A8 0%, #E0D4BC 40%, #EBE0D0 100%)",
+        padding: "56px 24px 36px",
         textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
+        borderBottom: "1px solid rgba(139,125,107,0.12)",
       }}>
-        <div style={{ position: "absolute", top: -40, right: -20, width: 120, height: 120, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-        <div style={{ position: "absolute", bottom: -30, left: -30, width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
-        <Link href="/" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: 12, position: "relative", zIndex: 1 }}>← Volver</Link>
-        <h1 style={{ fontSize: 32, fontFamily: "var(--nv-font-display)", color: "#FFFFFF", margin: "16px 0 8px", letterSpacing: -0.5, position: "relative", zIndex: 1 }}>
-          Talleres
-        </h1>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", maxWidth: 300, margin: "0 auto", lineHeight: 1.6, position: "relative", zIndex: 1 }}>
-          Espacios de aprendizaje y transformación. Cada taller es una invitación a explorar, sentir y crecer.
+        <Link href="/" style={{
+          color: "rgba(90,70,50,0.5)", textDecoration: "none",
+          fontSize: 12, fontWeight: 500,
+        }}>← Volver</Link>
+        <h1 style={{
+          fontSize: 34, fontFamily: "var(--nv-font-display)",
+          color: "#5A3E2B", margin: "14px 0 6px",
+          letterSpacing: -0.5, fontWeight: 400,
+        }}>Talleres</h1>
+        <p style={{
+          fontSize: 13, color: "rgba(90,60,40,0.55)",
+          maxWidth: 320, margin: "0 auto", lineHeight: 1.7,
+          fontStyle: "italic",
+        }}>
+          Espacios de calma, aprendizaje y transformación. Cada taller es una invitación a detenerse, sentir y crecer.
         </p>
       </div>
 
       {/* LISTA */}
-      <div style={{ padding: "20px 16px 60px", maxWidth: 500, margin: "0 auto" }}>
+      <div style={{ padding: "24px 16px 60px", maxWidth: 520, margin: "0 auto" }}>
         {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: 60 }}><span className="spinner" /></div>
+          <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
+            <span className="spinner" style={{ borderTopColor: "#8B7D6B" }} />
+          </div>
         ) : talleres.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 48 }}>
-            <p style={{ fontSize: 48, marginBottom: 12 }}>🎓</p>
-            <p style={{ fontSize: 13, color: "var(--nv-text-muted)" }}>Pronto vas a encontrar talleres acá.</p>
+          <div style={{
+            textAlign: "center", padding: 56,
+            background: "rgba(255,255,255,0.3)", borderRadius: 8,
+          }}>
+            <p style={{ fontSize: 40, marginBottom: 12, opacity: 0.5 }}>🕯️</p>
+            <p style={{ fontSize: 13, color: "rgba(90,60,40,0.5)", fontStyle: "italic" }}>
+              Pronto vas a encontrar talleres acá. Mientras tanto, respirá hondo.
+            </p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {talleres.map(t => (
-              <Link key={t.id} href={`/talleres/${t.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <div style={{
-                  background: "#FFFFFF",
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  transition: "all 0.3s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.10)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.05)"; }}
-                >
-                  {/* Thumbnail */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {talleres.map((t, i) => {
+              const bg = FONDOS[i % FONDOS.length];
+              return (
+                <Link key={t.id} href={`/talleres/${t.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                   <div style={{
-                    height: 140,
-                    background: t.video_url
-                      ? "#1B4332"
-                      : "linear-gradient(135deg, #2D5A3D 0%, #1B4332 50%, #3A6B4F 100%)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    position: "relative",
-                  }}>
-                    <span style={{ fontSize: 40, opacity: 0.6 }}>🎬</span>
-                    {t.gratuito && (
-                      <span style={{
-                        position: "absolute", top: 10, right: 10,
-                        background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)",
-                        color: "#FFF", fontSize: 10, fontWeight: 700,
-                        padding: "4px 10px", borderRadius: 999,
-                        textTransform: "uppercase", letterSpacing: 1,
-                      }}>Gratuito</span>
-                    )}
-                    <span style={{
-                      position: "absolute", bottom: 10, left: 10,
-                      background: "rgba(0,0,0,0.4)", color: "#FFF",
-                      fontSize: 9, fontWeight: 600,
-                      padding: "3px 8px", borderRadius: 999,
-                    }}>{t.modalidad === "grabado" ? "📹 Grabado" : "🔴 En vivo"}</span>
-                  </div>
-
-                  {/* Info */}
-                  <div style={{ padding: "16px 18px" }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--nv-text-primary)", margin: "0 0 4px" }}>{t.titulo}</h3>
-                    <p style={{ fontSize: 12, color: "var(--nv-text-muted)", margin: "0 0 10px", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {t.descripcion || "Un espacio para explorar, sentir y transformar."}
-                    </p>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: "var(--nv-accent)" }}>
-                        {t.gratuito ? "Gratuito" : `$${t.precio_usd} USD`}
-                      </span>
-                      {!t.gratuito && dolar && (
-                        <span style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>
-                          ≈ ${(t.precio_usd * dolar).toLocaleString("es-AR")} ARS
-                        </span>
+                    background: "#FAF6F0",
+                    borderRadius: 6,
+                    overflow: "hidden",
+                    border: "1px solid rgba(139,125,107,0.12)",
+                    transition: "all 0.35s ease",
+                  }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.boxShadow = "0 6px 28px rgba(90,60,40,0.10)";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    {/* Header 16:9 painterly */}
+                    <div style={{
+                      aspectRatio: "16/9",
+                      backgroundImage: `url(${bg})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+                      padding: "14px 16px",
+                      position: "relative",
+                    }}>
+                      {t.gratuito && (
+                        <span style={{
+                          position: "absolute", top: 12, right: 14,
+                          background: "rgba(255,250,245,0.75)",
+                          backdropFilter: "blur(4px)",
+                          color: "#5A3E2B", fontSize: 10, fontWeight: 600,
+                          padding: "3px 10px", borderRadius: 999,
+                          letterSpacing: "0.04em",
+                          border: "1px solid rgba(139,125,107,0.15)",
+                        }}>Gratuito</span>
                       )}
+                      <span style={{
+                        background: "rgba(250,245,238,0.8)",
+                        backdropFilter: "blur(3px)",
+                        color: "#6B5A4A", fontSize: 10, fontWeight: 500,
+                        padding: "3px 10px", borderRadius: 999,
+                      }}>{t.modalidad === "grabado" ? "Grabado" : "En vivo"}</span>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ padding: "18px 20px" }}>
+                      <h3 style={{
+                        fontSize: 17, fontWeight: 600, color: "#4A3222",
+                        margin: "0 0 4px", fontFamily: "var(--nv-font-display)",
+                        letterSpacing: -0.3,
+                      }}>{t.titulo}</h3>
+                      <p style={{
+                        fontSize: 12, color: "rgba(90,60,40,0.5)",
+                        margin: "0 0 14px", lineHeight: 1.6,
+                        display: "-webkit-box", WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical", overflow: "hidden",
+                      }}>
+                        {t.descripcion || "Un espacio para la pausa, la contemplación y el aprendizaje sereno."}
+                      </p>
+                      <div style={{
+                        display: "flex", justifyContent: "space-between",
+                        alignItems: "center",
+                        borderTop: "1px solid rgba(139,125,107,0.08)",
+                        paddingTop: 12,
+                      }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#5A3E2B" }}>
+                          {t.gratuito ? "Gratuito" : `$${t.precio_usd} USD`}
+                        </span>
+                        {!t.gratuito && dolar && (
+                          <span style={{ fontSize: 10, color: "rgba(90,60,40,0.45)" }}>
+                            ≈ ${(t.precio_usd * dolar).toLocaleString("es-AR")} ARS
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
