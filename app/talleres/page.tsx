@@ -18,7 +18,7 @@ interface Taller {
 
 export default function TalleresPage() {
   const supabase = createClient();
-  const { dolar } = useDolar();
+  const { venta: dolar } = useDolar();
   const [talleres, setTalleres] = useState<Taller[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -16,7 +16,7 @@ function DetalleContent({ id }: { id: string }) {
   const sp = useSearchParams();
   const pagoExito = sp.get("pago") === "exito";
   const supabase = createClient();
-  const { dolar } = useDolar();
+  const { venta: dolar } = useDolar();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [taller, setTaller] = useState<Taller | null>(null);
   const [loading, setLoading] = useState(true);
