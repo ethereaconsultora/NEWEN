@@ -114,9 +114,15 @@ export default function TalleresPage() {
         borderBottom: "1px solid rgba(139,125,107,0.12)",
       }}>
         <Link href="/" style={{
-          color: "rgba(90,70,50,0.5)", textDecoration: "none",
-          fontSize: 12, fontWeight: 500,
-        }}>← Volver</Link>
+          display: "inline-flex", alignItems: "center", gap: 6,
+          fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+          color: "var(--nv-accent)", textDecoration: "none",
+          background: "rgba(27,67,50,0.08)", border: "1.5px solid rgba(27,67,50,0.2)",
+          padding: "6px 14px", borderRadius: 8, marginBottom: 16,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          ATRÁS
+        </Link>
         <h1 style={{
           fontSize: 34, fontFamily: "var(--nv-font-display)",
           color: "#5A3E2B", margin: "14px 0 6px",
@@ -179,6 +185,7 @@ export default function TalleresPage() {
                       padding: "14px 16px",
                       position: "relative",
                     }}>
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(139,125,107,0.06)" }} />
                       {t.gratuito && (
                         <span style={{
                           position: "absolute", top: 12, right: 14,

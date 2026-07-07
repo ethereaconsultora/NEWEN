@@ -41,6 +41,7 @@ export async function GET(request: Request) {
     `
     )
     .eq("estado", "activo")
+    .eq("activo", true)
     .order("promedio_estrellas", { ascending: false });
 
   // Búsqueda por texto
