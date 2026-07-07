@@ -23,25 +23,8 @@ export async function GET(request: Request) {
 
   let query = supabase
     .from("counselors")
-    .select(
-      `
-      id,
-      bio,
-      enfoque,
-      especialidades,
-      modalidad,
-      provincia,
-      ciudad,
-      experiencia_anios,
-      aac_verificado,
-      promedio_estrellas,
-      total_sesiones,
-      foto_url,
-      users!inner(nombre)
-    `
-    )
+    .select("*")
     .eq("estado", "activo")
-    .eq("activo", true)
     .order("promedio_estrellas", { ascending: false });
 
   // Búsqueda por texto
@@ -75,15 +58,16 @@ export async function GET(request: Request) {
     );
   }
 
-  // Aplanar la relación users(nombre)
-  const counselors = (data ?? []).map((c: Record<string, unknown>) => {
-    const user = c.users as unknown as { nombre: string } | null;
-    return {
-      ...c,
-      nombre: user?.nombre ?? "Sin nombre",
-      users: undefined,
-    };
-  });
+  // Obtener nombres de users
+  const ids = (data ?? []).map((c: Record<string, unknown>) => c.id as string);
+  const { data: users } = await supabase.from("users").select("id, nombre").in("id", ids);
+  const userMap = new Map((users ?? []).map((u: Record<string, unknown>) => [u.id, u.nombre]));
+
+  // Aplanar
+  const counselors = (data ?? []).map((c: Record<string, unknown>) => ({
+    ...c,
+    nombre: (userMap.get(c.id as string) as string) ?? "Sin nombre",
+  }));
 
   return NextResponse.json(counselors, {
     status: 200,
