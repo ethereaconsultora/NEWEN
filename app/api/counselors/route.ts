@@ -31,10 +31,12 @@ export async function GET(request: Request) {
       especialidades,
       modalidad,
       provincia,
+      ciudad,
       experiencia_anios,
       aac_verificado,
       promedio_estrellas,
       total_sesiones,
+      foto_url,
       users!inner(nombre)
     `
     )

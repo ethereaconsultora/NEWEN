@@ -173,19 +173,25 @@ export default function HomePage() {
       {/* FORM */}
       <form action="/buscar" method="GET" style={{ width: "100%", maxWidth: 390, display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ display: "flex", gap: 8 }}>
-          <select name="modalidad" style={{ flex: 1, padding: "14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
-            <option value="">Modalidad</option>
-            <option value="online">Online</option>
-            <option value="presencial">Presencial</option>
-          </select>
-          <select name="provincia" style={{ flex: 1, padding: "14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
-            <option value="">Región</option>
-            <option value="Buenos Aires">Buenos Aires</option>
-            <option value="CABA">CABA</option>
-            <option value="Córdoba">Córdoba</option>
-            <option value="Santa Fe">Santa Fe</option>
-            <option value="Mendoza">Mendoza</option>
-          </select>
+          <div style={{ flex: 1, position: "relative" }}>
+            <select name="modalidad" style={{ width: "100%", padding: "14px 36px 14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
+              <option value="">Modalidad</option>
+              <option value="online">Online</option>
+              <option value="presencial">Presencial</option>
+            </select>
+            <svg style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", opacity: 0.4 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div style={{ flex: 1, position: "relative" }}>
+            <select name="provincia" style={{ width: "100%", padding: "14px 36px 14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
+              <option value="">Región</option>
+              <option value="Buenos Aires">Buenos Aires</option>
+              <option value="CABA">CABA</option>
+              <option value="Córdoba">Córdoba</option>
+              <option value="Santa Fe">Santa Fe</option>
+              <option value="Mendoza">Mendoza</option>
+            </select>
+            <svg style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", opacity: 0.4 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
         </div>
 
         <button type="submit" onClick={(e) => {

@@ -42,17 +42,20 @@ function Content() {
         top: 0,
         zIndex: 10,
       }}>
-        {/* Back arrow */}
+        {/* Back button */}
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
           style={{
-            background: "none", border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", padding: 4,
-            color: "var(--nv-text-primary)",
+            background: "rgba(27,67,50,0.08)", border: "1.5px solid rgba(27,67,50,0.2)",
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+            padding: "6px 12px", borderRadius: 8,
+            color: "var(--nv-accent)", fontSize: 11, fontWeight: 700,
+            letterSpacing: "0.06em",
           }}
-          aria-label="Volver"
+          aria-label="Atrás"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          ATRÁS
         </button>
 
         {/* Title */}
@@ -105,9 +108,11 @@ function Content() {
               especialidades={c.especialidades ?? []}
               modalidad={c.modalidad}
               provincia={c.provincia}
+              ciudad={(c as Record<string,unknown>).ciudad as string ?? null}
               promedio_estrellas={c.promedio_estrellas}
               total_sesiones={c.total_sesiones}
               aac_verificado={c.aac_verificado}
+              foto_url={(c as Record<string,unknown>).foto_url as string ?? null}
             />
           ))}
         </div>

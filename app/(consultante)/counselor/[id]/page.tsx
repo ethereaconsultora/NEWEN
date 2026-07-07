@@ -22,10 +22,12 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
       especialidades,
       modalidad,
       provincia,
+      ciudad,
       experiencia_anios,
       aac_verificado,
       promedio_estrellas,
       total_sesiones,
+      foto_url,
       users!inner(nombre)
     `
     )
@@ -44,15 +46,18 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
     especialidades: string[] | null;
     modalidad: string | null;
     provincia: string | null;
+    ciudad: string | null;
     experiencia_anios: number | null;
     aac_verificado: boolean;
     promedio_estrellas: number;
     total_sesiones: number;
+    foto_url: string | null;
     users: { nombre: string }[] | null;
   };
   const userData = counselor.users?.[0];
   const nombre = userData?.nombre ?? "Sin nombre";
   const especialidades = counselor.especialidades ?? [];
+  const ocultarStats = counselor.total_sesiones < 10;
   const iniciales = nombre
     .split(" ")
     .map((w: string) => w[0])
@@ -74,15 +79,23 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
       <Link
         href="/buscar"
         style={{
-          fontSize: 13,
+          fontSize: 12,
+          fontWeight: 700,
           color: "var(--nv-accent)",
           textDecoration: "none",
-          fontWeight: 500,
-          display: "inline-block",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          background: "rgba(27,67,50,0.08)",
+          border: "1.5px solid rgba(27,67,50,0.2)",
+          padding: "8px 16px",
+          borderRadius: 8,
           marginBottom: 24,
+          letterSpacing: "0.06em",
         }}
       >
-        ← Buscar
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        ATRÁS
       </Link>
 
       {/* Perfil */}
@@ -98,22 +111,22 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
         >
           <div
             style={{
-              width: 72,
-              height: 72,
+              width: 88,
+              height: 88,
               borderRadius: "50%",
-              background: "var(--nv-verde-oo)",
-              border: "2px solid var(--nv-verde-o)",
+              background: counselor.foto_url ? `url(${counselor.foto_url}) center/cover` : "linear-gradient(145deg, #c8dccf 0%, #a8c9b0 40%, #8db89a 100%)",
+              border: counselor.foto_url ? "3px solid var(--nv-accent-border)" : "2px solid var(--nv-verde-o)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 26,
+              fontSize: 28,
               fontWeight: 600,
-              color: "var(--nv-accent)",
+              color: counselor.foto_url ? "transparent" : "#fff",
               fontFamily: "var(--nv-font-display)",
               flexShrink: 0,
             }}
           >
-            {iniciales}
+            {!counselor.foto_url && iniciales}
           </div>
 
           <div>
@@ -128,7 +141,7 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
             >
               {nombre}
             </h1>
-            <Stars rating={counselor.promedio_estrellas} size="md" />
+            <Stars rating={ocultarStats ? 0 : counselor.promedio_estrellas} size="md" showNumber={!ocultarStats} />
             {counselor.aac_verificado && (
               <span className="badge" style={{ marginTop: 6 }}>
                 AAC Verificado
@@ -148,11 +161,12 @@ export default async function CounselorPerfilPage({ params }: PageProps) {
             color: "var(--nv-text-secondary)",
           }}
         >
-          {counselor.provincia && <span>📍 {counselor.provincia}</span>}
+          {counselor.ciudad && <span>📍 {[counselor.ciudad, counselor.provincia].filter(Boolean).join(", ")}</span>}
+          {!counselor.ciudad && counselor.provincia && <span>📍 {counselor.provincia}</span>}
           {counselor.experiencia_anios && (
             <span>📅 {counselor.experiencia_anios} años de experiencia</span>
           )}
-          <span>🎯 {counselor.total_sesiones || 0} sesiones</span>
+          <span>🎯 {ocultarStats ? "—" : counselor.total_sesiones} sesiones</span>
           <span>
             {counselor.modalidad === "online"
               ? "💻 Online"
