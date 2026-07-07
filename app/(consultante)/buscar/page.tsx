@@ -108,11 +108,11 @@ function Content() {
               especialidades={c.especialidades ?? []}
               modalidad={c.modalidad}
               provincia={c.provincia}
-              ciudad={(c as Record<string,unknown>).ciudad as string ?? null}
+              ciudad={(c as unknown as Record<string,unknown>).ciudad as string ?? null}
               promedio_estrellas={c.promedio_estrellas}
               total_sesiones={c.total_sesiones}
               aac_verificado={c.aac_verificado}
-              foto_url={(c as Record<string,unknown>).foto_url as string ?? null}
+              foto_url={(c as unknown as Record<string,unknown>).foto_url as string ?? null}
             />
           ))}
         </div>
