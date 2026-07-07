@@ -24,7 +24,6 @@ export async function GET(request: Request) {
   let query = supabase
     .from("counselors")
     .select("*")
-    .eq("estado", "activo")
     .order("promedio_estrellas", { ascending: false });
 
   // Búsqueda por texto
