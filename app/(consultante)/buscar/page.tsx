@@ -21,7 +21,7 @@ function Content() {
     if (query) p.set("q", query);
     if (modalidad) p.set("modalidad", modalidad);
     if (provincia) p.set("provincia", provincia);
-    fetch(`/api/counselors?${p}`).then(r => r.json()).then(d => { setData(d); setLoading(false); });
+    fetch(`/api/counselors?${p}`).then(r => r.json()).then(d => { setData(Array.isArray(d) ? d : []); setLoading(false); }).catch(() => { setData([]); setLoading(false); });
   }, [query, modalidad, provincia]);
 
   return (
