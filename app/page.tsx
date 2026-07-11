@@ -223,6 +223,10 @@ export default function HomePage() {
         <a href="/auth/login" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
           Ingresá acá
         </a>
+        <span style={{ fontSize: 10, color: "var(--nv-text-muted)", margin: "0 6px" }}>·</span>
+        <a href="/postularse" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+          Postulate
+        </a>
       </div>
     </div>
   );

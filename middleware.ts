@@ -53,6 +53,7 @@ export async function middleware(request: NextRequest) {
     "/explorar",
     "/agenda",
     "/talleres",
+    "/postularse",
     "/auth",
     "/privacidad",
     "/terminos",
