@@ -216,14 +216,15 @@ export default function HomePage() {
         </button>
       </form>
 
-      <div style={{ marginTop: 28, textAlign: "center" }}>
-        <span style={{ fontSize: 10, color: "var(--nv-text-muted)", letterSpacing: "0.04em" }}>
-          ¿Sos counselor o admin?{" "}
-        </span>
+      <div style={{ marginTop: 28, textAlign: "center", display: "flex", justifyContent: "center", gap: 16 }}>
         <a href="/auth/login" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          Ingresá acá
+          Counselor
         </a>
-        <span style={{ fontSize: 10, color: "var(--nv-text-muted)", margin: "0 6px" }}>·</span>
+        <span style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>|</span>
+        <a href="/auth/login" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+          Admin
+        </a>
+        <span style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>|</span>
         <a href="/postularse" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
           Postulate
         </a>
