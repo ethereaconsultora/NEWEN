@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
     "/auth",
     "/privacidad",
     "/terminos",
-    "/api/dolar",
+    "/api",
     "/images",
     "/icons",
     "/manifest.json",
