@@ -77,7 +77,7 @@ export default function LoginPage() {
       <div style={{ background: "var(--nv-bg-card)", borderRadius: "var(--nv-radius-xl)", padding: 32, width: "100%", maxWidth: 380, boxShadow: "var(--nv-shadow)", border: "1px solid var(--nv-border)" }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div style={{ fontSize: 44, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", letterSpacing: -1 }}>Newen</div>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 4 }}>Counselors</div>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 4 }}>Profesionales</div>
         </div>
 
         {/* TOGGLE Ingresar / Crear cuenta */}
