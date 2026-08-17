@@ -38,7 +38,7 @@ y redirige a `/empresa`). Policies INSERT para organizaciones y miembros.
 - `middleware.ts` (MODIFICADO)
 - `spec/init_v0.27.0_empresas.sql` (MODIFICADO — policies INSERT)
 
-**Commit**: (COMPLETAR)
+**Commit**: `7d46114`
 
 **Próximo paso**: Probar el alta de un espacio y ajustar el onboarding (pago, logo, banner).
 
