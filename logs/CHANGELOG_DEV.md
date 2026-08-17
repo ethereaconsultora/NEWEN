@@ -32,7 +32,7 @@ mover la apariencia a un `ThemeProvider` (contexto) para previsualización en vi
 
 **Archivos tocados**: 8 archivos.
 
-**Commit**: `d362517`
+**Commit**: `b6d833f`
 
 **Próximo paso**: Probar previsualización y alta rápida de paciente.
 
