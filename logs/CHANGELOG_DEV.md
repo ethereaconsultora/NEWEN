@@ -37,7 +37,7 @@ CSS modules corregidos; migración renombrada de v0.22.0 a v0.23.0.
 
 **Archivos tocados**: 25 archivos.
 
-**Commit**: `b56d596`
+**Commit**: `045a421`
 
 **Próximo paso**: Ejecutar SQL en Supabase de Newen y probar el módulo.
 
