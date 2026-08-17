@@ -75,7 +75,7 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
 
   // Auto-logout después de 10 min de inactividad
   useAutoLogout();
-  const { isAdmin } = useEsMultiRol();
+  const { isAdmin, isEmpresa } = useEsMultiRol();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -131,8 +131,8 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
             </Link>
           );
         })}
-        {/* Switch de rol (solo cuentas con acceso admin) */}
-        {isAdmin && <RoleSwitch compact />}
+        {/* Switch de rol (cuentas con acceso admin y/o empresa) */}
+        {(isAdmin || isEmpresa) && <RoleSwitch compact isEmpresa={isEmpresa} />}
         {/* Botón salir */}
         <button
           onClick={handleLogout}

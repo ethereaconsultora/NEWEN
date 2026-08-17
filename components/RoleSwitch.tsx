@@ -7,9 +7,16 @@ import { usePathname } from "next/navigation";
  * Switch de rol en la barra inferior: prende perfil profesional o admin.
  * El lado activo se resalta según la ruta actual.
  */
-export default function RoleSwitch({ compact = false }: { compact?: boolean }) {
+export default function RoleSwitch({
+  compact = false,
+  isEmpresa = false,
+}: {
+  compact?: boolean;
+  isEmpresa?: boolean;
+}) {
   const pathname = usePathname();
   const esAdmin = pathname.startsWith("/admin");
+  const esEmpresa = pathname.startsWith("/empresa");
 
   const seg = (active: boolean) => ({
     padding: compact ? "5px 10px" : "7px 14px",
@@ -38,9 +45,14 @@ export default function RoleSwitch({ compact = false }: { compact?: boolean }) {
         flexShrink: 0,
       }}
     >
-      <Link href="/panel" style={seg(!esAdmin)}>
+      <Link href="/panel" style={seg(!esAdmin && !esEmpresa)}>
         {compact ? "Prof." : "Profesional"}
       </Link>
+      {isEmpresa && (
+        <Link href="/empresa" style={seg(esEmpresa)}>
+          {compact ? "Empr." : "Empresa"}
+        </Link>
+      )}
       <Link href="/admin" style={seg(esAdmin)}>
         Admin
       </Link>

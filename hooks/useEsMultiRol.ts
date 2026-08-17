@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 export type RolEstado = {
   isAdmin: boolean;
   isCounselor: boolean;
+  isEmpresa: boolean;
 };
 
 /**
@@ -13,7 +14,7 @@ export type RolEstado = {
  * Una cuenta es "dual" cuando puede actuar en ambos shells.
  */
 export function useEsMultiRol() {
-  const [estado, setEstado] = useState<RolEstado>({ isAdmin: false, isCounselor: false });
+  const [estado, setEstado] = useState<RolEstado>({ isAdmin: false, isCounselor: false, isEmpresa: false });
 
   useEffect(() => {
     let activo = true;
@@ -26,10 +27,18 @@ export function useEsMultiRol() {
 
       const { data: u } = await supabase.from("users").select("*").eq("id", user.id).single();
 
+      // Miembro de alguna organización → puede acceder al área Empresa sin cambiar su rol.
+      const { data: memb } = await supabase
+        .from("organization_members")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+
       if (!activo) return;
       const isAdmin = u?.es_admin === true || u?.rol === "admin";
       const isCounselor = u?.rol === "counselor";
-      setEstado({ isAdmin, isCounselor });
+      const isEmpresa = u?.rol === "empresa" || (Array.isArray(memb) && memb.length > 0);
+      setEstado({ isAdmin, isCounselor, isEmpresa });
     })();
 
     return () => {

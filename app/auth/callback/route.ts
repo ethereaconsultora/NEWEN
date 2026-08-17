@@ -31,7 +31,15 @@ export async function GET(request: Request) {
         const rol = profile?.rol ?? "consultante";
         const esAdmin = profile?.es_admin === true || rol === "admin";
         const esCounselor = rol === "counselor";
-        const esEmpresa = rol === "empresa";
+        let esEmpresa = rol === "empresa";
+        if (!esEmpresa) {
+          const { data: memb } = await supabase
+            .from("organization_members")
+            .select("id")
+            .eq("user_id", user.id)
+            .limit(1);
+          esEmpresa = Array.isArray(memb) && memb.length > 0;
+        }
 
         if (esCounselor) {
           return NextResponse.redirect(`${origin}/panel`);

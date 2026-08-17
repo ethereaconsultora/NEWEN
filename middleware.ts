@@ -96,7 +96,18 @@ export async function middleware(request: NextRequest) {
     const rol = profile?.rol ?? "consultante";
     const esAdmin = profile?.es_admin === true || rol === "admin";
     const esCounselor = rol === "counselor";
-    const esEmpresa = rol === "empresa";
+    let esEmpresa = rol === "empresa";
+
+    // La misma cuenta puede ser empresa si es miembro de una organización,
+    // sin necesidad de cambiar el rol counselor/admin.
+    if (!esEmpresa) {
+      const { data: memb } = await supabase
+        .from("organization_members")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+      esEmpresa = Array.isArray(memb) && memb.length > 0;
+    }
 
     // ── Protección de shells ──
     // /panel para counselors y admins

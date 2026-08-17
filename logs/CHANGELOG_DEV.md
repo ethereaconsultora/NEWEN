@@ -19,6 +19,27 @@
 
 ## Historial
 
+### [2026-08-17] — feat: acceso a /empresa con la misma cuenta (sin cambiar rol)
+
+**Prompt**: ¿Por dónde accedo al área empresas? ¿Puedo usar el mismo mail de counselor/admin?
+¿Lo cargo en el SQL v27?
+
+**Acción esperada**: Detectar el acceso a Empresa por membresía en `organization_members`
+(sin exigir `rol = 'empresa'`), sumar el segmento "Empresa" al switch de rol y ajustar el
+comentario del SQL para no requerir cambio de rol.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. El acceso a /empresa
+ahora se habilita por membresía en `organization_members` (misma cuenta counselor/admin/empresa)
+y el switch de rol suma el segmento "Empresa".
+
+**Archivos tocados**: `middleware.ts`, `app/auth/callback/route.ts`,
+`hooks/useEsMultiRol.ts`, `components/RoleSwitch.tsx`, `app/(counselor)/layout.tsx`,
+`app/(admin)/layout.tsx`, `spec/init_v0.27.0_empresas.sql`.
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Ejecutar el SQL, insertar la membresía y acceder a /empresa.
+
 ### [2026-08-17] — fix: v0.27.0 — colisión de nombre `derivaciones` en la migración
 
 **Prompt**: Error al correr `init_v0.27.0_empresas.sql`: `42703: column

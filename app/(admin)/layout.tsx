@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
+import { useEsMultiRol } from "@/hooks/useEsMultiRol";
 import RoleSwitch from "@/components/RoleSwitch";
 
 const TABS = [
@@ -29,6 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const supabase = createClient();
   useAutoLogout();
+  const { isEmpresa } = useEsMultiRol();
 
   return (
     <>
@@ -43,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           );
         })}
-        <RoleSwitch />
+        <RoleSwitch isEmpresa={isEmpresa} />
         <button onClick={async () => { await supabase.auth.signOut(); router.push("/auth/login"); }}
           style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", fontSize: 10, fontWeight: 500, color: "rgba(28,18,8,0.35)", minWidth: 60, fontFamily: "var(--nv-font-body)", padding: 0 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,0.35)" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Salir

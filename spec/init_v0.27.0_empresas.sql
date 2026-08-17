@@ -221,10 +221,11 @@ ON CONFLICT (slug) DO NOTHING;
 -- ============================================================
 -- VINCULAR TU CUENTA (manual, luego de ejecutar este script)
 -- ============================================================
--- 1) Tu cuenta pasa a rol empresa (no modifica es_admin ni counselor):
---    UPDATE public.users SET rol = 'empresa' WHERE email = 'TU_EMAIL@example.com';
+-- Podés usar la MISMA cuenta de counselor/admin. NO hace falta cambiar el rol:
+-- con solo insertarte como miembro de la organización ya tenés acceso a /empresa.
+-- (Si preferís una cuenta exclusivamente empresa, ahí sí: UPDATE ... SET rol='empresa'.)
 --
--- 2) Vincular la cuenta como owner de Espacio Crítico:
+-- Vincular la cuenta como owner de Espacio Crítico:
 --    INSERT INTO public.organization_members (organization_id, user_id, rol)
 --    SELECT o.id, u.id, 'owner'
 --    FROM public.organizations o, public.users u
