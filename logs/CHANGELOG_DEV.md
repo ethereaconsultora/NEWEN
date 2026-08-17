@@ -35,7 +35,7 @@ idempotentes (`DROP POLICY IF EXISTS`) para poder re-ejecutar el script.
 
 **Archivos tocados**: `spec/init_v0.27.0_empresas.sql`, `app/(empresa)/empresa/page.tsx`.
 
-**Commit**: (COMPLETAR)
+**Commit**: `73fadd0`
 
 **Próximo paso**: Re-ejecutar la migración en Supabase.
 
