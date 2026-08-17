@@ -45,61 +45,60 @@ function Icon({ name }: { name: string }) {
   }
 }
 
-export default function ConsultorioNav({ nombre }: { nombre: string }) {
+function isActivePath(pathname: string, href: string) {
+  return href === "/panel/consultorio" ? pathname === href : pathname.startsWith(href);
+}
+
+export function ConsultorioChips() {
   const pathname = usePathname();
-
-  const isActive = (href: string) =>
-    href === "/panel/consultorio"
-      ? pathname === href
-      : pathname.startsWith(href);
-
   return (
-    <>
-      {/* Sidebar escritorio */}
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>
-          <div className={styles.brandName}>
-            newen<span>.</span>
-          </div>
-          <div className={styles.brandSub}>Mi consultorio</div>
+    <div className={styles.chips}>
+      {ITEMS.map((item) => {
+        const active = isActivePath(pathname, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.chip}${active ? ` ${styles.chipActive}` : ""}`}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function ConsultorioNav() {
+  const pathname = usePathname();
+  return (
+    <aside className={styles.sidebar}>
+      <div className={styles.brand}>
+        <div className={styles.brandName}>
+          newen<span>.</span>
         </div>
-
-        <div className={styles.navLabel}>Consultorio</div>
-        {ITEMS.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem}${active ? ` ${styles.navItemActive}` : ""}`}
-            >
-              <Icon name={item.icon} />
-              {item.label}
-            </Link>
-          );
-        })}
-
-        <div className={styles.sidebarFoot}>
-          <strong>Anexo integrado</strong>
-          Anima · Gestión clínica dentro de newen.
-        </div>
-      </aside>
-
-      {/* Chips móvil */}
-      <div className={styles.chips}>
-        {ITEMS.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.chip}${active ? ` ${styles.chipActive}` : ""}`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+        <div className={styles.brandSub}>Mi consultorio</div>
       </div>
-    </>
+
+      <div className={styles.navLabel}>Consultorio</div>
+      {ITEMS.map((item) => {
+        const active = isActivePath(pathname, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.navItem}${active ? ` ${styles.navItemActive}` : ""}`}
+          >
+            <Icon name={item.icon} />
+            {item.label}
+          </Link>
+        );
+      })}
+
+      <div className={styles.sidebarFoot}>
+        <strong>Anexo integrado</strong>
+        Anima · Gestión clínica dentro de newen.
+      </div>
+    </aside>
   );
 }

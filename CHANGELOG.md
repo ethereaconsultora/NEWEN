@@ -1,5 +1,49 @@
 # Changelog — Newen
 
+## [0.25.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Reemplazar el selector post-login por un switch admin/profesional en la barra inferior,
+quitar la agenda obsoleta del menú counselor y completar Ajustes del consultorio con las
+paletas/tipografías de Anima y cambio de contraseña con doble confirmación. Sin tocar RLS.
+
+### Cambios realizados
+
+- [x] Switch "Profesional | Admin" en la barra inferior de ambos shells
+- [x] Se quita la pestaña "Agenda" del menú counselor (la agenda real está en el consultorio)
+- [x] Ajustes del consultorio: 9 paletas (Newen + 8 de Anima), 10 tipografías (Newen + 9 de Anima) y 4 tamaños de letra
+- [x] Cambio de contraseña con doble confirmación
+- [x] Revertido: sin cambios de RLS ni de rol en la cuenta
+- [x] Se elimina `/elegir-rol` (reemplazado por el switch)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `components/RoleSwitch.tsx` | NUEVO |
+| `lib/consultorio-apariencia.ts` | NUEVO |
+| `components/consultorio/FontLoader.tsx` | NUEVO |
+| `spec/init_v0.25.0_consultorio_apariencia.sql` | NUEVO |
+| `app/(counselor)/layout.tsx` | MODIFICADO — sin Agenda + switch |
+| `app/(admin)/layout.tsx` | MODIFICADO — switch |
+| `middleware.ts` + `app/auth/callback/route.ts` | MODIFICADO — sin /elegir-rol |
+| `app/elegir-rol/page.tsx` | ELIMINADO |
+| consultorio `layout/nav/css/ajustes` | MODIFICADO — apariencia + estructura |
+| `logs/2026-08-17-feature-v0.25.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Ejecutar `spec/init_v0.25.0_consultorio_apariencia.sql` en Supabase de Newen.
+
+---
+
 ## [0.24.0] — 2026-08-17
 
 ### Tipo: FEATURE

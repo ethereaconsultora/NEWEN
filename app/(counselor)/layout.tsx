@@ -5,12 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { useEsMultiRol } from "@/hooks/useEsMultiRol";
+import RoleSwitch from "@/components/RoleSwitch";
 
 const TABS = [
   { href: "/panel/consultorio", label: "Consultorio", icon: "consultorio" },
   { href: "/panel", label: "Perfil", icon: "user" },
   { href: "/panel/notificaciones", label: "Notif.", icon: "bell" },
-  { href: "/panel/agenda", label: "Agenda", icon: "calendar" },
   { href: "/panel/muro", label: "Muro", icon: "users" },
   { href: "/panel/talleres", label: "Talleres", icon: "workshop" },
 ];
@@ -131,28 +131,8 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
             </Link>
           );
         })}
-        {/* Botón admin (solo cuenta dual) */}
-        {isAdmin && (
-          <Link
-            href="/admin"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 3,
-              textDecoration: "none",
-              fontSize: 10,
-              fontWeight: 500,
-              color: "rgba(28,18,8,0.35)",
-              minWidth: 60,
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-            Admin
-          </Link>
-        )}
+        {/* Switch de rol (solo cuentas con acceso admin) */}
+        {isAdmin && <RoleSwitch compact />}
         {/* Botón salir */}
         <button
           onClick={handleLogout}

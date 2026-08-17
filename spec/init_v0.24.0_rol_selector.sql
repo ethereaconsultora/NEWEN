@@ -15,11 +15,10 @@ UPDATE public.users
 SET es_admin = true
 WHERE rol = 'admin';
 
--- 3. CUENTA ÚNICA (profesional + admin) — ejecutá esto con TU email real:
---    Te deja como counselor (identidad profesional) con capacidad admin.
-UPDATE public.users
-SET rol = 'counselor', es_admin = true
-WHERE email = 'TU_EMAIL@example.com';
+-- 3. Cuenta con doble acceso (profesional + admin):
+--    Si tu cuenta es counselor y querés que además sea admin, ejecutá:
+--    UPDATE public.users SET es_admin = true WHERE email = 'TU_EMAIL@example.com';
+--    (No cambia el rol; es_admin alcanza para acceder a /admin.)
 
 -- 4. SEGURIDAD — Admin solo manual: el registro público NUNCA crea admin.
 --    El trigger de alta queda limitado a 'consultante' o 'counselor'.
@@ -45,11 +44,3 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
--- 5. Política RLS de postulaciones: respeta es_admin (no solo rol='admin').
-DROP POLICY IF EXISTS "Admin lee postulaciones" ON public.postulaciones;
-CREATE POLICY "Admin lee postulaciones" ON public.postulaciones FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM public.users
-    WHERE id = auth.uid() AND (es_admin = true OR rol = 'admin')
-  ));

@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-17] — v0.25.0: switch admin/profesional + Ajustes completos
+
+**Prompt**: No tocar RLS; la cuenta queda como está con doble acceso. Switch admin/profesional
+en el menú inferior, quitar Agenda obsoleta, terminar Ajustes con paletas/tipografías de Anima
+y cambio de contraseña con doble confirmación. Mantener la historia clínica de Anima.
+
+**Acción esperada**: Revertir RLS/rol, crear `RoleSwitch`, quitar tab Agenda, construir
+apariencia del consultorio (temas/fuentes/tamaño) con migración v0.25.0, y password con
+doble confirmación.
+
+**Archivos previstos**: 13 archivos.
+
+**Resultado**: Éxito. Build OK.
+
+**Archivos tocados**: 13 archivos.
+
+**Commit**: `c05bd92`
+
+**Próximo paso**: Ejecutar SQL v0.25.0 en Supabase de Newen.
+
 ### [2026-08-17] — fix v0.24.0: detección de counselor determinística (rol)
 
 **Prompt**: No aparecía el selector. La detección de counselor dependía de la fila en

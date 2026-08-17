@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import ConsultorioNav from "./nav";
+import ConsultorioNav, { ConsultorioChips } from "./nav";
 import styles from "./consultorio.module.css";
+import FontLoader from "@/components/consultorio/FontLoader";
+import { getTema, getTipografia, getTamano, temaVars, fontVars } from "@/lib/consultorio-apariencia";
 
 export default async function ConsultorioLayout({
   children,
@@ -16,12 +18,22 @@ export default async function ConsultorioLayout({
 
   const { data: profile } = await supabase
     .from("users")
-    .select("nombre, email")
+    .select("nombre, email, theme_id, font_id, font_size")
     .eq("id", user.id)
     .single();
 
   const nombre = profile?.nombre ?? "Counselor";
   const email = profile?.email ?? "";
+
+  const tema = getTema(profile?.theme_id);
+  const tipografia = getTipografia(profile?.font_id);
+  const tamano = getTamano(profile?.font_size);
+
+  const shellStyle = {
+    ...temaVars(tema),
+    ...fontVars(tipografia),
+  } as React.CSSProperties;
+
   const iniciales = nombre
     .split(" ")
     .map((w: string) => w[0])
@@ -37,10 +49,11 @@ export default async function ConsultorioLayout({
   });
 
   return (
-    <div className={styles.shell}>
-      <ConsultorioNav nombre={nombre} />
+    <div className={styles.shell} style={shellStyle}>
+      <FontLoader gFont={tipografia.gFont} />
+      <ConsultorioNav />
 
-      <div className={styles.workspace}>
+      <div className={styles.workspace} style={{ zoom: tamano.zoom } as React.CSSProperties}>
         <header className={styles.topbar}>
           <div className={styles.topbarMark}>n.</div>
           <div className={styles.topbarTxt}>
@@ -56,6 +69,8 @@ export default async function ConsultorioLayout({
             <div className={styles.avatar}>{iniciales}</div>
           </div>
         </header>
+
+        <ConsultorioChips />
 
         <main className={styles.content}>{children}</main>
       </div>

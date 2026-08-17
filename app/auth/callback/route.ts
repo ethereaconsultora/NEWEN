@@ -32,15 +32,11 @@ export async function GET(request: Request) {
         const esAdmin = profile?.es_admin === true || rol === "admin";
         const esCounselor = rol === "counselor";
 
-        // Cuenta dual → elegir rol
-        if (esAdmin && esCounselor) {
-          return NextResponse.redirect(`${origin}/elegir-rol`);
+        if (esCounselor) {
+          return NextResponse.redirect(`${origin}/panel`);
         }
         if (esAdmin) {
           return NextResponse.redirect(`${origin}/admin`);
-        }
-        if (esCounselor) {
-          return NextResponse.redirect(`${origin}/panel`);
         }
         // consultante o sin rol → home
         return NextResponse.redirect(`${origin}${next}`);

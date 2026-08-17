@@ -109,28 +109,22 @@ export async function middleware(request: NextRequest) {
 
     // ── Redirección post-login según roles ──
     if (path === "/auth/callback") {
-      if (esAdmin && esCounselor) {
-        return NextResponse.redirect(new URL("/elegir-rol", request.url));
+      if (esCounselor) {
+        return NextResponse.redirect(new URL("/panel", request.url));
       }
       if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
-      }
-      if (esCounselor) {
-        return NextResponse.redirect(new URL("/panel", request.url));
       }
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     // ── Redirección desde / a shell correcto ──
     if (path === "/") {
-      if (esAdmin && esCounselor) {
-        return NextResponse.redirect(new URL("/elegir-rol", request.url));
+      if (esCounselor) {
+        return NextResponse.redirect(new URL("/panel", request.url));
       }
       if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
-      }
-      if (esCounselor) {
-        return NextResponse.redirect(new URL("/panel", request.url));
       }
     }
   }

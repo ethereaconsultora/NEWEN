@@ -158,9 +158,6 @@
   padding: 12px 16px;
   background: var(--nv-bg-surface);
   border-bottom: 1px solid var(--nv-border);
-  position: sticky;
-  top: 0;
-  z-index: 39;
 }
 .chips::-webkit-scrollbar { height: 0; }
 .chip {
