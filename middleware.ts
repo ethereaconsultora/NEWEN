@@ -84,32 +84,48 @@ export async function middleware(request: NextRequest) {
 
   // ── Con sesión ──
   if (user) {
-    // Obtener rol desde la tabla users
+    // Obtener rol y flag admin desde la tabla users.
+    // select("*") tolera que la columna es_admin aún no exista (previo a migrar).
     const { data: profile } = await supabase
       .from("users")
-      .select("rol")
+      .select("*")
       .eq("id", user.id)
       .single();
 
     const rol = profile?.rol ?? "consultante";
+    const esAdmin = profile?.es_admin === true || rol === "admin";
+
+    // Counselor real: rol counselor o existe su fila en counselors
+    let esCounselor = rol === "counselor";
+    if (!esCounselor) {
+      const { data: counselorRow } = await supabase
+        .from("counselors")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      esCounselor = !!counselorRow;
+    }
 
     // ── Protección de shells ──
-    // /panel solo para counselors y admin
-    if (path.startsWith("/panel") && rol !== "counselor" && rol !== "admin") {
+    // /panel para counselors y admins
+    if (path.startsWith("/panel") && !esCounselor && !esAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // /admin solo para admin
-    if (path.startsWith("/admin") && rol !== "admin") {
+    // /admin solo para admins
+    if (path.startsWith("/admin") && !esAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // ── Redirección post-login según rol ──
+    // ── Redirección post-login según roles ──
     if (path === "/auth/callback") {
-      if (rol === "admin") {
+      if (esAdmin && esCounselor) {
+        return NextResponse.redirect(new URL("/elegir-rol", request.url));
+      }
+      if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
       }
-      if (rol === "counselor") {
+      if (esCounselor) {
         return NextResponse.redirect(new URL("/panel", request.url));
       }
       return NextResponse.redirect(new URL("/", request.url));
@@ -117,10 +133,13 @@ export async function middleware(request: NextRequest) {
 
     // ── Redirección desde / a shell correcto ──
     if (path === "/") {
-      if (rol === "admin") {
+      if (esAdmin && esCounselor) {
+        return NextResponse.redirect(new URL("/elegir-rol", request.url));
+      }
+      if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
       }
-      if (rol === "counselor") {
+      if (esCounselor) {
         return NextResponse.redirect(new URL("/panel", request.url));
       }
     }

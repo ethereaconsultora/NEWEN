@@ -24,17 +24,31 @@ export async function GET(request: Request) {
       if (user) {
         const { data: profile } = await supabase
           .from("users")
-          .select("rol")
+          .select("*")
           .eq("id", user.id)
           .single();
 
-        const rol = profile?.rol;
+        const rol = profile?.rol ?? "consultante";
+        const esAdmin = profile?.es_admin === true || rol === "admin";
 
-        // Redirección por rol
-        if (rol === "admin") {
+        let esCounselor = rol === "counselor";
+        if (!esCounselor) {
+          const { data: counselorRow } = await supabase
+            .from("counselors")
+            .select("id")
+            .eq("id", user.id)
+            .maybeSingle();
+          esCounselor = !!counselorRow;
+        }
+
+        // Cuenta dual → elegir rol
+        if (esAdmin && esCounselor) {
+          return NextResponse.redirect(`${origin}/elegir-rol`);
+        }
+        if (esAdmin) {
           return NextResponse.redirect(`${origin}/admin`);
         }
-        if (rol === "counselor") {
+        if (esCounselor) {
           return NextResponse.redirect(`${origin}/panel`);
         }
         // consultante o sin rol → home

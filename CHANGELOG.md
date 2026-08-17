@@ -1,5 +1,48 @@
 # Changelog — Newen
 
+## [0.24.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+El usuario ingresa al panel admin con la misma cuenta de su perfil profesional.
+Necesita elegir al ingresar si continuar como admin o como profesional, y contar
+con logout automático a los 10 minutos de inactividad.
+
+### Cambios realizados
+
+- [x] `users.es_admin` — flag de capacidad admin independiente del rol primario
+- [x] Detección de cuenta dual (admin + counselor) en middleware y callback OAuth
+- [x] Pantalla `/elegir-rol` para elegir entre Panel admin y Panel profesional
+- [x] Switch "Profesional" en el shell admin y "Admin" en el shell counselor (solo cuentas duales)
+- [x] Logout automático a los 10 min de inactividad en ambos shells y en `/elegir-rol`
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.24.0_rol_selector.sql` | NUEVO — columna es_admin + backfill |
+| `middleware.ts` | MODIFICADO — capacidades dual + redirect a elegir-rol |
+| `app/auth/callback/route.ts` | MODIFICADO — redirect post-OAuth |
+| `hooks/useEsMultiRol.ts` | NUEVO — hook de capacidades |
+| `app/elegir-rol/page.tsx` | NUEVO — selector de rol |
+| `app/(admin)/layout.tsx` | MODIFICADO — switch Profesional |
+| `app/(counselor)/layout.tsx` | MODIFICADO — switch Admin |
+| `logs/CHANGELOG_DEV.md` | MODIFICADO — entrada 2026-08-17 |
+| `logs/2026-08-17-feature-v0.24.0.md` | NUEVO — log detallado |
+
+---
+
+### Próximo paso
+Ejecutar `spec/init_v0.24.0_rol_selector.sql` en Supabase de Newen y marcar la
+cuenta profesional con `es_admin = true` si corresponde.
+
+---
+
 ## [0.23.0] — 2026-08-17
 
 ### Tipo: FEATURE

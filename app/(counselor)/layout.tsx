@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
+import { useEsMultiRol } from "@/hooks/useEsMultiRol";
 
 const TABS = [
   { href: "/panel/consultorio", label: "Consultorio", icon: "consultorio" },
@@ -74,6 +75,7 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
 
   // Auto-logout después de 10 min de inactividad
   useAutoLogout();
+  const { isAdmin } = useEsMultiRol();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -129,6 +131,28 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
             </Link>
           );
         })}
+        {/* Botón admin (solo cuenta dual) */}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 3,
+              textDecoration: "none",
+              fontSize: 10,
+              fontWeight: 500,
+              color: "rgba(28,18,8,0.35)",
+              minWidth: 60,
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Admin
+          </Link>
+        )}
         {/* Botón salir */}
         <button
           onClick={handleLogout}

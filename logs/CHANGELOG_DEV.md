@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-17] — v0.24.0: selector de rol (admin / profesional)
+
+**Prompt**: Ingreso al panel admin con la misma cuenta del profesional. Poder elegir
+una vez logueado si continuar como admin o como profesional, y logout automático a
+los 10 minutos de inactividad.
+
+**Acción esperada**: Agregar `users.es_admin`, detectar cuenta dual en middleware y
+callback OAuth, crear pantalla `/elegir-rol`, switches de rol en ambos shells, y
+confirmar `useAutoLogout` (10 min) en ambos.
+
+**Archivos previstos**: 10 archivos (1 SQL + 5 código + 4 registros).
+
+**Resultado**: Éxito. Build de Next exitoso, ruta `/elegir-rol` presente.
+
+**Archivos tocados**: 10 archivos.
+
+**Commit**: `2cfda02`
+
+**Próximo paso**: Ejecutar SQL en Supabase de Newen y marcar es_admin en la cuenta dual.
+
 ### [2026-08-17] — v0.23.0: módulo "Mi consultorio" (Anima) en panel counselor
 
 **Prompt**: Integrar Anima como anexo importante dentro de Newen ("Mi consultorio"),
