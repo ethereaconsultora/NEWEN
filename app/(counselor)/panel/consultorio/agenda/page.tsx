@@ -15,7 +15,7 @@ export default async function AgendaPage() {
 
   const { data: turnos } = await supabase
     .from("turnos")
-    .select("id,fecha,hora,duracion,modalidad,tipo,estado,notas,patient_name,patient_phone,pacientes(nombre,telefono),consultante:consultante_id(nombre)")
+    .select("id,fecha,hora,duracion,modalidad,tipo,estado,notas,patient_name,patient_phone,pacientes(nombre,telefono)")
     .order("fecha", { ascending: true })
     .order("hora", { ascending: true });
 

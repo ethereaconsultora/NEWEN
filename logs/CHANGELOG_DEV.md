@@ -19,21 +19,22 @@
 
 ## Historial
 
-### [2026-08-17] — v0.26.0: agenda con dualidad paciente/consultante
+### [2026-08-17] — v0.26.0 (corregido): "Agregar paciente" en turno + previsualización en Ajustes
 
-**Prompt**: Al agregar turno en la agenda, que aparezca la opción de agendar
-paciente/consultante (dualidad).
+**Prompt**: No era lo que quería. Revertir la dualidad paciente/consultante. En "Nuevo
+turno", botón "Agregar paciente" y que el principal diga "Agendar paciente". En Ajustes,
+previsualizar paleta/tipografía al instante; "Guardar cambios" persiste lo previsualizado.
 
-**Acción esperada**: Toggle Paciente/Consultante en nuevo turno, columna
-`turnos.consultante_id`, y listado/detalle con el nombre del consultante.
+**Acción esperada**: Revertir consultante, agregar alta rápida de paciente en turno, y
+mover la apariencia a un `ThemeProvider` (contexto) para previsualización en vivo.
 
 **Resultado**: Éxito. Build OK.
 
-**Archivos tocados**: 5 archivos.
+**Archivos tocados**: 8 archivos.
 
-**Commit**: `60beda9`
+**Commit**: `d362517`
 
-**Próximo paso**: Ejecutar SQL v0.26.0 en Supabase de Newen.
+**Próximo paso**: Probar previsualización y alta rápida de paciente.
 
 ### [2026-08-17] — v0.25.0: switch admin/profesional + Ajustes completos
 

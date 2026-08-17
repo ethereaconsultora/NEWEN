@@ -14,7 +14,7 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
 
   const { data: turno } = await supabase
     .from("turnos")
-    .select("*,pacientes(id,nombre),consultante:consultante_id(nombre)")
+    .select("*,pacientes(id,nombre)")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
@@ -34,15 +34,8 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
         <div style={{ fontFamily: "var(--nv-font-display)", fontSize: 28, color: "var(--nv-accent)", marginBottom: 4 }}>
           {turno.hora?.slice(0, 5)}
         </div>
-        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
-          {turno.pacientes?.nombre ?? turno.consultante?.nombre ?? turno.patient_name ?? "—"}
-        </div>
+        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{turno.pacientes?.nombre ?? turno.patient_name ?? "—"}</div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {turno.pacientes?.id ? (
-            <span className={styles.badgeOk}>Paciente</span>
-          ) : (
-            <span className={styles.badgeWarn}>Consultante</span>
-          )}
           {turno.modalidad && <span className={styles.badgeOk}>{cap(turno.modalidad)}</span>}
           <span className={styles.badgeMuted}>{turno.estado}</span>
           {turno.fecha && (

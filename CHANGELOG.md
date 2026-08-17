@@ -9,30 +9,36 @@
 ---
 
 ### Motivación
-Al agendar un turno en la agenda del consultorio, poder elegir entre **paciente**
-(clínico) o **consultante** (cliente de la plataforma newen).
+Corrección del alcance: revertir la dualidad paciente/consultante en la agenda. En su
+lugar, dentro de "Nuevo turno" se agrega el botón "Agregar paciente" (alta rápida sin
+salir del formulario) y el botón pasa a decir "Agendar paciente". Además, en Ajustes la
+paleta de colores y las tipografías se previsualizan al instante; "Guardar cambios" solo
+persiste lo que se está previsualizando.
 
 ### Cambios realizados
 
-- [x] Toggle "Paciente | Consultante" en el formulario de nuevo turno
-- [x] `turnos.consultante_id` (referencia a users) con migración v0.26.0
-- [x] Listado y detalle del turno muestran el nombre del consultante
+- [x] Revertida la dualidad paciente/consultante (se elimina `turnos.consultante_id`)
+- [x] Botón "+ Agregar paciente" con alta rápida inline en "Nuevo turno"
+- [x] Botón principal "Agendar paciente"
+- [x] Previsualización instantánea de paleta/tipografía/tamaño en Ajustes (contexto reactivo)
+- [x] "Guardar cambios" persiste la apariencia previsualizada
 
 ### Archivos modificados
 
 | Archivo | Tipo de cambio |
 |---|---|
-| `spec/init_v0.26.0_turnos_consultante.sql` | NUEVO |
-| `agenda/nuevo/page.tsx` | MODIFICADO — toggle dual |
-| `agenda/page.tsx` | MODIFICADO — join consultante |
-| `agenda/AgendaClient.tsx` | MODIFICADO — fallback nombre |
-| `agenda/[id]/page.tsx` | MODIFICADO — badge Paciente/Consultante |
-| `logs/2026-08-17-feature-v0.26.0.md` | NUEVO |
+| `components/consultorio/ThemeProvider.tsx` | NUEVO |
+| `agenda/nuevo/page.tsx` | MODIFICADO — alta rápida paciente |
+| `agenda/page.tsx`, `AgendaClient.tsx`, `agenda/[id]/page.tsx` | REVERTIDOS — sin consultante |
+| `consultorio/layout.tsx` | MODIFICADO — ThemeProvider |
+| `consultorio/ajustes/page.tsx` | MODIFICADO — previsualización |
+| `spec/init_v0.26.0_turnos_consultante.sql` | ELIMINADO |
+| `logs/2026-08-17-feature-v0.26.0.md` | NUEVO (corregido) |
 
 ---
 
 ### Próximo paso
-Ejecutar `spec/init_v0.26.0_turnos_consultante.sql` en Supabase de Newen.
+Sin SQL pendiente para v0.26.0 (la columna de apariencia sigue siendo v0.25.0).
 
 ---
 

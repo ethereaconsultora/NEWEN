@@ -4,18 +4,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { TEMAS, TIPOGRAFIAS, TAMANOS } from "@/lib/consultorio-apariencia";
+import { useApariencia } from "@/components/consultorio/ThemeProvider";
 import styles from "../pages.module.css";
 
 export default function AjustesPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { prefs, setPrefs } = useApariencia();
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ nombre: string; email: string } | null>(null);
-
-  const [theme, setTheme] = useState("newen");
-  const [font, setFont] = useState("newen");
-  const [size, setSize] = useState("mediana");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -37,15 +35,10 @@ export default function AjustesPage() {
       }
       const { data } = await supabase
         .from("users")
-        .select("nombre, email, theme_id, font_id, font_size")
+        .select("nombre, email")
         .eq("id", user.id)
         .single();
-      if (data) {
-        setProfile({ nombre: data.nombre ?? "", email: data.email ?? "" });
-        setTheme(data.theme_id ?? "newen");
-        setFont(data.font_id ?? "newen");
-        setSize(data.font_size ?? "mediana");
-      }
+      if (data) setProfile({ nombre: data.nombre ?? "", email: data.email ?? "" });
       setLoading(false);
     })();
   }, [supabase, router]);
@@ -59,7 +52,7 @@ export default function AjustesPage() {
     if (user) {
       const { error } = await supabase
         .from("users")
-        .update({ theme_id: theme, font_id: font, font_size: size })
+        .update({ theme_id: prefs.themeId, font_id: prefs.fontId, font_size: prefs.sizeId })
         .eq("id", user.id);
       if (!error) {
         setSaved(true);
@@ -107,7 +100,7 @@ export default function AjustesPage() {
       <div className={styles.pageHead}>
         <div>
           <h1 className={styles.pageTitle}>Ajustes</h1>
-          <div className={styles.pageSub}>Personalizá tu consultorio</div>
+          <div className={styles.pageSub}>Personalizá tu consultorio — los cambios se previsualizan al instante</div>
         </div>
         <button className="btn-primary" onClick={handleSave} disabled={saving}>
           {saving ? "Guardando…" : "Guardar cambios"}
@@ -132,8 +125,8 @@ export default function AjustesPage() {
             {TEMAS.map((t) => (
               <div
                 key={t.id}
-                className={`${styles.swatch}${theme === t.id ? ` ${styles.swatchSel}` : ""}`}
-                onClick={() => setTheme(t.id)}
+                className={`${styles.swatch}${prefs.themeId === t.id ? ` ${styles.swatchSel}` : ""}`}
+                onClick={() => setPrefs({ ...prefs, themeId: t.id })}
               >
                 <div className={styles.swatchDot} style={{ background: t.accent }} />
                 <span className={styles.swatchName}>{t.nombre}</span>
@@ -148,8 +141,8 @@ export default function AjustesPage() {
             {TIPOGRAFIAS.map((f) => (
               <div
                 key={f.id}
-                className={`${styles.fopt}${font === f.id ? ` ${styles.foptSel}` : ""}`}
-                onClick={() => setFont(f.id)}
+                className={`${styles.fopt}${prefs.fontId === f.id ? ` ${styles.foptSel}` : ""}`}
+                onClick={() => setPrefs({ ...prefs, fontId: f.id })}
               >
                 <div className={styles.foptName}>{f.nombre}</div>
                 <div className={styles.foptPrev} style={{ fontFamily: f.fh }}>{f.preview}</div>
@@ -164,8 +157,8 @@ export default function AjustesPage() {
             {TAMANOS.map((s) => (
               <div
                 key={s.id}
-                className={`${styles.sizeOpt}${size === s.id ? ` ${styles.sizeOptSel}` : ""}`}
-                onClick={() => setSize(s.id)}
+                className={`${styles.sizeOpt}${prefs.sizeId === s.id ? ` ${styles.sizeOptSel}` : ""}`}
+                onClick={() => setPrefs({ ...prefs, sizeId: s.id })}
               >
                 {s.nombre}
               </div>

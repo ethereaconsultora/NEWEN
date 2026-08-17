@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ConsultorioNav, { ConsultorioChips } from "./nav";
 import styles from "./consultorio.module.css";
-import FontLoader from "@/components/consultorio/FontLoader";
-import { getTema, getTipografia, getTamano, temaVars, fontVars } from "@/lib/consultorio-apariencia";
+import ThemeProvider from "@/components/consultorio/ThemeProvider";
 
 export default async function ConsultorioLayout({
   children,
@@ -25,15 +24,6 @@ export default async function ConsultorioLayout({
   const nombre = profile?.nombre ?? "Counselor";
   const email = profile?.email ?? "";
 
-  const tema = getTema(profile?.theme_id);
-  const tipografia = getTipografia(profile?.font_id);
-  const tamano = getTamano(profile?.font_size);
-
-  const shellStyle = {
-    ...temaVars(tema),
-    ...fontVars(tipografia),
-  } as React.CSSProperties;
-
   const iniciales = nombre
     .split(" ")
     .map((w: string) => w[0])
@@ -49,31 +39,38 @@ export default async function ConsultorioLayout({
   });
 
   return (
-    <div className={styles.shell} style={shellStyle}>
-      <FontLoader gFont={tipografia.gFont} />
-      <ConsultorioNav />
+    <ThemeProvider
+      initial={{
+        themeId: profile?.theme_id ?? "newen",
+        fontId: profile?.font_id ?? "newen",
+        sizeId: profile?.font_size ?? "mediana",
+      }}
+    >
+      <div className={styles.shell}>
+        <ConsultorioNav />
 
-      <div className={styles.workspace} style={{ zoom: tamano.zoom } as React.CSSProperties}>
-        <header className={styles.topbar}>
-          <div className={styles.topbarMark}>n.</div>
-          <div className={styles.topbarTxt}>
-            <div className={styles.kicker}>Panel counselor</div>
-            <div className={styles.topbarTitle}>Mi consultorio</div>
-            <div className={styles.topbarDate}>{fecha}</div>
-          </div>
-          <div className={styles.topbarUser}>
-            <div className={styles.hello}>
-              <b>{nombre}</b>
-              {email}
+        <div className={styles.workspace}>
+          <header className={styles.topbar}>
+            <div className={styles.topbarMark}>n.</div>
+            <div className={styles.topbarTxt}>
+              <div className={styles.kicker}>Panel counselor</div>
+              <div className={styles.topbarTitle}>Mi consultorio</div>
+              <div className={styles.topbarDate}>{fecha}</div>
             </div>
-            <div className={styles.avatar}>{iniciales}</div>
-          </div>
-        </header>
+            <div className={styles.topbarUser}>
+              <div className={styles.hello}>
+                <b>{nombre}</b>
+                {email}
+              </div>
+              <div className={styles.avatar}>{iniciales}</div>
+            </div>
+          </header>
 
-        <ConsultorioChips />
+          <ConsultorioChips />
 
-        <main className={styles.content}>{children}</main>
+          <main className={styles.content}>{children}</main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
