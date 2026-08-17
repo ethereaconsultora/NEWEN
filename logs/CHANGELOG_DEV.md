@@ -19,6 +19,28 @@
 
 ## Historial
 
+### [2026-08-17] — v0.23.0: módulo "Mi consultorio" (Anima) en panel counselor
+
+**Prompt**: Integrar Anima como anexo importante dentro de Newen ("Mi consultorio"),
+al igual que el Campus. Trabajar en las cuentas de Supabase, GitHub y Vercel de Newen
+(las de Anima quedaron cerradas). Registrar todas las modificaciones.
+
+**Acción esperada**: Crear tablas clínicas (pacientes, entradas, turnos, pagos) en
+`spec/init_v0.23.0_consultorio.sql`; agregar pestaña "Consultorio" al layout counselor;
+construir las rutas `/panel/consultorio/**` (Inicio, Pacientes, Agenda, Calendario,
+Pagos, Resumen, Ajustes) con el design system de Newen.
+
+**Archivos previstos**: 25 archivos (1 SQL + 21 módulo + 3 registros).
+
+**Resultado**: Éxito. Build de Next exitoso (42/42 páginas). 3 errores de import de
+CSS modules corregidos; migración renombrada de v0.22.0 a v0.23.0.
+
+**Archivos tocados**: 25 archivos.
+
+**Commit**: `b56d596`
+
+**Próximo paso**: Ejecutar SQL en Supabase de Newen y probar el módulo.
+
 ### [2026-06-21] — Inicio del proyecto Newen
 **Prompt**: Crear app Newen desde zero. Documentos fundacionales: prompt ejecutivo + spec de modelo de negocio.
 

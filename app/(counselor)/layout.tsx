@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 const TABS = [
+  { href: "/panel/consultorio", label: "Consultorio", icon: "consultorio" },
   { href: "/panel", label: "Perfil", icon: "user" },
   { href: "/panel/notificaciones", label: "Notif.", icon: "bell" },
   { href: "/panel/agenda", label: "Agenda", icon: "calendar" },
@@ -18,6 +19,13 @@ function Icon({ name, active }: { name: string; active: boolean }) {
   const stroke = active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)";
 
   switch (name) {
+    case "consultorio":
+      return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="7" width="18" height="13" rx="2" />
+          <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </svg>
+      );
     case "user":
       return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

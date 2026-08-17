@@ -1,5 +1,53 @@
 # Changelog — Newen
 
+## [0.23.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Integrar la app Anima (gestión clínica) dentro de Newen como **"Mi consultorio"**,
+anexo del panel counselor. Se trabaja únicamente con las cuentas de
+Supabase / GitHub / Vercel de Newen (las de Anima quedaron cerradas).
+
+### Cambios realizados
+
+#### Base de datos
+- [x] `spec/init_v0.23.0_consultorio.sql` — tablas `pacientes`, `entradas`, `turnos`, `pagos` con RLS por counselor
+
+#### Navegación
+- [x] Pestaña "Consultorio" primera en la barra inferior del panel counselor
+
+#### Módulo consultorio (`/panel/consultorio`)
+- [x] Inicio: KPIs, próximos turnos, accesos rápidos
+- [x] Pacientes: listado, buscador, alta, ficha, edición
+- [x] Historia clínica: registrar sesión + historial (motivo, estado, tareas, temas, notas)
+- [x] Agenda: turnos con filtros, alta, detalle, cambio de estado, recordatorio WhatsApp
+- [x] Calendario: vista mensual con días ocupados
+- [x] Pagos: cobros pendientes/pagados, alta, marcar pagado
+- [x] Resumen: KPIs, ingresos por mes, modalidad de atención
+- [x] Ajustes: perfil + apariencia (hereda identidad visual de Newen)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.23.0_consultorio.sql` | NUEVO — 4 tablas clínicas + RLS |
+| `app/(counselor)/layout.tsx` | MODIFICADO — pestaña Consultorio |
+| `app/(counselor)/panel/consultorio/**` | NUEVO — 21 archivos del módulo |
+| `logs/CHANGELOG_DEV.md` | MODIFICADO — entrada 2026-08-17 |
+| `logs/2026-08-17-feature-v0.23.0.md` | NUEVO — log detallado |
+
+---
+
+### Próximo paso
+Ejecutar `spec/init_v0.23.0_consultorio.sql` en Supabase de Newen y probar el módulo.
+
+---
+
 ## [0.2.0] — 2026-06-28
 
 ### Tipo: FEATURE
