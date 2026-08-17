@@ -35,7 +35,7 @@ doble confirmación.
 
 **Archivos tocados**: 13 archivos.
 
-**Commit**: `c05bd92`
+**Commit**: `3fe60a4`
 
 **Próximo paso**: Ejecutar SQL v0.25.0 en Supabase de Newen.
 
