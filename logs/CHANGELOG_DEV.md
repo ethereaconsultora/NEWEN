@@ -19,6 +19,22 @@
 
 ## Historial
 
+### [2026-08-17] — v0.26.0: agenda con dualidad paciente/consultante
+
+**Prompt**: Al agregar turno en la agenda, que aparezca la opción de agendar
+paciente/consultante (dualidad).
+
+**Acción esperada**: Toggle Paciente/Consultante en nuevo turno, columna
+`turnos.consultante_id`, y listado/detalle con el nombre del consultante.
+
+**Resultado**: Éxito. Build OK.
+
+**Archivos tocados**: 5 archivos.
+
+**Commit**: `54a69e5`
+
+**Próximo paso**: Ejecutar SQL v0.26.0 en Supabase de Newen.
+
 ### [2026-08-17] — v0.25.0: switch admin/profesional + Ajustes completos
 
 **Prompt**: No tocar RLS; la cuenta queda como está con doble acceso. Switch admin/profesional

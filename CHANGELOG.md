@@ -1,5 +1,41 @@
 # Changelog — Newen
 
+## [0.26.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Al agendar un turno en la agenda del consultorio, poder elegir entre **paciente**
+(clínico) o **consultante** (cliente de la plataforma newen).
+
+### Cambios realizados
+
+- [x] Toggle "Paciente | Consultante" en el formulario de nuevo turno
+- [x] `turnos.consultante_id` (referencia a users) con migración v0.26.0
+- [x] Listado y detalle del turno muestran el nombre del consultante
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.26.0_turnos_consultante.sql` | NUEVO |
+| `agenda/nuevo/page.tsx` | MODIFICADO — toggle dual |
+| `agenda/page.tsx` | MODIFICADO — join consultante |
+| `agenda/AgendaClient.tsx` | MODIFICADO — fallback nombre |
+| `agenda/[id]/page.tsx` | MODIFICADO — badge Paciente/Consultante |
+| `logs/2026-08-17-feature-v0.26.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Ejecutar `spec/init_v0.26.0_turnos_consultante.sql` en Supabase de Newen.
+
+---
+
 ## [0.25.0] — 2026-08-17
 
 ### Tipo: FEATURE

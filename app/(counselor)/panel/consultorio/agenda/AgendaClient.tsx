@@ -89,7 +89,7 @@ export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: stri
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {grouped[fecha].map((t: any) => {
-                const nombre = t.patient_name || t.pacientes?.nombre || "—";
+                const nombre = t.patient_name || t.pacientes?.nombre || t.consultante?.nombre || "—";
                 const phone = (t.patient_phone || t.pacientes?.telefono || "").replace(/\D/g, "");
                 const msg = buildWaMsg(nombre, t.fecha, t.hora ?? "");
                 const badgeClass = styles[ESTADO_BADGE[t.estado] ?? "badgeMuted"];

@@ -5,22 +5,48 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "../../pages.module.css";
 
+type Persona = { id: string; nombre: string; telefono?: string | null; email?: string | null };
+
 export default function NuevoTurnoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [pacientes, setPacientes] = useState<{ id: string; nombre: string; telefono: string | null }[]>([]);
+  const [tipo, setTipo] = useState<"paciente" | "consultante">("paciente");
+  const [pacientes, setPacientes] = useState<Persona[]>([]);
+  const [consultantes, setConsultantes] = useState<Persona[]>([]);
 
   useEffect(() => {
     (async () => {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
-      const { data } = await supabase
+
+      const { data: pacs } = await supabase
         .from("pacientes")
         .select("id,nombre,telefono")
         .is("deleted_at", null)
         .order("nombre");
-      if (data) setPacientes(data);
+      if (pacs) setPacientes(pacs);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: sess } = await supabase
+          .from("sesiones")
+          .select("consultante_id, consultante:consultante_id(nombre, email)")
+          .eq("counselor_id", user.id)
+          .in("estado", ["confirmada", "en_curso", "finalizada"]);
+        if (sess) {
+          const mapa = new Map<string, Persona>();
+          sess.forEach((s: any) => {
+            const c = s.consultante as { nombre: string; email: string } | null;
+            if (c && s.consultante_id) {
+              mapa.set(s.consultante_id, { id: s.consultante_id, nombre: c.nombre, email: c.email });
+            }
+          });
+          setConsultantes(Array.from(mapa.values()).sort((a, b) => a.nombre.localeCompare(b.nombre)));
+        }
+      }
     })();
   }, []);
 
@@ -34,10 +60,20 @@ export default function NuevoTurnoPage() {
       if (v) payload[k] = v;
     });
 
-    const paciente = pacientes.find((p) => p.id === payload.paciente_id);
-    if (paciente) {
-      payload.patient_name = paciente.nombre;
-      payload.patient_phone = paciente.telefono ?? null;
+    if (tipo === "paciente") {
+      delete payload.consultante_id;
+      const paciente = pacientes.find((p) => p.id === payload.paciente_id);
+      if (paciente) {
+        payload.patient_name = paciente.nombre;
+        payload.patient_phone = paciente.telefono ?? null;
+      }
+    } else {
+      delete payload.paciente_id;
+      const consultante = consultantes.find((c) => c.id === payload.consultante_id);
+      if (consultante) {
+        payload.patient_name = consultante.nombre;
+        payload.patient_phone = null;
+      }
     }
 
     const { createClient } = await import("@/lib/supabase/client");
@@ -54,6 +90,20 @@ export default function NuevoTurnoPage() {
 
   const hoy = new Date().toISOString().split("T")[0];
 
+  const toggleStyle = (activo: boolean) => ({
+    flex: 1,
+    padding: "9px 14px",
+    borderRadius: 999,
+    fontSize: 13,
+    fontWeight: activo ? 700 : 500,
+    border: "none",
+    cursor: "pointer",
+    fontFamily: "var(--nv-font-body)",
+    background: activo ? "var(--nv-accent)" : "transparent",
+    color: activo ? "#fff" : "var(--nv-text-muted)",
+    transition: "all .15s",
+  });
+
   return (
     <div>
       <div className={styles.pageHead}>
@@ -66,17 +116,46 @@ export default function NuevoTurnoPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="card" style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 520 }}>
-        <div>
-          <label className="label">Paciente *</label>
-          <select name="paciente_id" className="input" required defaultValue="">
-            <option value="">Seleccioná un paciente</option>
-            {pacientes.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre}
-              </option>
-            ))}
-          </select>
+        {/* Dualidad: paciente (clínico) o consultante (plataforma) */}
+        <div style={{ display: "flex", background: "var(--nv-bg-input)", borderRadius: 999, padding: 3, gap: 3, border: "1px solid var(--nv-border)" }}>
+          <button type="button" style={toggleStyle(tipo === "paciente")} onClick={() => setTipo("paciente")}>
+            Paciente
+          </button>
+          <button type="button" style={toggleStyle(tipo === "consultante")} onClick={() => setTipo("consultante")}>
+            Consultante
+          </button>
         </div>
+
+        {tipo === "paciente" ? (
+          <div>
+            <label className="label">Paciente *</label>
+            <select name="paciente_id" className="input" required defaultValue="">
+              <option value="">Seleccioná un paciente</option>
+              {pacientes.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div>
+            <label className="label">Consultante *</label>
+            <select name="consultante_id" className="input" required defaultValue="">
+              <option value="">Seleccioná un consultante</option>
+              {consultantes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+            {consultantes.length === 0 && (
+              <p style={{ fontSize: 12, color: "var(--nv-text-muted)", marginTop: 6 }}>
+                Todavía no tenés consultantes con sesiones en newen.
+              </p>
+            )}
+          </div>
+        )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
@@ -113,7 +192,7 @@ export default function NuevoTurnoPage() {
         {error && <p className="error-text">{error}</p>}
 
         <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Guardando…" : "Crear turno"}
+          {loading ? "Guardando…" : `Agendar ${tipo === "paciente" ? "paciente" : "consultante"}`}
         </button>
       </form>
     </div>
