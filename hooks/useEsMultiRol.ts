@@ -24,14 +24,11 @@ export function useEsMultiRol() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const [{ data: u }, { data: c }] = await Promise.all([
-        supabase.from("users").select("*").eq("id", user.id).single(),
-        supabase.from("counselors").select("id").eq("id", user.id).maybeSingle(),
-      ]);
+      const { data: u } = await supabase.from("users").select("*").eq("id", user.id).single();
 
       if (!activo) return;
       const isAdmin = u?.es_admin === true || u?.rol === "admin";
-      const isCounselor = u?.rol === "counselor" || !!c;
+      const isCounselor = u?.rol === "counselor";
       setEstado({ isAdmin, isCounselor });
     })();
 

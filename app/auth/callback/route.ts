@@ -30,16 +30,7 @@ export async function GET(request: Request) {
 
         const rol = profile?.rol ?? "consultante";
         const esAdmin = profile?.es_admin === true || rol === "admin";
-
-        let esCounselor = rol === "counselor";
-        if (!esCounselor) {
-          const { data: counselorRow } = await supabase
-            .from("counselors")
-            .select("id")
-            .eq("id", user.id)
-            .maybeSingle();
-          esCounselor = !!counselorRow;
-        }
+        const esCounselor = rol === "counselor";
 
         // Cuenta dual → elegir rol
         if (esAdmin && esCounselor) {

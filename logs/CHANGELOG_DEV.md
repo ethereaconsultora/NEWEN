@@ -19,6 +19,25 @@
 
 ## Historial
 
+### [2026-08-17] — fix v0.24.0: detección de counselor determinística (rol)
+
+**Prompt**: No aparecía el selector. La detección de counselor dependía de la fila en
+`counselors` bajo RLS (solo expone estado activo), lo que fallaba en algunas cuentas.
+
+**Acción esperada**: Detección determinística: `esCounselor = rol = 'counselor'` y
+`esAdmin = es_admin = true OR rol = 'admin'`. Migración: marcar la cuenta única con
+`rol='counselor' + es_admin=true`, y actualizar la política RLS de postulaciones para
+respetar `es_admin`.
+
+**Resultado**: Éxito. Build OK. Sin dependencia de RLS para el selector.
+
+**Archivos tocados**: `middleware.ts`, `app/auth/callback/route.ts`,
+`hooks/useEsMultiRol.ts`, `app/elegir-rol/page.tsx`, `spec/init_v0.24.0_rol_selector.sql`.
+
+**Commit**: `1557056`
+
+**Próximo paso**: Ejecutar el paso 3 del SQL con el email real (rol='counselor' + es_admin=true).
+
 ### [2026-08-17] — fix v0.24.0: selector en login email/password + admin solo manual
 
 **Prompt**: Aclaración — admin es solo del dueño, las demás cuentas admin se crean

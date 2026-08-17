@@ -94,17 +94,7 @@ export async function middleware(request: NextRequest) {
 
     const rol = profile?.rol ?? "consultante";
     const esAdmin = profile?.es_admin === true || rol === "admin";
-
-    // Counselor real: rol counselor o existe su fila en counselors
-    let esCounselor = rol === "counselor";
-    if (!esCounselor) {
-      const { data: counselorRow } = await supabase
-        .from("counselors")
-        .select("id")
-        .eq("id", user.id)
-        .maybeSingle();
-      esCounselor = !!counselorRow;
-    }
+    const esCounselor = rol === "counselor";
 
     // ── Protección de shells ──
     // /panel para counselors y admins
