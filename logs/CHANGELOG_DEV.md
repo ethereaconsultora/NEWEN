@@ -36,7 +36,7 @@ y el switch de rol suma el segmento "Empresa".
 `hooks/useEsMultiRol.ts`, `components/RoleSwitch.tsx`, `app/(counselor)/layout.tsx`,
 `app/(admin)/layout.tsx`, `spec/init_v0.27.0_empresas.sql`.
 
-**Commit**: (COMPLETAR)
+**Commit**: `63fe9f6`
 
 **Próximo paso**: Ejecutar el SQL, insertar la membresía y acceder a /empresa.
 
