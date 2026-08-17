@@ -19,6 +19,23 @@
 
 ## Historial
 
+### [2026-08-17] — fix v0.24.0: selector en login email/password + admin solo manual
+
+**Prompt**: Aclaración — admin es solo del dueño, las demás cuentas admin se crean
+manualmente. El selector debe aparecer apenas se loguea con la cuenta única.
+
+**Acción esperada**: Hacer que el login email/password pase por el middleware (y así
+por `/elegir-rol`); endurecer el trigger para que ningún registro público pueda
+auto-asignarse `admin`.
+
+**Resultado**: Éxito. Build OK. `handle_new_user` limitado a consultante/counselor.
+
+**Archivos tocados**: `app/auth/login/page.tsx`, `spec/init_v0.24.0_rol_selector.sql`.
+
+**Commit**: `f6f81f0`
+
+**Próximo paso**: Ejecutar SQL en Supabase de Newen.
+
 ### [2026-08-17] — v0.24.0: selector de rol (admin / profesional)
 
 **Prompt**: Ingreso al panel admin con la misma cuenta del profesional. Poder elegir

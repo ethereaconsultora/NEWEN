@@ -20,6 +20,8 @@ con logout automático a los 10 minutos de inactividad.
 - [x] Pantalla `/elegir-rol` para elegir entre Panel admin y Panel profesional
 - [x] Switch "Profesional" en el shell admin y "Admin" en el shell counselor (solo cuentas duales)
 - [x] Logout automático a los 10 min de inactividad en ambos shells y en `/elegir-rol`
+- [x] Login email/password redirige a `/` → el middleware decide (selector para cuentas duales)
+- [x] Trigger `handle_new_user` limitado a consultante/counselor (admin solo manual)
 
 ### Archivos modificados
 
@@ -28,6 +30,7 @@ con logout automático a los 10 minutos de inactividad.
 | `spec/init_v0.24.0_rol_selector.sql` | NUEVO — columna es_admin + backfill |
 | `middleware.ts` | MODIFICADO — capacidades dual + redirect a elegir-rol |
 | `app/auth/callback/route.ts` | MODIFICADO — redirect post-OAuth |
+| `app/auth/login/page.tsx` | MODIFICADO — redirect a / (selector dual) |
 | `hooks/useEsMultiRol.ts` | NUEVO — hook de capacidades |
 | `app/elegir-rol/page.tsx` | NUEVO — selector de rol |
 | `app/(admin)/layout.tsx` | MODIFICADO — switch Profesional |

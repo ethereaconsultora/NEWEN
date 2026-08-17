@@ -22,3 +22,28 @@ WHERE rol = 'admin';
 --
 --    Si tu cuenta es admin (rol='admin') y además tenés perfil de counselor,
 --    ya queda cubierta por el paso 2 + la existencia de su fila en public.counselors.
+
+-- 4. SEGURIDAD — Admin solo manual: el registro público NUNCA crea admin.
+--    El trigger de alta queda limitado a 'consultante' o 'counselor'.
+--    El rol 'admin' y la marca es_admin solo se asignan desde este SQL Editor.
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, nombre, rol, es_admin, created_at)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data ->> 'nombre', NEW.email),
+    CASE
+      WHEN NEW.raw_user_meta_data ->> 'rol' = 'counselor' THEN 'counselor'
+      ELSE 'consultante'
+    END,
+    false,
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$;
