@@ -34,7 +34,7 @@ respetar `es_admin`.
 **Archivos tocados**: `middleware.ts`, `app/auth/callback/route.ts`,
 `hooks/useEsMultiRol.ts`, `app/elegir-rol/page.tsx`, `spec/init_v0.24.0_rol_selector.sql`.
 
-**Commit**: `1557056`
+**Commit**: `1d058dc`
 
 **Próximo paso**: Ejecutar el paso 3 del SQL con el email real (rol='counselor' + es_admin=true).
 
