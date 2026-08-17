@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import PacienteForm from "../../pacientes/PacienteForm";
 import styles from "../../pages.module.css";
 
 type Paciente = { id: string; nombre: string; telefono: string | null };
@@ -12,14 +13,10 @@ export default function NuevoTurnoPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  const [nuevoPacienteId, setNuevoPacienteId] = useState("");
+  const [pacienteId, setPacienteId] = useState("");
 
-  // Quick-add paciente
+  // Alta rápida de paciente (mismo formulario completo)
   const [mostrarAlta, setMostrarAlta] = useState(false);
-  const [nombreNuevo, setNombreNuevo] = useState("");
-  const [telefonoNuevo, setTelefonoNuevo] = useState("");
-  const [altaLoading, setAltaLoading] = useState(false);
-  const [altaError, setAltaError] = useState("");
 
   async function cargarPacientes() {
     const { createClient } = await import("@/lib/supabase/client");
@@ -36,31 +33,9 @@ export default function NuevoTurnoPage() {
     cargarPacientes();
   }, []);
 
-  async function handleAltaPaciente(e: React.FormEvent) {
-    e.preventDefault();
-    setAltaError("");
-    if (!nombreNuevo.trim()) {
-      setAltaError("El nombre es obligatorio.");
-      return;
-    }
-    setAltaLoading(true);
-    const { createClient } = await import("@/lib/supabase/client");
-    const supabase = createClient();
-    const { data, error: err } = await supabase
-      .from("pacientes")
-      .insert({ nombre: nombreNuevo.trim(), telefono: telefonoNuevo.trim() || null })
-      .select("id")
-      .single();
-    if (err) {
-      setAltaError("No se pudo agregar. Intentá de nuevo.");
-      setAltaLoading(false);
-      return;
-    }
-    setNombreNuevo("");
-    setTelefonoNuevo("");
+  async function handlePacienteCreado(id: string) {
     setMostrarAlta(false);
-    setAltaLoading(false);
-    setNuevoPacienteId(data.id);
+    setPacienteId(id);
     await cargarPacientes();
   }
 
@@ -113,13 +88,13 @@ export default function NuevoTurnoPage() {
               type="button"
               className="btn-ghost"
               style={{ padding: "5px 12px", fontSize: 12 }}
-              onClick={() => { setMostrarAlta((v) => !v); setAltaError(""); }}
+              onClick={() => setMostrarAlta(true)}
             >
-              + Agregar paciente
+              + Nuevo paciente
             </button>
           </div>
 
-          <select name="paciente_id" className="input" required value={nuevoPacienteId} onChange={(e) => setNuevoPacienteId(e.target.value)}>
+          <select name="paciente_id" className="input" required value={pacienteId} onChange={(e) => setPacienteId(e.target.value)}>
             <option value="">Seleccioná un paciente</option>
             {pacientes.map((p) => (
               <option key={p.id} value={p.id}>
@@ -128,35 +103,6 @@ export default function NuevoTurnoPage() {
             ))}
           </select>
         </div>
-
-        {mostrarAlta && (
-          <div style={{ background: "var(--nv-bg-surface)", border: "1px dashed var(--nv-accent-border)", borderRadius: 12, padding: 14 }}>
-            <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 13.5 }}>Agregar paciente</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <input
-                className="input"
-                placeholder="Nombre completo *"
-                value={nombreNuevo}
-                onChange={(e) => setNombreNuevo(e.target.value)}
-              />
-              <input
-                className="input"
-                placeholder="Teléfono (opcional)"
-                value={telefonoNuevo}
-                onChange={(e) => setTelefonoNuevo(e.target.value)}
-              />
-              {altaError && <p className="error-text">{altaError}</p>}
-              <div style={{ display: "flex", gap: 8 }}>
-                <button type="button" className="btn-primary" style={{ flex: 1 }} onClick={handleAltaPaciente} disabled={altaLoading}>
-                  {altaLoading ? "Guardando…" : "Guardar paciente"}
-                </button>
-                <button type="button" className="btn-ghost" onClick={() => setMostrarAlta(false)}>
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
@@ -193,9 +139,44 @@ export default function NuevoTurnoPage() {
         {error && <p className="error-text">{error}</p>}
 
         <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Guardando…" : "Agendar paciente"}
+          {loading ? "Guardando…" : "Guardar turno"}
         </button>
       </form>
+
+      {/* Modal alta de paciente (formulario completo) */}
+      {mostrarAlta && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(28,18,8,0.45)",
+            zIndex: 80,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+          onClick={() => setMostrarAlta(false)}
+        >
+          <div
+            style={{
+              background: "var(--nv-bg-card)",
+              borderRadius: "var(--nv-radius-lg)",
+              padding: 20,
+              width: "100%",
+              maxWidth: 560,
+              maxHeight: "90vh",
+              overflowY: "auto",
+              boxShadow: "var(--nv-shadow)",
+              border: "1px solid var(--nv-border)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontFamily: "var(--nv-font-display)", fontSize: 20, marginBottom: 16 }}>Nuevo paciente</h2>
+            <PacienteForm onSuccess={handlePacienteCreado} onCancel={() => setMostrarAlta(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

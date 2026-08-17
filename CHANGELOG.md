@@ -22,6 +22,10 @@ persiste lo que se está previsualizando.
 - [x] Botón principal "Agendar paciente"
 - [x] Previsualización instantánea de paleta/tipografía/tamaño en Ajustes (contexto reactivo)
 - [x] "Guardar cambios" persiste la apariencia previsualizada
+- [x] Formulario de paciente compartido (`PacienteForm`) con DNI y fecha de nacimiento
+- [x] "+ Nuevo paciente" en agenda → nuevo turno (modal con el mismo formulario completo)
+- [x] Botón "Guardar turno" y normalización de "+ Nuevo turno"
+- [x] Botón "Recordar por WhatsApp" con el texto de recordatorio de Anima
 
 ### Archivos modificados
 

@@ -19,6 +19,24 @@
 
 ## Historial
 
+### [2026-08-17] — fix: formulario de paciente compartido + WhatsApp + textos
+
+**Prompt**: "+ nuevo paciente" en vez de "agregar paciente"; un único botón en pacientes
+y otro igual en agenda → nuevo turno; mismo formulario completo (con DNI y fecha de
+nacimiento) en ambos; eliminar "agregar turno" (usar "+ nuevo turno") y que el botón
+diga "Guardar turno"; botón de recordatorio por WhatsApp con el texto de Anima.
+
+**Acción esperada**: componente `PacienteForm` compartido, modal en nuevo turno, botón
+WhatsApp en detalle de turno y normalización de textos de botones.
+
+**Resultado**: Éxito. Build OK.
+
+**Archivos tocados**: 6 archivos.
+
+**Commit**: `f59a105`
+
+**Próximo paso**: Probar alta de paciente desde nuevo turno y recordatorio WhatsApp.
+
 ### [2026-08-17] — v0.26.0 (corregido): "Agregar paciente" en turno + previsualización en Ajustes
 
 **Prompt**: No era lo que quería. Revertir la dualidad paciente/consultante. En "Nuevo

@@ -4,6 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import styles from "../../pages.module.css";
 import CambiarEstadoButton from "./CambiarEstadoButton";
 
+const DAYS_FULL = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MONTHS_FULL = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+function buildWaReminder(nombre: string, fecha: string, hora: string) {
+  const primerNombre = nombre.split(" ")[0];
+  const d = new Date(fecha + "T12:00:00");
+  const fechaStr = `${DAYS_FULL[d.getDay()]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]}`;
+  const horaStr = (hora ?? "").slice(0, 5);
+  return `Hola ${primerNombre}\n\nTe recuerdo nuestro encuentro agendado para el ${fechaStr} a las ${horaStr}hs.\n\n¿Podés confirmar tu asistencia?\n\n¡Hasta pronto!`;
+}
+
 export default async function TurnoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -14,13 +25,17 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
 
   const { data: turno } = await supabase
     .from("turnos")
-    .select("*,pacientes(id,nombre)")
+    .select("*,pacientes(id,nombre,telefono)")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
   if (!turno) notFound();
 
   const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
+  const nombreTurno = turno.pacientes?.nombre ?? turno.patient_name ?? "";
+  const phone = (turno.patient_phone || turno.pacientes?.telefono || "").replace(/\D/g, "");
+  const waMsg = nombreTurno && turno.fecha ? buildWaReminder(nombreTurno, turno.fecha, turno.hora) : "";
 
   return (
     <div>
@@ -45,6 +60,18 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
           )}
         </div>
       </div>
+
+      {phone && waMsg && (
+        <a
+          href={`https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary"
+          style={{ width: "100%", justifyContent: "center", display: "inline-flex", marginBottom: 12 }}
+        >
+          📲 Recordar por WhatsApp
+        </a>
+      )}
 
       {turno.notas && (
         <div className="card" style={{ marginBottom: 16 }}>

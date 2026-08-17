@@ -76,7 +76,7 @@ export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: stri
             No hay turnos {filtro === "hoy" ? "para hoy" : filtro === "proximos" ? "próximos" : filtro === "pasados" ? "pasados" : ""}.
           </p>
           <Link href="/panel/consultorio/agenda/nuevo" className="btn-primary" style={{ display: "inline-flex", marginTop: 14 }}>
-            + Agregar turno
+            + Nuevo turno
           </Link>
         </div>
       ) : (

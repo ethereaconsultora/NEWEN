@@ -61,7 +61,7 @@ export default async function PacientesPage({
           </p>
           {!q && (
             <Link href="/panel/consultorio/pacientes/nuevo" className="btn-primary" style={{ display: "inline-flex", marginTop: 14 }}>
-              + Agregar paciente
+              + Nuevo paciente
             </Link>
           )}
         </div>
