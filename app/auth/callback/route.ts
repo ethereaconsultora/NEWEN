@@ -31,12 +31,16 @@ export async function GET(request: Request) {
         const rol = profile?.rol ?? "consultante";
         const esAdmin = profile?.es_admin === true || rol === "admin";
         const esCounselor = rol === "counselor";
+        const esEmpresa = rol === "empresa";
 
         if (esCounselor) {
           return NextResponse.redirect(`${origin}/panel`);
         }
         if (esAdmin) {
           return NextResponse.redirect(`${origin}/admin`);
+        }
+        if (esEmpresa) {
+          return NextResponse.redirect(`${origin}/empresa`);
         }
         // consultante o sin rol → home
         return NextResponse.redirect(`${origin}${next}`);

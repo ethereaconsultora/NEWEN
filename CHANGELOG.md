@@ -1,5 +1,53 @@
 # Changelog — Newen
 
+## [0.27.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO (primera integración)
+
+---
+
+### Motivación
+Agregar una cuarta área en newen, distinta de profesional/admin/consultante: un acceso para
+**empresas que pagan por un espacio comercial** dentro de la plataforma, enlazado (si se paga)
+a un **campus digital**. Caso de validación: **Espacio Crítico** (counseling organizacional),
+con la estética de su web (oscura/dorada) y una consola admin multicliente.
+
+### Cambios realizados
+
+- [x] Rol `empresa` en `users` (migración) + protección de `/empresa` y ruta pública `/e/[slug]`
+- [x] Tablas nuevas: `organizations`, `organization_members`, `organization_clients`,
+      `organization_employees`, `organization_tasks`, `derivaciones`, `mensajes` (con RLS)
+- [x] Shell `(empresa)` con estética propia (CSS Module oscuro/dorado) y logout automático
+- [x] Dashboard multicliente: selector de cliente, KPIs, sistema de 6 fases, empleados con
+      derivación a Newen, alta/edición/archivado de clientes
+- [x] Stub del campus digital (`/empresa/campus`)
+- [x] Página pública `/e/[slug]` con la estética de Espacio Crítico (server component)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.27.0_empresas.sql` | NUEVO — esquema + RLS + seed |
+| `app/(empresa)/layout.tsx` | NUEVO |
+| `app/(empresa)/empresa/page.tsx` | NUEVO — dashboard |
+| `app/(empresa)/empresa/campus/page.tsx` | NUEVO — stub campus |
+| `app/(empresa)/empresa.module.css` | NUEVO |
+| `app/e/[slug]/page.tsx` | NUEVO — página pública |
+| `middleware.ts` | MODIFICADO — rol empresa |
+| `app/auth/callback/route.ts` | MODIFICADO — redirect empresa |
+| `logs/2026-08-17-feature-v0.27.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Ejecutar `spec/init_v0.27.0_empresas.sql` en Supabase y vincular la cuenta (rol empresa +
+owner). Luego completar: mensajería interna, seguimiento por tarea, informes PDF y derivación
+completa.
+
+---
+
 ## [0.26.0] — 2026-08-17
 
 ### Tipo: FEATURE

@@ -19,6 +19,36 @@
 
 ## Historial
 
+### [2026-08-17] — feat: v0.27.0 — Área Empresa (espacio comercial multicliente)
+
+**Prompt**: Crear una nueva sección dentro de newen, distinta de profesional/admin/consultante:
+un acceso para empresas que pagan por un espacio comercial, enlazado (si se paga) a un campus
+digital. Caso concreto: "Espacio Crítico" con la estética de su web (oscura/dorada) y una consola
+admin multicliente (clientes, 6 fases, informes, agenda, seguimiento, empleados y derivaciones).
+
+**Acción esperada**: Migración SQL (`organizations`, `organization_members`, `organization_clients`,
+`organization_employees`, `organization_tasks`, `derivaciones`, `mensajes` + RLS + seed), rol
+`empresa` en users, middleware + callback, shell `(empresa)` con dashboard multicliente y stub de
+campus, y página pública `/e/[slug]` con la estética de Espacio Crítico.
+
+**Resultado**: Éxito. `npx tsc --noEmit` limpio y `npm run build` OK (rutas `/empresa`,
+`/empresa/campus` y `/e/[slug]` compiladas).
+
+**Archivos tocados**:
+- `spec/init_v0.27.0_empresas.sql` (NUEVO)
+- `app/(empresa)/layout.tsx` (NUEVO)
+- `app/(empresa)/empresa/page.tsx` (NUEVO)
+- `app/(empresa)/empresa/campus/page.tsx` (NUEVO)
+- `app/(empresa)/empresa.module.css` (NUEVO)
+- `app/e/[slug]/page.tsx` (NUEVO)
+- `middleware.ts` + `app/auth/callback/route.ts` (MODIFICADOS)
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Ejecutar `spec/init_v0.27.0_empresas.sql` en Supabase y vincular la cuenta
+(rol empresa + owner). Luego completar: mensajería interna, seguimiento por tarea, informes PDF
+y derivación completa.
+
 ### [2026-08-17] — fix: formulario de paciente compartido + WhatsApp + textos
 
 **Prompt**: "+ nuevo paciente" en vez de "agregar paciente"; un único botón en pacientes

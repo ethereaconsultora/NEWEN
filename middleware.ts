@@ -57,6 +57,7 @@ export async function middleware(request: NextRequest) {
     "/auth",
     "/privacidad",
     "/terminos",
+    "/e/",
     "/api",
     "/images",
     "/icons",
@@ -95,6 +96,7 @@ export async function middleware(request: NextRequest) {
     const rol = profile?.rol ?? "consultante";
     const esAdmin = profile?.es_admin === true || rol === "admin";
     const esCounselor = rol === "counselor";
+    const esEmpresa = rol === "empresa";
 
     // ── Protección de shells ──
     // /panel para counselors y admins
@@ -107,6 +109,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
+    // /empresa para empresas y admins
+    if (path.startsWith("/empresa") && !esEmpresa && !esAdmin) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     // ── Redirección post-login según roles ──
     if (path === "/auth/callback") {
       if (esCounselor) {
@@ -114,6 +121,9 @@ export async function middleware(request: NextRequest) {
       }
       if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      if (esEmpresa) {
+        return NextResponse.redirect(new URL("/empresa", request.url));
       }
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -125,6 +135,9 @@ export async function middleware(request: NextRequest) {
       }
       if (esAdmin) {
         return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      if (esEmpresa) {
+        return NextResponse.redirect(new URL("/empresa", request.url));
       }
     }
   }
