@@ -35,7 +35,7 @@ confirmar `useAutoLogout` (10 min) en ambos.
 
 **Archivos tocados**: 10 archivos.
 
-**Commit**: `2cfda02`
+**Commit**: `92613ca`
 
 **Próximo paso**: Ejecutar SQL en Supabase de Newen y marcar es_admin en la cuenta dual.
 
