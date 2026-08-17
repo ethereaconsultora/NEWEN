@@ -54,6 +54,7 @@ export async function middleware(request: NextRequest) {
     "/agenda",
     "/talleres",
     "/postularse",
+    "/empresas",
     "/auth",
     "/privacidad",
     "/terminos",
@@ -120,8 +121,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // /empresa para empresas y admins
-    if (path.startsWith("/empresa") && !esEmpresa && !esAdmin) {
+    // /empresa para empresas y admins (sin matchear /empresas, la vidriera pública)
+    if ((path === "/empresa" || path.startsWith("/empresa/")) && !esEmpresa && !esAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 

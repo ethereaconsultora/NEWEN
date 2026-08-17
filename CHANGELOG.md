@@ -1,5 +1,44 @@
 # Changelog — Newen
 
+## [0.28.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Resolver el arranque del producto Empresa: falta una **vidriera pública** (página principal
+que lista los espacios, como perfiles de Shopify) y un **onboarding** para crear un espacio
+desde cero.
+
+### Cambios realizados
+
+- [x] Página pública `/empresas` — vidriera con todos los espacios activos (cards + link al espacio)
+- [x] Onboarding `/empresas/crear` — formulario que crea `organizations` + `organization_members`
+      (owner) y redirige al dashboard `/empresa`
+- [x] Policies INSERT (`organizations_insert`, `members_insert_self`) en la migración
+- [x] Middleware: `/empresas` público y corrección para no confundir `/empresa` con `/empresas`
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `app/empresas/page.tsx` | NUEVO — vidriera pública |
+| `app/empresas/crear/page.tsx` | NUEVO — onboarding |
+| `middleware.ts` | MODIFICADO — público + matcher |
+| `spec/init_v0.27.0_empresas.sql` | MODIFICADO — policies INSERT |
+| `logs/2026-08-17-feature-v0.28.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Probar el alta de un espacio desde `/empresas/crear` y ajustar el onboarding (pago, logo,
+banner, previsualización).
+
+---
+
 ## [0.27.0] — 2026-08-17
 
 ### Tipo: FEATURE

@@ -144,6 +144,11 @@ CREATE POLICY "organizations_member_update" ON public.organizations
     WHERE m.organization_id = organizations.id AND m.user_id = auth.uid()
   ));
 
+-- Organizaciones: cualquier usuario autenticado puede crear su espacio (onboarding).
+DROP POLICY IF EXISTS "organizations_insert" ON public.organizations;
+CREATE POLICY "organizations_insert" ON public.organizations
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
 -- Members: visibles para la propia organización.
 DROP POLICY IF EXISTS "members_read_own" ON public.organization_members;
 CREATE POLICY "members_read_own" ON public.organization_members
@@ -151,6 +156,11 @@ CREATE POLICY "members_read_own" ON public.organization_members
     SELECT 1 FROM public.organization_members me
     WHERE me.organization_id = organization_members.organization_id AND me.user_id = auth.uid()
   ));
+
+-- Members: el usuario se vincula como miembro de su propia organización.
+DROP POLICY IF EXISTS "members_insert_self" ON public.organization_members;
+CREATE POLICY "members_insert_self" ON public.organization_members
+  FOR INSERT WITH CHECK (user_id = auth.uid());
 
 -- Clients: todo para miembros de la organización.
 DROP POLICY IF EXISTS "clients_member_all" ON public.organization_clients;

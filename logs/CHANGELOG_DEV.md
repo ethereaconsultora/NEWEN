@@ -19,6 +19,29 @@
 
 ## Historial
 
+### [2026-08-17] — feat: v0.28.0 — vidriera pública + onboarding de organizaciones
+
+**Prompt**: Pausa. Hacer el registro/onboarding de organizaciones para poder crear desde cero
+una "página empresa" (como perfiles en Shopify). ¿Desde dónde se carga? Hace falta una página
+principal que sea la vidriera de esas ventas; hacer ese paso primero si no está.
+
+**Acción esperada**: Página pública `/empresas` (vidriera con todos los espacios activos) y
+onboarding `/empresas/crear` (formulario que crea `organizations` + `organization_members`
+y redirige a `/empresa`). Policies INSERT para organizaciones y miembros.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK (rutas `/empresas` y
+`/empresas/crear`).
+
+**Archivos tocados**:
+- `app/empresas/page.tsx` (NUEVO)
+- `app/empresas/crear/page.tsx` (NUEVO)
+- `middleware.ts` (MODIFICADO)
+- `spec/init_v0.27.0_empresas.sql` (MODIFICADO — policies INSERT)
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Probar el alta de un espacio y ajustar el onboarding (pago, logo, banner).
+
 ### [2026-08-17] — feat: acceso a /empresa con la misma cuenta (sin cambiar rol)
 
 **Prompt**: ¿Por dónde accedo al área empresas? ¿Puedo usar el mismo mail de counselor/admin?
