@@ -32,7 +32,7 @@ auto-asignarse `admin`.
 
 **Archivos tocados**: `app/auth/login/page.tsx`, `spec/init_v0.24.0_rol_selector.sql`.
 
-**Commit**: `f6f81f0`
+**Commit**: `bc4205a`
 
 **Próximo paso**: Ejecutar SQL en Supabase de Newen.
 
