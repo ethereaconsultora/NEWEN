@@ -43,7 +43,7 @@ campus, y página pública `/e/[slug]` con la estética de Espacio Crítico.
 - `app/e/[slug]/page.tsx` (NUEVO)
 - `middleware.ts` + `app/auth/callback/route.ts` (MODIFICADOS)
 
-**Commit**: (COMPLETAR)
+**Commit**: `06cb8a1`
 
 **Próximo paso**: Ejecutar `spec/init_v0.27.0_empresas.sql` en Supabase y vincular la cuenta
 (rol empresa + owner). Luego completar: mensajería interna, seguimiento por tarea, informes PDF
