@@ -33,7 +33,7 @@ WhatsApp en detalle de turno y normalización de textos de botones.
 
 **Archivos tocados**: 6 archivos.
 
-**Commit**: `f59a105`
+**Commit**: `dce5ad9`
 
 **Próximo paso**: Probar alta de paciente desde nuevo turno y recordatorio WhatsApp.
 
