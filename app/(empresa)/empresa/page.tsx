@@ -183,7 +183,7 @@ export default function EmpresaDashboard() {
       return;
     }
     const caso = (document.getElementById("dv-caso") as HTMLTextAreaElement)?.value?.trim() || null;
-    const { error } = await supabase.from("derivaciones").insert({
+    const { error } = await supabase.from("organization_derivaciones").insert({
       organization_id: org.id,
       client_id: active.id,
       employee_id: emp.id,

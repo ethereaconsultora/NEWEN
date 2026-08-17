@@ -1,10 +1,10 @@
 -- ============================================================
 -- NEWEN — v0.27.0 — Área Empresa (espacio comercial multicliente)
 -- Ejecutar en Supabase → SQL Editor.
+-- Idempotente: puede re-ejecutarse sin error.
 -- ============================================================
 
 -- 1. Ampliar el rol de users para incluir 'empresa'.
---    La columna rol usa un CHECK; lo recreamos sumando 'empresa'.
 ALTER TABLE public.users DROP CONSTRAINT IF EXISTS users_rol_check;
 ALTER TABLE public.users
   ADD CONSTRAINT users_rol_check
@@ -84,8 +84,10 @@ CREATE TABLE IF NOT EXISTS public.organization_tasks (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. DERIVACIONES — derivación de una persona a un counselor de newen.
-CREATE TABLE IF NOT EXISTS public.derivaciones (
+-- 7. ORGANIZATION_DERIVACIONES — derivación de una persona a un counselor de newen.
+--    (Nombre distinto de `derivaciones`, que ya existe en v0.15.0 para derivaciones
+--     entre counselors.)
+CREATE TABLE IF NOT EXISTS public.organization_derivaciones (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE,
   client_id UUID REFERENCES public.organization_clients(id) ON DELETE SET NULL,
@@ -98,10 +100,13 @@ CREATE TABLE IF NOT EXISTS public.derivaciones (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 8. MENSAJES — mensajería interna profesional ↔ quien deriva (por derivación).
-CREATE TABLE IF NOT EXISTS public.mensajes (
+-- 8. ORGANIZATION_MENSAJES — mensajería interna profesional ↔ quien deriva.
+--    Limpia una tabla `mensajes` huérfana de una ejecución anterior fallida.
+DROP TABLE IF EXISTS public.mensajes;
+
+CREATE TABLE IF NOT EXISTS public.organization_mensajes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  derivacion_id UUID REFERENCES public.derivaciones(id) ON DELETE CASCADE,
+  derivacion_id UUID REFERENCES public.organization_derivaciones(id) ON DELETE CASCADE,
   de TEXT CHECK (de IN ('espacio','profesional')) NOT NULL,
   texto TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -115,14 +120,16 @@ ALTER TABLE public.organization_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.organization_clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.organization_employees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.organization_tasks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.derivaciones ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.mensajes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_derivaciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_mensajes ENABLE ROW LEVEL SECURITY;
 
 -- Organizaciones: lectura pública de las activas (página /e/slug).
+DROP POLICY IF EXISTS "organizations_public_read" ON public.organizations;
 CREATE POLICY "organizations_public_read" ON public.organizations
   FOR SELECT USING (estado = 'activa');
 
 -- Organizaciones: miembros leen su propia organización.
+DROP POLICY IF EXISTS "organizations_member_read" ON public.organizations;
 CREATE POLICY "organizations_member_read" ON public.organizations
   FOR SELECT USING (EXISTS (
     SELECT 1 FROM public.organization_members m
@@ -130,6 +137,7 @@ CREATE POLICY "organizations_member_read" ON public.organizations
   ));
 
 -- Organizaciones: miembros actualizan su propia organización.
+DROP POLICY IF EXISTS "organizations_member_update" ON public.organizations;
 CREATE POLICY "organizations_member_update" ON public.organizations
   FOR UPDATE USING (EXISTS (
     SELECT 1 FROM public.organization_members m
@@ -137,6 +145,7 @@ CREATE POLICY "organizations_member_update" ON public.organizations
   ));
 
 -- Members: visibles para la propia organización.
+DROP POLICY IF EXISTS "members_read_own" ON public.organization_members;
 CREATE POLICY "members_read_own" ON public.organization_members
   FOR SELECT USING (user_id = auth.uid() OR EXISTS (
     SELECT 1 FROM public.organization_members me
@@ -144,6 +153,7 @@ CREATE POLICY "members_read_own" ON public.organization_members
   ));
 
 -- Clients: todo para miembros de la organización.
+DROP POLICY IF EXISTS "clients_member_all" ON public.organization_clients;
 CREATE POLICY "clients_member_all" ON public.organization_clients
   FOR ALL USING (EXISTS (
     SELECT 1 FROM public.organization_members m
@@ -151,6 +161,7 @@ CREATE POLICY "clients_member_all" ON public.organization_clients
   ));
 
 -- Employees: todo para miembros de la organización del cliente.
+DROP POLICY IF EXISTS "employees_member_all" ON public.organization_employees;
 CREATE POLICY "employees_member_all" ON public.organization_employees
   FOR ALL USING (EXISTS (
     SELECT 1 FROM public.organization_clients c
@@ -159,6 +170,7 @@ CREATE POLICY "employees_member_all" ON public.organization_employees
   ));
 
 -- Tasks: todo para miembros de la organización del cliente.
+DROP POLICY IF EXISTS "tasks_member_all" ON public.organization_tasks;
 CREATE POLICY "tasks_member_all" ON public.organization_tasks
   FOR ALL USING (EXISTS (
     SELECT 1 FROM public.organization_clients c
@@ -167,18 +179,20 @@ CREATE POLICY "tasks_member_all" ON public.organization_tasks
   ));
 
 -- Derivaciones: todo para miembros de la organización.
-CREATE POLICY "derivaciones_member_all" ON public.derivaciones
+DROP POLICY IF EXISTS "derivaciones_member_all" ON public.organization_derivaciones;
+CREATE POLICY "derivaciones_member_all" ON public.organization_derivaciones
   FOR ALL USING (EXISTS (
     SELECT 1 FROM public.organization_members m
-    WHERE m.organization_id = derivaciones.organization_id AND m.user_id = auth.uid()
+    WHERE m.organization_id = organization_derivaciones.organization_id AND m.user_id = auth.uid()
   ));
 
 -- Mensajes: todo para miembros de la organización de la derivación.
-CREATE POLICY "mensajes_member_all" ON public.mensajes
+DROP POLICY IF EXISTS "mensajes_member_all" ON public.organization_mensajes;
+CREATE POLICY "mensajes_member_all" ON public.organization_mensajes
   FOR ALL USING (EXISTS (
-    SELECT 1 FROM public.derivaciones d
+    SELECT 1 FROM public.organization_derivaciones d
     JOIN public.organization_members m ON m.organization_id = d.organization_id
-    WHERE d.id = mensajes.derivacion_id AND m.user_id = auth.uid()
+    WHERE d.id = organization_mensajes.derivacion_id AND m.user_id = auth.uid()
   ));
 
 -- ============================================================

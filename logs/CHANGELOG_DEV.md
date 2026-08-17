@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-17] — fix: v0.27.0 — colisión de nombre `derivaciones` en la migración
+
+**Prompt**: Error al correr `init_v0.27.0_empresas.sql`: `42703: column
+derivaciones.organization_id does not exist`.
+
+**Acción esperada**: La tabla `derivaciones` ya existía (v0.15.0, derivaciones entre
+counselors). Renombrar las tablas nuevas a `organization_derivaciones` y
+`organization_mensajes`, limpiar la tabla huérfana `mensajes` y hacer las policies
+idempotentes (`DROP POLICY IF EXISTS`) para poder re-ejecutar el script.
+
+**Resultado**: Éxito. Migración corregida (tablas `organization_derivaciones` y
+`organization_mensajes`, limpieza de `mensajes` huérfana, policies idempotentes con
+`DROP POLICY IF EXISTS`). `npx tsc --noEmit` limpio.
+
+**Archivos tocados**: `spec/init_v0.27.0_empresas.sql`, `app/(empresa)/empresa/page.tsx`.
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Re-ejecutar la migración en Supabase.
+
 ### [2026-08-17] — feat: v0.27.0 — Área Empresa (espacio comercial multicliente)
 
 **Prompt**: Crear una nueva sección dentro de newen, distinta de profesional/admin/consultante:
