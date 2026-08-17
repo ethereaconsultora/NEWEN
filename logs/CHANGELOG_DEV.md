@@ -31,7 +31,7 @@ paciente/consultante (dualidad).
 
 **Archivos tocados**: 5 archivos.
 
-**Commit**: `54a69e5`
+**Commit**: `60beda9`
 
 **Próximo paso**: Ejecutar SQL v0.26.0 en Supabase de Newen.
 
