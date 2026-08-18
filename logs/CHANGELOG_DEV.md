@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-17] — feat: v0.29.0 — logo/banner + vista previa en el onboarding
+
+**Prompt**: "Seguimos en ese orden" → paso 1 de los próximos pasos: logo/banner +
+previsualización en el onboarding de organizaciones.
+
+**Acción esperada**: Columnas `logo_url`, `cover_url`, `cover_gradient` en `organizations`;
+en el onboarding, selector de banner (degradés curados), logo por iniciales + color, y una
+vista previa en vivo del espacio. La página pública usa `cover_gradient`.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `spec/init_v0.29.0_empresas_apariencia.sql` (NUEVO)
+- `app/empresas/crear/page.tsx` (RECREADO)
+- `app/e/[slug]/page.tsx` (MODIFICADO)
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Subida real de logo/banner a Storage, luego pago del plan.
+
 ### [2026-08-17] — feat: v0.28.0 — vidriera pública + onboarding de organizaciones
 
 **Prompt**: Pausa. Hacer el registro/onboarding de organizaciones para poder crear desde cero

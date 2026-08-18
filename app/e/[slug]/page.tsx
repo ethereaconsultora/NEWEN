@@ -93,7 +93,9 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
       <div
         style={{
           height: 140,
-          background: `linear-gradient(135deg, ${primary} 0%, #1a1710 60%, ${accent}22 130%)`,
+          background:
+            org.cover_gradient ||
+            `linear-gradient(135deg, ${primary} 0%, #1a1710 60%, ${accent}22 130%)`,
         }}
       />
       <header style={{ background: BONE, color: "#241d12", padding: "12px 32px 40px" }}>

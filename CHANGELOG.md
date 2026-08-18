@@ -1,5 +1,40 @@
 # Changelog — Newen
 
+## [0.29.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Paso 1 de los próximos pasos: logo/banner + previsualización en el onboarding de
+organizaciones.
+
+### Cambios realizados
+
+- [x] Columnas `logo_url`, `cover_url`, `cover_gradient` en `organizations`
+- [x] Onboarding con selector de banner (8 degradés curados) y color de acento
+- [x] Vista previa en vivo del espacio (banner + logo por iniciales + nombre + tagline)
+- [x] La página pública `/e/[slug]` usa `cover_gradient` en el banner
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.29.0_empresas_apariencia.sql` | NUEVO |
+| `app/empresas/crear/page.tsx` | RECREADO — banner + vista previa |
+| `app/e/[slug]/page.tsx` | MODIFICADO — cover_gradient |
+| `logs/2026-08-17-feature-v0.29.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Subida real de logo/banner a Supabase Storage, luego pago del plan.
+
+---
+
 ## [0.28.0] — 2026-08-17
 
 ### Tipo: FEATURE
