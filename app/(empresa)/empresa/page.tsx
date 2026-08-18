@@ -218,9 +218,16 @@ export default function EmpresaDashboard() {
           <div className={styles.panel}>
             <h3>Sin organización vinculada</h3>
             <p style={{ marginTop: 8 }}>
-              Tu cuenta todavía no está asociada a una organización. Ejecutá la migración
-              v0.27.0 y vinculá tu cuenta como owner (ver comentarios en el script SQL).
+              Tu cuenta todavía no tiene un espacio de empresa. Creá el tuyo en un minuto:
             </p>
+            <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <Link className={styles.btn} href="/empresas/crear">
+                + Crear mi espacio
+              </Link>
+              <Link className={styles.btnOutline} href="/empresas">
+                Ver la vidriera
+              </Link>
+            </div>
           </div>
         </div>
       </div>
