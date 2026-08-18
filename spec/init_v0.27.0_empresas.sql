@@ -206,36 +206,21 @@ CREATE POLICY "mensajes_member_all" ON public.organization_mensajes
   ));
 
 -- ============================================================
--- SEED — Espacio Crítico (organización demo)
+-- CREAR TU ESPACIO (sin SQL)
 -- ============================================================
-INSERT INTO public.organizations (
-  slug, nombre, tagline, rubro, sede, empleados, contacto, email, telefono,
-  servicios, primary_color, accent_color, estado
-) VALUES (
-  'espacio-critico',
-  'Espacio Crítico',
-  'Counseling organizacional',
-  'Consultoría organizacional',
-  'Buenos Aires, Argentina',
-  10,
-  'Ari Mangini',
-  'hola@espaciocritico.com.ar',
-  '+54 9 11 0000 0000',
-  ARRAY['Liderazgo Sostenible','Fortalecimiento de Equipos','Recuperación del Clima','Gestión de Conflictos','Prevención de Burnout','Onboarding','Campus Digital'],
-  '#0a0806',
-  '#c4a87e',
-  'activa'
-)
-ON CONFLICT (slug) DO NOTHING;
+-- El alta se hace desde la app: entrá a /empresas/crear (o tocá
+-- "¿Sos una empresa? Creá tu espacio" en el login) y completá el formulario.
+-- Eso crea la organization y te vincula como owner automáticamente.
+--
+-- Si ya ejecutaste una versión anterior de este script y quedó una fila de demo
+-- con slug 'espacio-critico', eliminala para poder crear la tuya desde la app:
+--    DELETE FROM public.organizations WHERE slug = 'espacio-critico';
 
 -- ============================================================
--- VINCULAR TU CUENTA (manual, luego de ejecutar este script)
+-- VINCULAR TU CUENTA (alternativa manual, solo si NO usás la app)
 -- ============================================================
--- Podés usar la MISMA cuenta de counselor/admin. NO hace falta cambiar el rol:
--- con solo insertarte como miembro de la organización ya tenés acceso a /empresa.
--- (Si preferís una cuenta exclusivamente empresa, ahí sí: UPDATE ... SET rol='empresa'.)
---
--- Vincular la cuenta como owner de Espacio Crítico:
+-- Con el onboarding de /empresas/crear no hace falta nada de esto.
+-- Si querés hacerlo a mano, con esta cuenta (misma de counselor/admin, sin cambiar rol):
 --    INSERT INTO public.organization_members (organization_id, user_id, rol)
 --    SELECT o.id, u.id, 'owner'
 --    FROM public.organizations o, public.users u
