@@ -97,44 +97,27 @@ export default function CrearEspacioPage() {
       return;
     }
 
-    const { error: insErr } = await supabase.from("organizations").insert({
-      slug: finalSlug,
-      nombre: nombre.trim(),
-      tagline: tagline.trim() || null,
-      rubro: rubro.trim() || null,
-      sede: sede.trim() || null,
-      contacto: contacto.trim() || null,
-      email: email.trim() || null,
-      telefono: telefono.trim() || null,
-      servicios,
-      primary_color: "#0a0806",
-      accent_color: accent,
-      cover_gradient: banner,
+    const res = await fetch("/api/organizations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug: finalSlug,
+        nombre: nombre.trim(),
+        tagline: tagline.trim() || null,
+        rubro: rubro.trim() || null,
+        sede: sede.trim() || null,
+        contacto: contacto.trim() || null,
+        email: email.trim() || null,
+        telefono: telefono.trim() || null,
+        servicios,
+        primary_color: "#0a0806",
+        accent_color: accent,
+        cover_gradient: banner,
+      }),
     });
-    if (insErr) {
-      setError("Error al crear: " + insErr.message);
-      setSaving(false);
-      return;
-    }
-
-    const { data: orgRow } = await supabase
-      .from("organizations")
-      .select("id")
-      .eq("slug", finalSlug)
-      .maybeSingle();
-    if (!orgRow) {
-      setError("No se pudo confirmar la creación del espacio.");
-      setSaving(false);
-      return;
-    }
-
-    const { error: membErr } = await supabase.from("organization_members").insert({
-      organization_id: orgRow.id,
-      user_id: user.id,
-      rol: "owner",
-    });
-    if (membErr) {
-      setError("Error al vincular tu cuenta: " + membErr.message);
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || "Error al crear el espacio.");
       setSaving(false);
       return;
     }

@@ -19,6 +19,24 @@
 
 ## Historial
 
+### [2026-08-17] — fix: v0.32.0 — alta de organización vía API (crea o reclama)
+
+**Prompt**: Error al crear: duplicate key value violates unique constraint "organizations_slug_key".
+
+**Acción esperada**: Nueva API `/api/organizations` que crea la organización + membresía con
+service role, y si el slug ya existe pero está huérfano (sin miembros), lo "reclama" para el
+usuario. El onboarding deja de hacer inserts directos y usa esta API.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK (ruta `/api/organizations`).
+
+**Archivos tocados**:
+- `app/api/organizations/route.ts` (NUEVO)
+- `app/empresas/crear/page.tsx` (MODIFICADO — usa la API)
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Probar el alta y el reclamo del espacio demo.
+
 ### [2026-08-17] — feat: v0.31.0 — login con contraseña para EMPRESA/PROFESIONAL, sin ADMIN en el hub
 
 **Prompt**: No quiero más el magic link para esto. Quiero el login con contraseña tanto para

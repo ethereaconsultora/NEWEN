@@ -1,5 +1,38 @@
 # Changelog — Newen
 
+## [0.32.0] — 2026-08-17
+
+### Tipo: FIX
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Error al crear organización: `duplicate key value violates unique constraint
+"organizations_slug_key"`. Ocurría porque quedaba la fila de demo en la base. Se agrega una
+API que crea la organización o, si el slug existe pero está huérfano, la "reclama" para el
+usuario.
+
+### Cambios realizados
+
+- [x] Nueva API `POST /api/organizations` (crea org + owner, o reclama org huérfana)
+- [x] El onboarding usa la API (deja de hacer inserts directos)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `app/api/organizations/route.ts` | NUEVO |
+| `app/empresas/crear/page.tsx` | MODIFICADO |
+
+---
+
+### Próximo paso
+Probar el alta/reclamo y seguir con el pago del plan.
+
+---
+
 ## [0.31.0] — 2026-08-17
 
 ### Tipo: FEATURE
