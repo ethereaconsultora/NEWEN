@@ -33,7 +33,7 @@ login con contraseña (el consultante conserva magic link).
 
 **Archivos tocados**: `app/page.tsx`, `app/auth/login/page.tsx`, `middleware.ts`.
 
-**Commit**: (COMPLETAR)
+**Commit**: `4f6f4d7`
 
 **Próximo paso**: Probar login con contraseña desde el hub para ambas áreas.
 
