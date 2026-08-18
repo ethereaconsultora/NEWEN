@@ -35,7 +35,7 @@ vista previa en vivo del espacio. La página pública usa `cover_gradient`.
 - `app/empresas/crear/page.tsx` (RECREADO)
 - `app/e/[slug]/page.tsx` (MODIFICADO)
 
-**Commit**: (COMPLETAR)
+**Commit**: `534c220`
 
 **Próximo paso**: Subida real de logo/banner a Storage, luego pago del plan.
 
