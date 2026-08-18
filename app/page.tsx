@@ -1,234 +1,201 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
-const CATEGORIAS = [
-  { label: "Crisis Vitales", q: "Crisis", img: "/images/crisis-vitales.jpeg" },
-  { label: "Duelo y Pérdidas", q: "Duelo", img: "/images/duelo-perdidas.jpg" },
-  { label: "Estrés y Ansiedad", q: "Ansiedad", img: "/images/estres-ansiedad.jpg" },
-  { label: "Autoestima y Crecimiento", q: "Crecimiento personal", img: "/images/autoestima-crecimiento.jpg" },
+type Access = { counselor: boolean; admin: boolean; empresa: boolean };
+
+const AREAS: { key: keyof Access; label: string; desc: string; href: string; icon: string }[] = [
+  {
+    key: "counselor",
+    label: "PROFESIONAL",
+    desc: "Panel del counselor · consultorio, agenda y comunidad",
+    href: "/panel",
+    icon: "🩺",
+  },
+  {
+    key: "empresa",
+    label: "EMPRESA",
+    desc: "Espacio comercial multicliente de tu organización",
+    href: "/empresa",
+    icon: "🏛️",
+  },
+  {
+    key: "admin",
+    label: "ADMIN",
+    desc: "Gestión total de la plataforma",
+    href: "/admin",
+    icon: "🛡️",
+  },
 ];
 
 export default function HomePage() {
+  const supabase = createClient();
+  const [loading, setLoading] = useState(true);
+  const [logged, setLogged] = useState(false);
+  const [access, setAccess] = useState<Access>({ counselor: false, admin: false, empresa: false });
+
+  useEffect(() => {
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      const { data: u } = await supabase.from("users").select("*").eq("id", user.id).single();
+      const { data: memb } = await supabase
+        .from("organization_members")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+      setLogged(true);
+      setAccess({
+        counselor: u?.rol === "counselor",
+        admin: u?.es_admin === true || u?.rol === "admin",
+        empresa: u?.rol === "empresa" || (Array.isArray(memb) && memb.length > 0),
+      });
+      setLoading(false);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "var(--nv-bg-base)",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "44px 16px 44px",
-      fontFamily: "var(--nv-font-body)",
-    }}>
-      {/* HEADER */}
-      <div style={{ textAlign: "center", marginBottom: 6 }}>
-        <h1 style={{
-          fontSize: 42,
-          fontWeight: 400,
-          fontFamily: "var(--nv-font-display)",
-          color: "var(--nv-text-primary)",
-          letterSpacing: -1,
-          margin: "0 0 4px",
-          lineHeight: 1,
-        }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "var(--nv-bg-base)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "48px 20px 56px",
+        fontFamily: "var(--nv-font-body)",
+      }}
+    >
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <h1
+          style={{
+            fontSize: 44,
+            fontWeight: 400,
+            fontFamily: "var(--nv-font-display)",
+            color: "var(--nv-text-primary)",
+            letterSpacing: -1,
+            margin: "0 0 6px",
+            lineHeight: 1,
+          }}
+        >
           Newen
         </h1>
-        <p style={{
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: "0.28em",
-          color: "var(--nv-accent)",
-          textTransform: "uppercase",
-          margin: 0,
-        }}>
-          Encontrá a tu counselor
+        <p
+          style={{
+            fontSize: 10.5,
+            fontWeight: 600,
+            letterSpacing: "0.26em",
+            color: "var(--nv-accent)",
+            textTransform: "uppercase",
+            margin: 0,
+          }}
+        >
+          ¿A qué área querés entrar?
         </p>
       </div>
 
-      <p style={{
-        fontSize: 13,
-        color: "var(--nv-text-secondary)",
-        textAlign: "center",
-        maxWidth: 280,
-        margin: "0 0 24px",
-        lineHeight: 1.7,
-      }}>
-        Elegí una situación y encontrá al profesional adecuado para vos.
-      </p>
+      {/* Áreas */}
+      {loading ? (
+        <span className="spinner" />
+      ) : (
+        <div style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column", gap: 14 }}>
+          {AREAS.map((a) => {
+            const enabled = access[a.key];
+            const clickable = !logged || enabled;
+            const href = logged
+              ? enabled
+                ? a.href
+                : null
+              : `/auth/magic-link?redirect=${encodeURIComponent(a.href)}`;
 
-      {/* 2x2 GRID */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 10,
-        width: "100%",
-        maxWidth: 390,
-        marginBottom: 28,
-      }}>
-        {CATEGORIAS.map((cat) => (
-          <Link
-            key={cat.q}
-            href={`/buscar?q=${encodeURIComponent(cat.q)}`}
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "flex-start",
-              aspectRatio: "1",
-              backgroundImage: `url(${cat.img})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              border: "1px solid rgba(0,0,0,0.06)",
-              borderRadius: 4,
-              textDecoration: "none",
-              padding: "14px",
-              position: "relative",
-              overflow: "hidden",
-              transition: "all 0.3s ease",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = "scale(1.03)";
-              e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.15)";
-              e.currentTarget.style.zIndex = "2";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.06)";
-              e.currentTarget.style.zIndex = "1";
-            }}
-          >
-            <span style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: "#FFFFFF",
-              letterSpacing: "0.06em",
-              lineHeight: 1.3,
-              textTransform: "uppercase",
-              textShadow: "0 1px 6px rgba(0,0,0,0.6)",
-              padding: "6px 12px",
-              background: "rgba(0,0,0,0.40)",
-              borderRadius: 2,
-              maxWidth: "100%",
-            }}>
-              {cat.label}
-            </span>
-          </Link>
-        ))}
-      </div>
+            const inner = (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  width: "100%",
+                  padding: "18px 20px",
+                  borderRadius: "var(--nv-radius-lg)",
+                  background: enabled ? "var(--nv-accent)" : "var(--nv-bg-card)",
+                  border: enabled ? "1.5px solid var(--nv-accent)" : "1px solid var(--nv-border)",
+                  color: enabled ? "#fff" : "var(--nv-text-primary)",
+                  opacity: clickable ? 1 : 0.5,
+                }}
+              >
+                <span style={{ fontSize: 26 }}>{a.icon}</span>
+                <span style={{ flex: 1 }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {a.label}
+                    {logged && !enabled && (
+                      <span style={{ fontSize: 11, fontWeight: 500, marginLeft: 8, opacity: 0.7 }}>
+                        · sin acceso
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: 12.5,
+                      opacity: 0.8,
+                      marginTop: 2,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {a.desc}
+                  </span>
+                </span>
+                <span style={{ fontSize: 18 }}>→</span>
+              </div>
+            );
 
-      {/* BOTÓN TALLERES */}
-      <Link
-        href="/talleres"
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "flex-start",
-          width: "100%",
-          maxWidth: 390,
-          height: 130,
-          backgroundImage: "url(/images/taller.jpeg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center bottom",
-          border: "1px solid rgba(0,0,0,0.06)",
-          borderRadius: 4,
-          textDecoration: "none",
-          padding: "16px",
-          marginBottom: 28,
-          transition: "all 0.3s",
-          position: "relative",
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = "scale(1.02)";
-          e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.12)";
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "none";
-        }}
-      >
-        <span style={{
-          fontSize: 14,
-          fontWeight: 700,
-          color: "#FFFFFF",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          textShadow: "0 1px 6px rgba(0,0,0,0.6)",
-          padding: "6px 12px",
-          background: "rgba(0,0,0,0.40)",
-          borderRadius: 2,
-        }}>
-          🎓 Talleres
-        </span>
-      </Link>
-
-      {/* DIVIDER */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", maxWidth: 390, marginBottom: 16 }}>
-        <hr style={{ flex: 1, border: "none", borderTop: "1px solid rgba(27,67,50,0.10)" }} />
-        <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.15em", color: "var(--nv-text-muted)", textTransform: "uppercase" }}>
-          o filtrá por
-        </span>
-        <hr style={{ flex: 1, border: "none", borderTop: "1px solid rgba(27,67,50,0.10)" }} />
-      </div>
-
-      {/* FORM */}
-      <form action="/buscar" method="GET" style={{ width: "100%", maxWidth: 390, display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <div style={{ flex: 1, position: "relative" }}>
-            <select name="modalidad" style={{ width: "100%", padding: "14px 36px 14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
-              <option value="">Modalidad</option>
-              <option value="online">Online</option>
-              <option value="presencial">Presencial</option>
-            </select>
-            <svg style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", opacity: 0.4 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
-          </div>
-          <div style={{ flex: 1, position: "relative" }}>
-            <select name="provincia" style={{ width: "100%", padding: "14px 36px 14px 16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, color: "var(--nv-text-primary)", fontSize: 13, fontFamily: "var(--nv-font-body)", outline: "none", appearance: "none", WebkitAppearance: "none", cursor: "pointer" }}>
-              <option value="">Región</option>
-              <option value="Buenos Aires">Buenos Aires</option>
-              <option value="CABA">CABA</option>
-              <option value="Córdoba">Córdoba</option>
-              <option value="Santa Fe">Santa Fe</option>
-              <option value="Mendoza">Mendoza</option>
-            </select>
-            <svg style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", opacity: 0.4 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
-          </div>
+            return clickable && href ? (
+              <Link key={a.key} href={href} style={{ textDecoration: "none" }}>
+                {inner}
+              </Link>
+            ) : (
+              <div key={a.key}>{inner}</div>
+            );
+          })}
         </div>
+      )}
 
-        <button type="submit" onClick={(e) => {
-          const f = (e.target as HTMLButtonElement).closest("form") as HTMLFormElement;
-          const m = f.querySelector<HTMLSelectElement>("[name='modalidad']");
-          const p = f.querySelector<HTMLSelectElement>("[name='provincia']");
-          if (m && !m.value) m.removeAttribute("name");
-          if (p && !p.value) p.removeAttribute("name");
-        }} style={{
-          width: "100%", padding: "17px 0",
-          background: "var(--nv-accent)", border: "none", borderRadius: 4,
-          color: "#FFFFFF", fontSize: 13, fontWeight: 700,
-          fontFamily: "var(--nv-font-body)", letterSpacing: "0.08em",
-          textTransform: "uppercase", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-          boxShadow: "0 4px 16px rgba(27,67,50,0.22)",
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          Buscar Counselors
-        </button>
-      </form>
-
-      <div style={{ marginTop: 28, textAlign: "center", display: "flex", justifyContent: "center", gap: 16 }}>
-        <a href="/auth/login" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          Counselor
-        </a>
-        <span style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>|</span>
-        <a href="/auth/login" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          Admin
-        </a>
-        <span style={{ fontSize: 10, color: "var(--nv-text-muted)" }}>|</span>
-        <a href="/postularse" style={{ fontSize: 10, fontWeight: 600, color: "var(--nv-text-secondary)", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          Postulate
-        </a>
+      {/* Acceso consultante */}
+      <div style={{ marginTop: 28, textAlign: "center" }}>
+        <Link
+          href="/buscar"
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: "var(--nv-accent)",
+            textDecoration: "none",
+          }}
+        >
+          ¿Buscás acompañamiento? Explorá counselors →
+        </Link>
       </div>
+
+      {!loading && !logged && (
+        <p style={{ fontSize: 12, color: "var(--nv-text-muted)", marginTop: 18, textAlign: "center" }}>
+          Al tocar un área te va a pedir iniciar sesión y te lleva directo a esa sección.
+        </p>
+      )}
     </div>
   );
 }

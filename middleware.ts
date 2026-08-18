@@ -140,18 +140,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // ── Redirección desde / a shell correcto ──
-    if (path === "/") {
-      if (esCounselor) {
-        return NextResponse.redirect(new URL("/panel", request.url));
-      }
-      if (esAdmin) {
-        return NextResponse.redirect(new URL("/admin", request.url));
-      }
-      if (esEmpresa) {
-        return NextResponse.redirect(new URL("/empresa", request.url));
-      }
-    }
+    // ── / es el hub de acceso: no se redirige automáticamente ──
   }
 
   return response;

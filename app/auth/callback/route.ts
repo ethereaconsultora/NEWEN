@@ -41,6 +41,11 @@ export async function GET(request: Request) {
           esEmpresa = Array.isArray(memb) && memb.length > 0;
         }
 
+        // Si venía con un destino válido (botón del hub), respetarlo.
+        if (next && next !== "/" && next.startsWith("/") && !next.startsWith("//")) {
+          return NextResponse.redirect(`${origin}${next}`);
+        }
+
         if (esCounselor) {
           return NextResponse.redirect(`${origin}/panel`);
         }

@@ -1,5 +1,43 @@
 # Changelog — Newen
 
+## [0.30.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+El usuario caía siempre en Profesional y no encontraba el acceso a Empresa. Se crea una
+**página principal (hub)** con botones grandes EMPRESA / PROFESIONAL / ADMIN, con accesos por
+rol/suscripción, y los logins se generan desde ahí respetando el destino elegido.
+
+### Cambios realizados
+
+- [x] `/` como hub con botones grandes por área (habilitados según rol)
+- [x] Middleware: sin redirect automático desde `/`
+- [x] Callback respeta el destino `next` elegido
+- [x] Magic-link pasa `redirect` como `next` y usa el origin real (no URL hardcodeada)
+- [x] Acceso consultante a `/buscar` conservado
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `app/page.tsx` | RECREADO — hub |
+| `middleware.ts` | MODIFICADO — sin redirect en / |
+| `app/auth/callback/route.ts` | MODIFICADO — respeta next |
+| `app/auth/magic-link/page.tsx` | MODIFICADO — redirect + origin |
+| `logs/2026-08-17-feature-v0.30.0.md` | NUEVO |
+
+---
+
+### Próximo paso
+Probar el flujo de acceso por botón y ajustar estilos del hub.
+
+---
+
 ## [0.29.0] — 2026-08-17
 
 ### Tipo: FEATURE

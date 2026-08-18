@@ -14,7 +14,15 @@ export default function MagicLinkPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setError(""); setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: "https://newen-nu.vercel.app/auth/callback", shouldCreateUser: true } });
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect") || "/";
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+          shouldCreateUser: true,
+        },
+      });
       if (error) throw error;
       setSuccess(true);
     } catch (err: unknown) {

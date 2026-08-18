@@ -19,6 +19,28 @@
 
 ## Historial
 
+### [2026-08-17] — feat: v0.30.0 — hub de acceso en la home (EMPRESA / PROFESIONAL / ADMIN)
+
+**Prompt**: Sigo ingresando desde el mismo lugar y caigo en Profesional; al poner /empresa me
+manda a magic link y vuelve a profesional. No tengo acceso a la página principal. Quiero que
+todos los logins se generen en la página principal con botones grandes y claros EMPRESA y
+PROFESIONAL, según rol o suscripción.
+
+**Acción esperada**: Convertir `/` en un hub con botones grandes por área (según rol), quitar
+el redirect automático de `/`, y que el magic-link/callback respeten el destino elegido.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/page.tsx` (RECREADO — hub)
+- `middleware.ts` (MODIFICADO)
+- `app/auth/callback/route.ts` (MODIFICADO)
+- `app/auth/magic-link/page.tsx` (MODIFICADO)
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Probar el flujo de acceso por botón y ajustar estilos.
+
 ### [2026-08-17] — feat: v0.29.0 — logo/banner + vista previa en el onboarding
 
 **Prompt**: "Seguimos en ese orden" → paso 1 de los próximos pasos: logo/banner +
