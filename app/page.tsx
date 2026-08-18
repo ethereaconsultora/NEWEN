@@ -21,13 +21,6 @@ const AREAS: { key: keyof Access; label: string; desc: string; href: string; ico
     href: "/empresa",
     icon: "🏛️",
   },
-  {
-    key: "admin",
-    label: "ADMIN",
-    desc: "Gestión total de la plataforma",
-    href: "/admin",
-    icon: "🛡️",
-  },
 ];
 
 export default function HomePage() {
@@ -115,7 +108,7 @@ export default function HomePage() {
               ? enabled
                 ? a.href
                 : null
-              : `/auth/magic-link?redirect=${encodeURIComponent(a.href)}`;
+              : `/auth/login?redirect=${encodeURIComponent(a.href)}`;
 
             const inner = (
               <div

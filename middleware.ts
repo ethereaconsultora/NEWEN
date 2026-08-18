@@ -79,7 +79,14 @@ export async function middleware(request: NextRequest) {
 
   // ── Sin sesión → solo rutas públicas ──
   if (!user && !isPublic) {
-    const loginUrl = new URL("/auth/magic-link", request.url);
+    // Áreas de empresa/profesional/admin → login con contraseña.
+    // Consultante (reservas, sesiones) → magic link sin contraseña.
+    const usaLogin =
+      path.startsWith("/panel") ||
+      path === "/empresa" ||
+      path.startsWith("/empresa/") ||
+      path.startsWith("/admin");
+    const loginUrl = new URL(usaLogin ? "/auth/login" : "/auth/magic-link", request.url);
     loginUrl.searchParams.set("redirect", path);
     return NextResponse.redirect(loginUrl);
   }

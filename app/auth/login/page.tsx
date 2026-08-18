@@ -24,8 +24,9 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // El middleware redirige según rol (y a /elegir-rol si la cuenta es dual).
-        router.push("/");
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect") || "/";
+        router.push(redirect);
         router.refresh();
       } else {
         if (!nombre.trim()) { setError("El nombre es obligatorio."); setLoading(false); return; }
@@ -65,7 +66,7 @@ export default function LoginPage() {
       <div style={{ background: "var(--nv-bg-card)", borderRadius: "var(--nv-radius-xl)", padding: 32, width: "100%", maxWidth: 380, boxShadow: "var(--nv-shadow)", border: "1px solid var(--nv-border)" }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div style={{ fontSize: 44, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", letterSpacing: -1 }}>Newen</div>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 4 }}>Profesionales</div>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 4 }}>Ingresá a tu área</div>
         </div>
 
         {/* TOGGLE Ingresar / Crear cuenta */}
@@ -160,6 +161,9 @@ export default function LoginPage() {
           </p>
           <Link href="/auth/magic-link" style={{ fontSize: 11, color: "var(--nv-text-muted)", textDecoration: "none" }}>
             ¿Sos consultante? Ingresá sin contraseña
+          </Link>
+          <Link href="/empresas/crear" style={{ fontSize: 11, color: "var(--nv-text-muted)", textDecoration: "none" }}>
+            ¿Sos una empresa? Creá tu espacio
           </Link>
         </div>
       </div>

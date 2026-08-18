@@ -19,6 +19,24 @@
 
 ## Historial
 
+### [2026-08-17] — feat: v0.31.0 — login con contraseña para EMPRESA/PROFESIONAL, sin ADMIN en el hub
+
+**Prompt**: No quiero más el magic link para esto. Quiero el login con contraseña tanto para
+EMPRESA como para PROFESIONAL. Sacá el ADMIN del hub (por ahora solo yo; después vemos cómo
+asigno otro admin).
+
+**Acción esperada**: Quitar ADMIN del hub; botones EMPRESA/PROFESIONAL llevan a `/auth/login`
+con redirect; el login respeta el destino; middleware manda `/panel`, `/empresa` y `/admin` al
+login con contraseña (el consultante conserva magic link).
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: `app/page.tsx`, `app/auth/login/page.tsx`, `middleware.ts`.
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Probar login con contraseña desde el hub para ambas áreas.
+
 ### [2026-08-17] — feat: v0.30.0 — hub de acceso en la home (EMPRESA / PROFESIONAL / ADMIN)
 
 **Prompt**: Sigo ingresando desde el mismo lugar y caigo en Profesional; al poner /empresa me

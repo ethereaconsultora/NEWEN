@@ -1,5 +1,42 @@
 # Changelog — Newen
 
+## [0.31.0] — 2026-08-17
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Quitar el magic link del flujo de acceso de EMPRESA/PROFESIONAL: ambos usan el login con
+contraseña (`/auth/login`). Se quita el botón ADMIN del hub (por ahora solo el fundador, que
+entra por URL directa o por el switch).
+
+### Cambios realizados
+
+- [x] Hub sin ADMIN (solo EMPRESA y PROFESIONAL)
+- [x] Botones del hub → `/auth/login?redirect=...`
+- [x] Login respeta el destino `redirect` al ingresar
+- [x] Subtítulo del login neutro ("Ingresá a tu área")
+- [x] Link "¿Sos una empresa? Creá tu espacio" en el login
+- [x] Middleware: `/panel`, `/empresa`, `/admin` → login con contraseña (consultante conserva magic link)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `app/page.tsx` | MODIFICADO — sin ADMIN, login con contraseña |
+| `app/auth/login/page.tsx` | MODIFICADO — redirect + subtítulo + link empresa |
+| `middleware.ts` | MODIFICADO — login vs magic link por área |
+
+---
+
+### Próximo paso
+Probar login con contraseña desde el hub para ambas áreas.
+
+---
+
 ## [0.30.0] — 2026-08-17
 
 ### Tipo: FEATURE
