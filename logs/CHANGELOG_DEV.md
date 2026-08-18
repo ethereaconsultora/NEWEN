@@ -37,7 +37,7 @@ el redirect automático de `/`, y que el magic-link/callback respeten el destino
 - `app/auth/callback/route.ts` (MODIFICADO)
 - `app/auth/magic-link/page.tsx` (MODIFICADO)
 
-**Commit**: (COMPLETAR)
+**Commit**: `b14e2f4`
 
 **Próximo paso**: Probar el flujo de acceso por botón y ajustar estilos.
 
