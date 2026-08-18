@@ -33,7 +33,7 @@ usuario. El onboarding deja de hacer inserts directos y usa esta API.
 - `app/api/organizations/route.ts` (NUEVO)
 - `app/empresas/crear/page.tsx` (MODIFICADO — usa la API)
 
-**Commit**: (COMPLETAR)
+**Commit**: `7c3edb9`
 
 **Próximo paso**: Probar el alta y el reclamo del espacio demo.
 
