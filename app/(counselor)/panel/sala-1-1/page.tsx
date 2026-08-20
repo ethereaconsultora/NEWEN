@@ -81,7 +81,7 @@ export default function SalaUnoAUnoPage() {
     const res = await fetch("/api/daily/room", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "sala-1-1" }),
+      body: JSON.stringify({ reuse: true }),
     });
     const data = await res.json();
     setCreando(false);
@@ -95,7 +95,15 @@ export default function SalaUnoAUnoPage() {
     setRoomUrl(data.roomUrl || data.url || "");
   }
 
-  function salir() {
+  async function salir() {
+    // Borra la sala para no acumular salas no usadas (el cupo queda libre).
+    if (roomName) {
+      await fetch("/api/daily/room", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: roomName }),
+      }).catch(() => null);
+    }
     setRoomUrl("");
     setLink("");
     setRoomName("");

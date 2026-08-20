@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-20] — feat: sala 1-1 — reutilizar sala propia + borrar salas no usadas (sin colisiones)
+
+**Prompt**: (1) Sí a optimizar: borrar salas no usadas y reutilizar siempre que eso no genere que
+otros pisen una sala en simultáneo. (2) Consulta de arquitectura broadcast (OBS/YouTube/privacidad).
+
+**Acción esperada**: En `/api/daily/room`: con `{ reuse: true }` la sala 1-1 usa un nombre
+determinístico por profesional (`newen-1-1-<uid>`); si ya existe y está VACÍA (presence 0) se
+reutiliza (mismo enlace, sin acumular); si está ocupada se crea una nueva con sufijo (nadie pisa la
+sala). Nuevo `DELETE /api/daily/room` para borrar la sala al "Finalizar y salir" y liberar cupo.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/api/daily/room/route.ts` (RECREADO — reuse + presence + DELETE)
+- `app/(counselor)/panel/sala-1-1/page.tsx` (MODIFICADO — reuse + DELETE al salir)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar la sala tras el deploy (reutilización + borrado).
+
 ### [2026-08-20] — root cause: sala 1-1 Daily — falta método de pago en la cuenta
 
 **Prompt**: "Missing payment method. Please visit the Daily Dashboard and add a payment method to
