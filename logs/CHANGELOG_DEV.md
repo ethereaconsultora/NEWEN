@@ -19,6 +19,29 @@
 
 ## Historial
 
+### [2026-08-19] — fix: v0.35.0 — restaurar menús del panel Empresa + mostrar logo/banner
+
+**Prompt**: (1) No muestra el banner ni el logo del espacio creado. (2) Le faltan "mil menús" que
+estaban desarrollados en la maqueta. (3) Terminantemente prohibido quitar cualquier RLS de la base.
+
+**Acción esperada**: Reescribir el dashboard con las 6 pestañas de la maqueta + archivados +
+mensajería interna + informes PDF; mostrar logo/banner en vidriera, panel y sitio público; modo
+edición del espacio con errores de subida visibles; `PATCH /api/organizations`. Sin tocar RLS.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. RLS intacto.
+
+**Archivos tocados**:
+- `app/(empresa)/empresa/page.tsx` (RECREADO)
+- `app/(empresa)/empresa.module.css` (MODIFICADO)
+- `app/empresas/page.tsx` (MODIFICADO)
+- `app/empresas/crear/page.tsx` (MODIFICADO)
+- `app/api/organizations/route.ts` (MODIFICADO — PATCH)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar `/empresa` y re-subir logo/banner desde "🖼 Editar mi espacio" si quedaron
+sin guardar en el alta original.
+
 ### [2026-08-19] — feat: v0.33.0 + v0.34.0 — apariencia global + rediseño alta empresa
 
 **Prompt**: (1) Arreglar que la apariencia de Anima no persiste y aplicarla a todo el perfil,

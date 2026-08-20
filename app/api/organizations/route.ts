@@ -150,3 +150,63 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true, slug });
 }
+
+/**
+ * PATCH /api/organizations
+ * Actualiza los datos (incluido logo/banner) de la organización a la que el
+ * usuario está vinculado como miembro. No cambia el slug ni la membresía.
+ */
+export async function PATCH(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Debés iniciar sesión." }, { status: 401 });
+  }
+
+  let body: Record<string, any>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Body inválido." }, { status: 400 });
+  }
+
+  const admin = createAdminClient();
+
+  const { data: memb } = await admin
+    .from("organization_members")
+    .select("organization_id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (!memb) {
+    return NextResponse.json({ error: "No tenés una organización vinculada." }, { status: 404 });
+  }
+
+  const upd: Record<string, any> = {};
+  if (body.nombre !== undefined) upd.nombre = String(body.nombre || "").trim();
+  if (body.slogan !== undefined) upd.slogan = body.slogan || null;
+  if (body.tagline !== undefined) upd.tagline = body.tagline || null;
+  if (body.rubro !== undefined) upd.rubro = body.rubro || null;
+  if (body.sede !== undefined) upd.sede = body.sede || null;
+  if (body.contacto !== undefined) upd.contacto = body.contacto || null;
+  if (body.email !== undefined) upd.email = body.email || null;
+  if (body.telefono !== undefined) upd.telefono = body.telefono || null;
+  if (body.servicios !== undefined) upd.servicios = Array.isArray(body.servicios) ? body.servicios : [];
+  if (body.primary_color !== undefined) upd.primary_color = body.primary_color;
+  if (body.accent_color !== undefined) upd.accent_color = body.accent_color;
+  if (body.font_id !== undefined) upd.font_id = body.font_id;
+  if (body.font_size !== undefined) upd.font_size = body.font_size;
+  if (body.logo_url !== undefined) upd.logo_url = body.logo_url || null;
+  if (body.cover_url !== undefined) upd.cover_url = body.cover_url || null;
+
+  const { error } = await admin.from("organizations").update(upd).eq("id", memb.organization_id);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}

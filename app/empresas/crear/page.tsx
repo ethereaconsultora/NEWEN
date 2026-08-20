@@ -37,6 +37,7 @@ export default function CrearEspacioPage() {
   const supabase = createClient();
 
   const [user, setUser] = useState<any>(undefined);
+  const [org, setOrg] = useState<any | null>(null);
   const [nombre, setNombre] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -64,7 +65,33 @@ export default function CrearEspacioPage() {
   const tamano = getTamano(sizeId);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null));
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user ?? null);
+      if (!data.user) return;
+      const res = await fetch("/api/organizations/mine");
+      const j = await res.json().catch(() => ({ org: null }));
+      const o = j.org;
+      setOrg(o ?? null);
+      if (o) {
+        setNombre(o.nombre ?? "");
+        setSlug(o.slug ?? "");
+        setSlogan(o.slogan ?? "");
+        setTagline(o.tagline ?? "");
+        setRubro(o.rubro ?? "");
+        setSede(o.sede ?? "");
+        setContacto(o.contacto ?? "");
+        setEmail(o.email ?? "");
+        setTelefono(o.telefono ?? "");
+        setServicios((o.servicios ?? []).join("\n"));
+        setFontId(o.font_id || "newen");
+        setSizeId(o.font_size || "mediana");
+        const t = TEMAS.find((x) => x.accent === o.accent_color);
+        if (t) setTemaId(t.id);
+        if (o.logo_url) setLogoPreview(o.logo_url);
+        if (o.cover_url) setBannerPreview(o.cover_url);
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,13 +114,13 @@ export default function CrearEspacioPage() {
     setBannerPreview(URL.createObjectURL(f));
   }
 
-  async function uploadFile(file: File, folder: string): Promise<string | null> {
+  async function uploadFile(file: File, folder: string): Promise<{ url: string | null; error: string | null }> {
     const ext = file.name.split(".").pop() || "png";
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage.from("organizations").upload(path, file, { upsert: true });
-    if (error) return null;
+    if (error) return { url: null, error: error.message };
     const { data } = supabase.storage.from("organizations").getPublicUrl(path);
-    return data.publicUrl;
+    return { url: data.publicUrl, error: null };
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -113,38 +140,58 @@ export default function CrearEspacioPage() {
       return;
     }
 
-    let logo_url: string | null = null;
-    let cover_url: string | null = null;
-    if (logoFile) logo_url = await uploadFile(logoFile, "logos");
-    if (bannerFile) cover_url = await uploadFile(bannerFile, "banners");
+    let logo_url: string | null = org?.logo_url ?? null;
+    let cover_url: string | null = org?.cover_url ?? null;
+    if (logoFile) {
+      const r = await uploadFile(logoFile, "logos");
+      if (r.error) {
+        setError("No se pudo subir el logo: " + r.error);
+        setSaving(false);
+        return;
+      }
+      logo_url = r.url;
+    }
+    if (bannerFile) {
+      const r = await uploadFile(bannerFile, "banners");
+      if (r.error) {
+        setError("No se pudo subir el banner: " + r.error);
+        setSaving(false);
+        return;
+      }
+      cover_url = r.url;
+    }
 
     const serviciosArr = servicios
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const body: Record<string, any> = {
+      nombre: nombre.trim(),
+      slogan: slogan.trim() || null,
+      tagline: tagline.trim() || null,
+      rubro: rubro.trim() || null,
+      sede: sede.trim() || null,
+      contacto: contacto.trim() || null,
+      email: email.trim() || null,
+      telefono: telefono.trim() || null,
+      servicios: serviciosArr,
+      primary_color: "#0a0806",
+      accent_color: tema.accent,
+      logo_url,
+      cover_url,
+      font_id: fontId,
+      font_size: sizeId,
+    };
+    if (!org) {
+      body.slug = finalSlug;
+      body.cover_gradient = bannerFile ? null : FALLBACK_COVER;
+    }
+
     const res = await fetch("/api/organizations", {
-      method: "POST",
+      method: org ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug: finalSlug,
-        nombre: nombre.trim(),
-        slogan: slogan.trim() || null,
-        tagline: tagline.trim() || null,
-        rubro: rubro.trim() || null,
-        sede: sede.trim() || null,
-        contacto: contacto.trim() || null,
-        email: email.trim() || null,
-        telefono: telefono.trim() || null,
-        servicios: serviciosArr,
-        primary_color: "#0a0806",
-        accent_color: tema.accent,
-        cover_gradient: bannerFile ? null : FALLBACK_COVER,
-        logo_url,
-        cover_url,
-        font_id: fontId,
-        font_size: sizeId,
-      }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -212,7 +259,7 @@ export default function CrearEspacioPage() {
           ← Volver a la vidriera
         </Link>
         <h1 style={{ fontFamily: "var(--nv-font-display)", fontSize: "clamp(26px,4vw,38px)", lineHeight: 1.1, margin: "16px 0 6px" }}>
-          Creá el espacio de tu organización
+          {org ? "Editá el espacio de tu organización" : "Creá el espacio de tu organización"}
         </h1>
         <p style={{ color: "var(--nv-text-secondary)", marginBottom: 28, fontSize: 14 }}>
           Subí tu logo y banner, y elegí la apariencia. La vista previa se actualiza al instante.
@@ -352,7 +399,7 @@ export default function CrearEspacioPage() {
 
             <button type="submit" disabled={saving}
               style={{ width: "100%", marginTop: 22, background: "var(--nv-accent)", color: "#fff", border: "none", borderRadius: "var(--nv-radius-md)", padding: "14px", fontSize: 15, fontWeight: 600, cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
-              {saving ? "Creando…" : "Crear mi espacio"}
+              {saving ? (org ? "Guardando…" : "Creando…") : org ? "Guardar cambios" : "Crear mi espacio"}
             </button>
           </form>
 

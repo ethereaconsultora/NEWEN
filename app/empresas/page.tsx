@@ -104,24 +104,63 @@ export default async function EmpresasVitrinaPage() {
                   background: "var(--nv-bg-card)",
                   border: "1px solid var(--nv-border)",
                   borderRadius: "var(--nv-radius-lg)",
-                  padding: 22,
+                  padding: 0,
+                  overflow: "hidden",
                   transition: "transform .15s, box-shadow .15s",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span
+                {o.cover_url ? (
+                  <img
+                    src={o.cover_url}
+                    alt=""
+                    style={{ width: "100%", height: 110, objectFit: "cover", display: "block" }}
+                  />
+                ) : (
+                  <div
                     style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      background: o.accent_color || "#c4a87e",
-                      flexShrink: 0,
+                      width: "100%",
+                      height: 110,
+                      background: o.cover_gradient || `linear-gradient(135deg, ${o.primary_color || "#0a0806"}, ${o.accent_color || "#c4a87e"})`,
                     }}
                   />
-                  <span style={{ fontFamily: "var(--nv-font-display)", fontSize: 20 }}>
-                    {o.nombre}
-                  </span>
-                </div>
+                )}
+                <div style={{ padding: 22 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    {o.logo_url ? (
+                      <img
+                        src={o.logo_url}
+                        alt={o.nombre}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          objectFit: "contain",
+                          borderRadius: 8,
+                          background: "#fff",
+                          flexShrink: 0,
+                        }}
+                      />
+                    ) : (
+                      <span
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 8,
+                          background: o.accent_color || "#c4a87e",
+                          color: "#0d0b09",
+                          display: "grid",
+                          placeItems: "center",
+                          fontFamily: "var(--nv-font-display)",
+                          fontSize: 17,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {(o.nombre ?? "E").charAt(0)}
+                      </span>
+                    )}
+                    <span style={{ fontFamily: "var(--nv-font-display)", fontSize: 20 }}>
+                      {o.nombre}
+                    </span>
+                  </div>
                 {o.tagline && (
                   <div style={{ fontSize: 13, color: "var(--nv-text-secondary)", marginBottom: 6 }}>
                     {o.tagline}
@@ -157,6 +196,7 @@ export default async function EmpresasVitrinaPage() {
                   }}
                 >
                   Ver espacio →
+                </div>
                 </div>
               </Link>
             ))}

@@ -132,6 +132,52 @@
 
 .empty { color: var(--ec-muted); }
 
+/* ── Logo / cover ── */
+.brandRow { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.orgLogo { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; background: #fff; flex-shrink: 0; }
+.brandMark { width: 28px; height: 28px; border: 1px solid var(--ec-ac); color: var(--ec-ac); display: grid; place-items: center; font-family: Georgia, serif; font-size: 14px; flex-shrink: 0; }
+.coverStrip { width: 100%; height: 130px; object-fit: cover; display: block; }
+.coverFallback { width: 100%; height: 130px; background: linear-gradient(135deg, #1a1710 0%, #0a0806 60%, #3e3528 130%); }
+
+/* ── Informes (PDFs) ── */
+.reportRow { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--ec-panel-border); flex-wrap: wrap; }
+.reportTitle { font-size: 14px; color: var(--ec-text); font-weight: 600; }
+.reportMeta { font-size: 11.5px; color: var(--ec-dim); margin-top: 3px; }
+.btnPdf { background: transparent; border: 1px solid var(--ec-ac); color: var(--ec-ac); padding: 7px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.btnPdf:hover { background: var(--ec-ac-dim); }
+
+/* ── Agenda ── */
+.agendaItem { background: var(--ec-card); border: 1px solid var(--ec-card-border); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
+.agendaItem strong { font-size: 13px; color: var(--ec-text); }
+.agendaWhen { font-size: 11px; color: var(--ec-ac); margin-top: 4px; }
+
+/* ── Tareas ── */
+.taskRow { background: var(--ec-card); border: 1px solid var(--ec-card-border); border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.taskHead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.taskTitle { font-size: 14px; color: var(--ec-text); font-weight: 600; }
+.badge { font-size: 10.5px; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+.badgePend { background: rgba(158,147,130,0.15); color: var(--ec-muted); border: 1px solid var(--ec-panel-border); }
+.badgeCurso { background: rgba(196,168,126,0.15); color: var(--ec-ac); border: 1px solid var(--ec-ac); }
+.badgeDone { background: rgba(90,138,98,0.2); color: var(--ec-green); border: 1px solid var(--ec-green); }
+.anotList { margin-top: 10px; }
+.anot { font-size: 12px; color: var(--ec-muted); padding: 5px 0 5px 12px; border-left: 2px solid var(--ec-panel-border); margin-bottom: 4px; }
+.anotForm { display: flex; gap: 8px; margin-top: 10px; }
+.anotInput { flex: 1; background: #0d0b09; border: 1px solid var(--ec-panel-border); border-radius: 6px; padding: 8px 12px; color: var(--ec-text); font-size: 12.5px; outline: none; font-family: inherit; }
+.anotInput:focus { border-color: var(--ec-ac); }
+
+/* ── Mensajería ── */
+.msgThread { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px; }
+.msgBubble { max-width: 78%; padding: 9px 13px; border-radius: 12px; font-size: 12.5px; line-height: 1.5; }
+.msgMe { align-self: flex-end; background: var(--ec-ac); color: #0d0b09; border-bottom-right-radius: 3px; }
+.msgOther { align-self: flex-start; background: var(--ec-card); border: 1px solid var(--ec-card-border); color: var(--ec-text); border-bottom-left-radius: 3px; }
+.msgMeta { font-size: 10px; color: var(--ec-dim); margin-top: 3px; }
+.msgForm { display: flex; gap: 8px; }
+.derivBox { background: var(--ec-card); border: 1px solid var(--ec-card-border); border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px; color: var(--ec-muted); }
+.derivBox strong { color: var(--ec-ac); font-weight: 600; }
+.empFichaItem { background: var(--ec-card); border: 1px solid var(--ec-card-border); border-radius: 8px; padding: 10px 12px; }
+.empFichaK { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ec-dim); margin-bottom: 3px; }
+.empFichaV { font-size: 13px; color: var(--ec-text); white-space: pre-wrap; }
+
 @media (max-width: 900px) {
   .grid3, .grid2, .empGrid, .grid2form { grid-template-columns: 1fr; }
   .content, .header { padding-left: 16px; padding-right: 16px; }
