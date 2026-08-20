@@ -19,6 +19,28 @@
 
 ## Historial
 
+### [2026-08-20] — fix: sala 1-1 — reemplazar daily-js por iframe Prebuilt
+
+**Prompt**: Tras el fix anterior, daily-js seguía fallando: "No se pudo iniciar la videollamada:
+error desconocido" (la sala sí se creaba bien).
+
+**Causa**: daily-js crea el iframe insertándolo manualmente en un `<div>` que React también
+gestiona; el re-render de React borra el iframe y `join()` falla.
+
+**Acción esperada**: Reemplazar daily-js por el iframe Prebuilt (URL `https://<dominio>/prebuilt?
+roomUrl=...` generada por la API con el origen derivado de la URL de la sala), renderizado por
+React directamente. Desinstalar `@daily-co/daily-js`.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK (sala 1-1 vuelve a ~2 kB).
+
+**Archivos tocados**:
+- `app/(counselor)/panel/sala-1-1/page.tsx` (RECREADO — iframe Prebuilt)
+- `package.json` (sin `@daily-co/daily-js`)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar la sala 1-1 tras el deploy.
+
 ### [2026-08-20] — fix: sala 1-1 Daily.co — "The meeting you're trying to join does not exist"
 
 **Prompt**: Al crear la sala 1-1 desde el perfil profesional, Daily muestra "The meeting you're trying

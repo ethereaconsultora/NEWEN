@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import DailyIframe from "@daily-co/daily-js";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 /**
  * Sala 1-1 (Daily.co) para el área de profesionales.
- * Usa daily-js (vía oficial recomendada): crea la sala vía /api/daily/room
- * y la monta con createFrame() + join() sobre la URL que devuelve Daily.
+ * Crea la sala vía /api/daily/room y la muestra con el iframe Prebuilt
+ * que devuelve la API (origen derivado de la URL de la sala → sin
+ * desajustes de dominio ni "meeting does not exist").
+ * El iframe se renderiza por React (sin manipular el DOM a mano).
  */
 export default function SalaUnoAUnoPage() {
   const supabase = createClient();
-  const frameRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const [nombre, setNombre] = useState("");
   const [creando, setCreando] = useState(false);
-  const [activa, setActiva] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
   const [link, setLink] = useState("");
   const [roomName, setRoomName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,21 +27,14 @@ export default function SalaUnoAUnoPage() {
       const { data: u } = await supabase.from("users").select("nombre").eq("id", uid).single();
       setNombre(u?.nombre ?? "");
     })();
-    return () => {
-      try {
-        frameRef.current?.destroy();
-      } catch {
-        // ya destruido
-      }
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function iniciar() {
     setError(null);
     setCreando(true);
+    setIframeUrl("");
     setLink("");
-    setActiva(false);
 
     const res = await fetch("/api/daily/room", {
       method: "POST",
@@ -56,47 +48,13 @@ export default function SalaUnoAUnoPage() {
       return;
     }
 
-    const roomUrl = data.roomUrl || data.url || "";
     setRoomName(data.name);
-    setLink(roomUrl);
-
-    // Montar la llamada con daily-js sobre la URL que devuelve Daily.
-    try {
-      frameRef.current?.destroy();
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-        const call = DailyIframe.createFrame(containerRef.current, {
-          showLeaveButton: true,
-          iframeStyle: {
-            width: "100%",
-            height: "72vh",
-            border: "none",
-            borderRadius: "16px",
-          },
-        });
-        frameRef.current = call;
-        await call.join({ url: roomUrl, userName: nombre || "Profesional" });
-        setActiva(true);
-      }
-    } catch (e: any) {
-      setError("No se pudo iniciar la videollamada: " + (e?.message || "error desconocido"));
-      try {
-        frameRef.current?.destroy();
-      } catch {
-        // ignorar
-      }
-    }
+    setLink(data.roomUrl || data.url || "");
+    setIframeUrl(data.url || "");
   }
 
   function finalizar() {
-    try {
-      frameRef.current?.leave();
-      frameRef.current?.destroy();
-    } catch {
-      // ignorar
-    }
-    frameRef.current = null;
-    setActiva(false);
+    setIframeUrl("");
     setLink("");
     setRoomName("");
   }
@@ -120,7 +78,7 @@ export default function SalaUnoAUnoPage() {
         )}
       </p>
 
-      {!activa && (
+      {!iframeUrl && (
         <button
           onClick={iniciar}
           disabled={creando}
@@ -206,25 +164,31 @@ export default function SalaUnoAUnoPage() {
         </div>
       )}
 
-      <div ref={containerRef} />
-
-      {activa && (
-        <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-          <button
-            onClick={finalizar}
-            style={{
-              background: "none",
-              border: "1px solid var(--nv-border-strong)",
-              color: "var(--nv-text-secondary)",
-              borderRadius: "var(--nv-radius-sm)",
-              padding: "9px 16px",
-              fontSize: 12.5,
-              cursor: "pointer",
-            }}
-          >
-            📵 Finalizar y salir
-          </button>
-        </div>
+      {iframeUrl && (
+        <>
+          <iframe
+            src={iframeUrl}
+            allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write"
+            style={{ width: "100%", height: "72vh", border: "none", borderRadius: "var(--nv-radius-lg)" }}
+            allowFullScreen
+          />
+          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <button
+              onClick={finalizar}
+              style={{
+                background: "none",
+                border: "1px solid var(--nv-border-strong)",
+                color: "var(--nv-text-secondary)",
+                borderRadius: "var(--nv-radius-sm)",
+                padding: "9px 16px",
+                fontSize: 12.5,
+                cursor: "pointer",
+              }}
+            >
+              📵 Finalizar y salir
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
