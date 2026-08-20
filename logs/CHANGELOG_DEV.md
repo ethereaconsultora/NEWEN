@@ -43,7 +43,7 @@ apariencia; componente `LogoNewen`.
 - `app/api/organizations/route.ts` (MODIFICADO)
 - `components/LogoNewen.tsx` (NUEVO) + hub/login/magic-link
 
-**Commit**: (COMPLETAR)
+**Commit**: `0955f69`
 
 **Próximo paso**: Ejecutar v0.33.0 y v0.34.0 en Supabase; guardar el logo como
 `public/logo-newen.png`; probar alta y apariencia.
