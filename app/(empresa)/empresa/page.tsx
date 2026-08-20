@@ -51,32 +51,18 @@ export default function EmpresaDashboard() {
 
   async function load() {
     setLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-    const { data: member } = await supabase
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (!member) {
-      setLoading(false);
-      return;
-    }
-    const { data: orgData } = await supabase
-      .from("organizations")
-      .select("*")
-      .eq("id", member.organization_id)
-      .maybeSingle();
+    const res = await fetch("/api/organizations/mine");
+    const data = await res.json().catch(() => ({ org: null }));
+    const orgData = data.org;
     setOrg(orgData ?? null);
+    if (!orgData) {
+      setLoading(false);
+      return;
+    }
     const { data: clientsData } = await supabase
       .from("organization_clients")
       .select("*")
-      .eq("organization_id", member.organization_id)
+      .eq("organization_id", orgData.id)
       .eq("archivado", false)
       .order("nombre");
     setClients(clientsData ?? []);
