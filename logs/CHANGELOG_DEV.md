@@ -19,6 +19,31 @@
 
 ## Historial
 
+### [2026-08-20] — feat: v0.37.0 — Campus digital real + videollamadas (Jitsi grupal / Daily 1-1)
+
+**Prompt**: Diseñar el campus según la maqueta y la necesidad de videollamada: Daily.co para el
+área profesionales (1-1) y Jitsi Meet + OBS en servidores pagos para el campus. ¿Qué conviene hacer
+ahora? Se acuerda el Paso 1 completo (campus real + salas, sin infraestructura paga).
+
+**Acción esperada**: Schema `campus_*` con RLS; `/empresa/campus` real (diseño de maqueta, nav
+lateral); salas Jitsi (grupal) y Daily.co (1-1); `/api/daily/room`; tab "Sala 1-1" en /panel.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. RLS intacto.
+
+**Archivos tocados**:
+- `spec/init_v0.37.0_campus.sql` (NUEVO)
+- `app/(empresa)/empresa/campus/page.tsx` (RECREADO)
+- `app/(empresa)/empresa.module.css` (MODIFICADO)
+- `app/api/daily/room/route.ts` (NUEVO)
+- `app/(counselor)/panel/sala-1-1/page.tsx` (NUEVO)
+- `app/(counselor)/layout.tsx` (MODIFICADO)
+
+**Commit**: por registrar
+
+**Próximo paso**: ejecutar `init_v0.37.0_campus.sql` en Supabase; configurar
+`NEXT_PUBLIC_DAILY_DOMAIN` + `DAILY_API_KEY` (y `NEXT_PUBLIC_JITSI_BASE`). Fase 2: Jitsi en Hetzner
++ OBS/streaming en DigitalOcean.
+
 ### [2026-08-20] — fix: v0.36.0 — recursión infinita en RLS de organization_members
 
 **Prompt**: `Error al cargar: infinite recursion detected in policy for relation

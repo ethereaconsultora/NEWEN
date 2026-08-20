@@ -17,6 +17,7 @@ const TABS = [
   { href: "/panel/notificaciones", label: "Notif.", icon: "bell" },
   { href: "/panel/muro", label: "Muro", icon: "users" },
   { href: "/panel/talleres", label: "Talleres", icon: "workshop" },
+  { href: "/panel/sala-1-1", label: "Sala 1-1", icon: "video" },
   { href: "/panel/apariencia", label: "Apariencia", icon: "palette" },
 ];
 
@@ -66,6 +67,13 @@ function Icon({ name, active }: { name: string; active: boolean }) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 22a10 10 0 1 1 10-10c0 2-1 3-2.5 3-1.5 0-2-1-3-1.5-.8-.4-1.5-.5-2.5-.5a4 4 0 0 0 0 8c1 0 1 .4 0 1z" />
           <circle cx="7.5" cy="11.5" r="1" /><circle cx="10.5" cy="7.5" r="1" /><circle cx="15" cy="7.5" r="1" />
+        </svg>
+      );
+    case "video":
+      return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="23 7 16 12 23 17 23 7" />
+          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
         </svg>
       );
     default:
