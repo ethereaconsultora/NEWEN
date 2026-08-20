@@ -33,7 +33,7 @@ propio `SELECT`. Sin desactivar RLS.
 - `spec/init_v0.36.0_fix_rls_recursion.sql` (NUEVO)
 - `spec/init_v0.27.0_empresas.sql` (MODIFICADO — política corregida)
 
-**Commit**: por registrar
+**Commit**: `1c02cd8`
 
 **Próximo paso**: ejecutar `init_v0.36.0_fix_rls_recursion.sql` en Supabase y volver a dar de alta
 un cliente.
@@ -56,10 +56,76 @@ edición del espacio con errores de subida visibles; `PATCH /api/organizations`.
 - `app/empresas/crear/page.tsx` (MODIFICADO)
 - `app/api/organizations/route.ts` (MODIFICADO — PATCH)
 
-**Commit**: por registrar
+**Commit**: `6e725a5`
 
 **Próximo paso**: probar `/empresa` y re-subir logo/banner desde "🖼 Editar mi espacio" si quedaron
 sin guardar en el alta original.
+
+### [2026-08-19] — fix: detectar organización del usuario vía API (service role)
+
+**Prompt**: El panel `/empresa` seguía mostrando "Sin organización vinculada" pese a que el
+usuario era miembro (el lookup client-side con RLS podía dar falso negativo).
+
+**Acción esperada**: Nueva `GET /api/organizations/mine` que devuelve la organización del usuario
+con service role; el dashboard pasa a usarla.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/api/organizations/mine/route.ts` (NUEVO)
+- `app/(empresa)/empresa/page.tsx` (MODIFICADO)
+
+**Commit**: `b76c2a7`
+
+**Próximo paso**: Probar `/empresa` tras el deploy.
+
+### [2026-08-19] — fix: slug existente + usuario miembro → redirigir en vez de 409
+
+**Prompt**: `409 "slug ya está en uso"` al crear el espacio, cuando en realidad el usuario ya era
+miembro de esa organización.
+
+**Acción esperada**: En `POST /api/organizations`, si el slug ya existe y el usuario es miembro,
+devolver `{ok, already}` y redirigir a `/empresa` en vez de devolver error.
+
+**Resultado**: Éxito.
+
+**Archivos tocados**: `app/api/organizations/route.ts`, `app/empresas/crear/page.tsx`.
+
+**Commit**: `a2baebb`
+
+**Próximo paso**: Probar el alta con un slug ya existente.
+
+### [2026-08-19] — feat: logo de Newen en hub/login/magic-link
+
+**Prompt**: Usar el logo de Newen adjunto (`logo-hd.jpg`).
+
+**Acción esperada**: Componente `LogoNewen` (imagen con fallback a texto) aplicado al hub, login
+y magic-link; archivo copiado a `public/logo-newen.jpg`.
+
+**Resultado**: Éxito.
+
+**Archivos tocados**: `components/LogoNewen.tsx`, `app/page.tsx`, `app/auth/login/page.tsx`,
+`app/auth/magic-link/page.tsx`, `public/logo-newen.jpg`.
+
+**Commit**: `ce70a83`
+
+**Próximo paso**: Verificar que el logo se vea en el hub.
+
+### [2026-08-19] — fix: botón "Crear mi espacio" cuando no hay organización vinculada
+
+**Prompt**: En el estado "Sin organización vinculada" del panel faltaba el botón para crear el
+espacio.
+
+**Acción esperada**: Agregar el botón "+ Crear mi espacio" (link a `/empresas/crear`) y "Ver la
+vidriera" en el estado vacío del panel.
+
+**Resultado**: Éxito.
+
+**Archivos tocados**: `app/(empresa)/empresa/page.tsx`.
+
+**Commit**: `c71e0bc`
+
+**Próximo paso**: Probar el alta desde el botón.
 
 ### [2026-08-19] — feat: v0.33.0 + v0.34.0 — apariencia global + rediseño alta empresa
 
