@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       privacy: "public", // se une cualquiera con el enlace (sin token)
       properties: {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 3, // expira en 3 h
-        enable_prejoin_ui: true,
+        max_participants: 2, // sala estrictamente 1 a 1
         enable_screenshare: true,
       },
     }),

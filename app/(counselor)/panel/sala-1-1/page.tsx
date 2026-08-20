@@ -1,22 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import DailyIframe from "@daily-co/daily-js";
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * Sala 1-1 (Daily.co) para el área de profesionales.
- * Crea la sala vía /api/daily/room y la muestra con el iframe Prebuilt
- * que devuelve la API (origen derivado de la URL de la sala → sin
- * desajustes de dominio ni "meeting does not exist").
- * El iframe se renderiza por React (sin manipular el DOM a mano).
+ * Sala 1-1 (Daily.co) — área profesionales.
+ * Crea la sala vía /api/daily/room (máximo 2 participantes) y la monta con
+ * daily-js (método oficial de Daily). La llamada se crea en un useEffect
+ * DESPUÉS del render (el contenedor ya existe y React no borra el iframe).
  */
 export default function SalaUnoAUnoPage() {
   const supabase = createClient();
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [nombre, setNombre] = useState("");
   const [creando, setCreando] = useState(false);
-  const [iframeUrl, setIframeUrl] = useState("");
-  const [link, setLink] = useState("");
+  const [roomUrl, setRoomUrl] = useState(""); // al setearse, el efecto monta la llamada
   const [roomName, setRoomName] = useState("");
+  const [link, setLink] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,10 +31,51 @@ export default function SalaUnoAUnoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Monta la videollamada cuando hay roomUrl (efecto post-render).
+  useEffect(() => {
+    if (!roomUrl) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    let call: any = null;
+    let done = false;
+
+    (async () => {
+      try {
+        container.innerHTML = "";
+        call = DailyIframe.createFrame(container, {
+          showLeaveButton: true,
+          iframeStyle: {
+            width: "100%",
+            height: "72vh",
+            border: "none",
+            borderRadius: "16px",
+          },
+        });
+        call.on("error", (e: any) => {
+          if (!done) setError("Error de Daily: " + (e?.errorMsg || e?.type || "desconocido"));
+        });
+        await call.join({ url: roomUrl, userName: nombre || "Profesional" });
+      } catch (e: any) {
+        if (!done) setError("No se pudo iniciar la videollamada: " + (e?.message || "error"));
+      }
+    })();
+
+    return () => {
+      done = true;
+      try {
+        call?.destroy();
+      } catch {
+        // ignorar
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomUrl]);
+
   async function iniciar() {
     setError(null);
     setCreando(true);
-    setIframeUrl("");
+    setRoomUrl("");
     setLink("");
 
     const res = await fetch("/api/daily/room", {
@@ -50,13 +92,14 @@ export default function SalaUnoAUnoPage() {
 
     setRoomName(data.name);
     setLink(data.roomUrl || data.url || "");
-    setIframeUrl(data.url || "");
+    setRoomUrl(data.roomUrl || data.url || "");
   }
 
-  function finalizar() {
-    setIframeUrl("");
+  function salir() {
+    setRoomUrl("");
     setLink("");
     setRoomName("");
+    setError(null);
   }
 
   return (
@@ -68,8 +111,8 @@ export default function SalaUnoAUnoPage() {
         Sala 1-1 <span style={{ color: "var(--nv-accent)" }}>· videollamada</span>
       </h1>
       <p style={{ color: "var(--nv-text-secondary)", fontSize: 14, marginBottom: 22 }}>
-        Sesiones individuales de counseling y supervisión por Daily.co. Iniciá la sala y compartí el
-        enlace con la persona.
+        Sesiones individuales de counseling y supervisión por Daily.co — máximo 2 personas por sala.
+        Iniciá la sala y compartí el enlace con la persona.
         {nombre && (
           <>
             {" "}
@@ -78,7 +121,7 @@ export default function SalaUnoAUnoPage() {
         )}
       </p>
 
-      {!iframeUrl && (
+      {!roomUrl && (
         <button
           onClick={iniciar}
           disabled={creando}
@@ -126,15 +169,16 @@ export default function SalaUnoAUnoPage() {
             color: "var(--nv-text-secondary)",
           }}
         >
-          Sala <strong style={{ color: "var(--nv-accent)" }}>{roomName}</strong> lista. Enviá este enlace a
-          la persona para que se una:
-          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+          Sala <strong style={{ color: "var(--nv-accent)" }}>{roomName}</strong> lista (máx. 2 personas).
+          Enviá este enlace a la persona:
+          <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
             <input
               readOnly
               value={link}
               onFocus={(e) => e.currentTarget.select()}
               style={{
                 flex: 1,
+                minWidth: 220,
                 background: "var(--nv-bg-input)",
                 border: "1px solid var(--nv-border)",
                 borderRadius: "var(--nv-radius-sm)",
@@ -160,35 +204,47 @@ export default function SalaUnoAUnoPage() {
             >
               Copiar
             </button>
-          </div>
-        </div>
-      )}
-
-      {iframeUrl && (
-        <>
-          <iframe
-            src={iframeUrl}
-            allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write"
-            style={{ width: "100%", height: "72vh", border: "none", borderRadius: "var(--nv-radius-lg)" }}
-            allowFullScreen
-          />
-          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-            <button
-              onClick={finalizar}
+            <a
+              href={link}
+              target="_blank"
+              rel="noreferrer"
               style={{
+                display: "inline-flex",
+                alignItems: "center",
                 background: "none",
                 border: "1px solid var(--nv-border-strong)",
                 color: "var(--nv-text-secondary)",
                 borderRadius: "var(--nv-radius-sm)",
-                padding: "9px 16px",
+                padding: "0 14px",
                 fontSize: 12.5,
-                cursor: "pointer",
+                textDecoration: "none",
               }}
             >
-              📵 Finalizar y salir
-            </button>
+              ↗ Abrir en pestaña nueva
+            </a>
           </div>
-        </>
+        </div>
+      )}
+
+      <div ref={containerRef} />
+
+      {roomUrl && (
+        <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+          <button
+            onClick={salir}
+            style={{
+              background: "none",
+              border: "1px solid var(--nv-border-strong)",
+              color: "var(--nv-text-secondary)",
+              borderRadius: "var(--nv-radius-sm)",
+              padding: "9px 16px",
+              fontSize: 12.5,
+              cursor: "pointer",
+            }}
+          >
+            📵 Finalizar y salir
+          </button>
+        </div>
       )}
     </div>
   );

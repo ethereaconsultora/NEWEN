@@ -19,6 +19,27 @@
 
 ## Historial
 
+### [2026-08-20] — fix: sala 1-1 — daily-js con patrón React correcto + límite 2 personas
+
+**Prompt**: (1) Limitar la sala de profesionales a 2 personas. (2) Sigue el error "The meeting
+you're trying to join does not exist" al usar el iframe Prebuilt.
+
+**Acción esperada**: Agregar `max_participants: 2` en la creación de la sala. Migrar la sala 1-1 a
+daily-js (método oficial) montando la llamada en un `useEffect` post-render (evita que React borre
+el iframe), con manejo de eventos de error y enlace de respaldo "abrir en pestaña nueva".
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/api/daily/room/route.ts` (MODIFICADO — max_participants: 2)
+- `app/(counselor)/panel/sala-1-1/page.tsx` (RECREADO — daily-js en useEffect)
+- `package.json` (+`@daily-co/daily-js`)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar la sala tras el deploy; si persiste, revisar en el dashboard de Daily que
+la sala exista y que el dominio `newen` tenga Prebuilt habilitado.
+
 ### [2026-08-20] — fix: sala 1-1 — reemplazar daily-js por iframe Prebuilt
 
 **Prompt**: Tras el fix anterior, daily-js seguía fallando: "No se pudo iniciar la videollamada:
