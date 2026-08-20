@@ -9,8 +9,8 @@ import { createClient } from "@/lib/supabase/server";
  * Body: { name?: string }  → sufijo del nombre de la sala.
  *
  * Requiere en el entorno:
- *   NEXT_PUBLIC_DAILY_DOMAIN  → ej: "newen" (sin .daily.co)
  *   DAILY_API_KEY             → key del panel de Daily.co (solo servidor)
+ *   NEXT_PUBLIC_DAILY_DOMAIN  → opcional (ya no se usa para armar la URL)
  */
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -29,14 +29,12 @@ export async function POST(request: Request) {
     // body opcional
   }
 
-  const domain = process.env.NEXT_PUBLIC_DAILY_DOMAIN;
   const apiKey = process.env.DAILY_API_KEY;
 
-  if (!domain || !apiKey) {
+  if (!apiKey) {
     return NextResponse.json(
       {
-        error:
-          "Daily.co no está configurado todavía. Definí NEXT_PUBLIC_DAILY_DOMAIN y DAILY_API_KEY en el entorno.",
+        error: "Daily.co no está configurado todavía. Definí DAILY_API_KEY en el entorno.",
       },
       { status: 500 }
     );
@@ -52,6 +50,7 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       name,
+      privacy: "public", // se une cualquiera con el enlace (sin token)
       properties: {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 3, // expira en 3 h
         enable_prejoin_ui: true,
@@ -69,15 +68,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // Normaliza el dominio: acepta "newen", "newen.daily.co" o una URL completa,
-  // y siempre produce https://<dominio>.daily.co/prebuilt...
-  const base = domain
-    .trim()
-    .replace(/^https?:\/\//, "")
-    .replace(/\/+$/, "")
-    .replace(/\.daily\.co$/i, "");
+  const roomUrl = typeof data.url === "string" ? data.url : "";
+  if (!roomUrl) {
+    return NextResponse.json(
+      { error: "Daily.co no devolvió una URL de sala válida." },
+      { status: 500 }
+    );
+  }
 
-  const prebuiltUrl = `https://${base}.daily.co/prebuilt?roomUrl=${encodeURIComponent(data.url)}`;
+  // Deriva el iframe del MISMO origen que devolvió la API para la sala.
+  // Así nunca hay desajuste de dominio (evita "The meeting you're trying
+  // to join does not exist") y no depende de ninguna variable de entorno.
+  const origin = new URL(roomUrl).origin;
+  const prebuiltUrl = `${origin}/prebuilt?roomUrl=${encodeURIComponent(roomUrl)}`;
 
-  return NextResponse.json({ url: prebuiltUrl, roomUrl: data.url, name: data.name });
+  return NextResponse.json({ url: prebuiltUrl, roomUrl, name: data.name });
 }

@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-20] — fix: sala 1-1 Daily.co — "The meeting you're trying to join does not exist"
+
+**Prompt**: Al crear la sala 1-1 desde el perfil profesional, Daily muestra "The meeting you're trying
+to join does not exist".
+
+**Acción esperada**: (1) Derivar el origen del iframe Prebuilt de la URL que devuelve la API (evita
+desajuste de dominio), `privacy: public`, y solo requerir `DAILY_API_KEY`. (2) Migrar la sala 1-1 a
+daily-js (`createFrame()` + `join({ url })`), la vía oficial recomendada, con el nombre del profesional.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK (sala 1-1 usa daily-js).
+
+**Archivos tocados**:
+- `app/api/daily/room/route.ts` (MODIFICADO — origen derivado + privacy public)
+- `app/(counselor)/panel/sala-1-1/page.tsx` (RECREADO — daily-js)
+- `package.json` (+`@daily-co/daily-js`)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar la sala 1-1 tras el deploy.
+
 ### [2026-08-20] — fix: URL Daily.co duplicada + ojo de vuelta al espacio empresa
 
 **Prompt**: (1) Desde la página pública no se podía volver al espacio empresa; se quiere un "ojo" de
