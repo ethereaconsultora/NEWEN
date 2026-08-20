@@ -82,7 +82,19 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (existing) {
-    // Si ya tiene miembros, no permitir reclamarlo.
+    // ¿El usuario ya es miembro? → ya lo reclamó antes, lo llevamos directo a su panel.
+    const { data: myMembership } = await admin
+      .from("organization_members")
+      .select("id")
+      .eq("organization_id", existing.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (myMembership) {
+      return NextResponse.json({ ok: true, slug, already: true });
+    }
+
+    // Si ya tiene otros miembros, no permitir reclamarlo.
     const { count } = await admin
       .from("organization_members")
       .select("id", { count: "exact", head: true })
