@@ -19,6 +19,20 @@
 
 ## Historial
 
+### [2026-08-20] — root cause: sala 1-1 Daily — falta método de pago en la cuenta
+
+**Prompt**: "Missing payment method. Please visit the Daily Dashboard and add a payment method to
+use Daily."
+
+**Diagnóstico**: Los errores previos de la sala 1-1 ("The meeting you're trying to join does not
+exist") eran un síntoma de que la cuenta de Daily.co no tiene método de pago cargado. La sala se
+crea bien vía API, pero Daily no deja correr Prebuilt sin tarjeta. El código quedó correcto
+(daily-js, origen derivado, max_participants: 2).
+
+**Acción del usuario**: agregar tarjeta en https://dashboard.daily.co/billing.
+
+**Alternativa sin costo**: usar Jitsi también para las sesiones 1-1 (ya está integrado).
+
 ### [2026-08-20] — fix: sala 1-1 — daily-js con patrón React correcto + límite 2 personas
 
 **Prompt**: (1) Limitar la sala de profesionales a 2 personas. (2) Sigue el error "The meeting
