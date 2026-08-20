@@ -149,13 +149,11 @@ DROP POLICY IF EXISTS "organizations_insert" ON public.organizations;
 CREATE POLICY "organizations_insert" ON public.organizations
   FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
--- Members: visibles para la propia organización.
+-- Members: cada usuario lee su propia membresía. Sin subconsulta recursiva
+-- (evita "infinite recursion detected in policy for relation organization_members").
 DROP POLICY IF EXISTS "members_read_own" ON public.organization_members;
 CREATE POLICY "members_read_own" ON public.organization_members
-  FOR SELECT USING (user_id = auth.uid() OR EXISTS (
-    SELECT 1 FROM public.organization_members me
-    WHERE me.organization_id = organization_members.organization_id AND me.user_id = auth.uid()
-  ));
+  FOR SELECT USING (user_id = auth.uid());
 
 -- Members: el usuario se vincula como miembro de su propia organización.
 DROP POLICY IF EXISTS "members_insert_self" ON public.organization_members;

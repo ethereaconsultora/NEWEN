@@ -19,6 +19,25 @@
 
 ## Historial
 
+### [2026-08-20] — fix: v0.36.0 — recursión infinita en RLS de organization_members
+
+**Prompt**: `Error al cargar: infinite recursion detected in policy for relation
+"organization_members"` al dar de alta un cliente en /empresa.
+
+**Acción esperada**: Corregir la política `members_read_own` que se autoreferenciaba dentro de su
+propio `SELECT`. Sin desactivar RLS.
+
+**Resultado**: Éxito (SQL). RLS intacto.
+
+**Archivos tocados**:
+- `spec/init_v0.36.0_fix_rls_recursion.sql` (NUEVO)
+- `spec/init_v0.27.0_empresas.sql` (MODIFICADO — política corregida)
+
+**Commit**: por registrar
+
+**Próximo paso**: ejecutar `init_v0.36.0_fix_rls_recursion.sql` en Supabase y volver a dar de alta
+un cliente.
+
 ### [2026-08-19] — fix: v0.35.0 — restaurar menús del panel Empresa + mostrar logo/banner
 
 **Prompt**: (1) No muestra el banner ni el logo del espacio creado. (2) Le faltan "mil menús" que
