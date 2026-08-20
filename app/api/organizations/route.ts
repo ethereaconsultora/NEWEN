@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     slug?: string;
     nombre?: string;
     tagline?: string | null;
+    slogan?: string | null;
     rubro?: string | null;
     sede?: string | null;
     contacto?: string | null;
@@ -35,6 +36,10 @@ export async function POST(request: Request) {
     primary_color?: string;
     accent_color?: string;
     cover_gradient?: string | null;
+    logo_url?: string | null;
+    cover_url?: string | null;
+    font_id?: string;
+    font_size?: string;
   };
   try {
     body = await request.json();
@@ -53,6 +58,7 @@ export async function POST(request: Request) {
   const payload = {
     nombre,
     tagline: body.tagline || null,
+    slogan: body.slogan || null,
     rubro: body.rubro || null,
     sede: body.sede || null,
     contacto: body.contacto || null,
@@ -62,6 +68,10 @@ export async function POST(request: Request) {
     primary_color: body.primary_color || "#0a0806",
     accent_color: body.accent_color || "#c4a87e",
     cover_gradient: body.cover_gradient || null,
+    logo_url: body.logo_url || null,
+    cover_url: body.cover_url || null,
+    font_id: body.font_id || "newen",
+    font_size: body.font_size || "mediana",
   };
 
   // ¿El slug ya existe?

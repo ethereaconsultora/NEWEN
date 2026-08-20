@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import LogoNewen from "@/components/LogoNewen";
 
 type Access = { counselor: boolean; admin: boolean; empresa: boolean };
 
@@ -69,19 +70,7 @@ export default function HomePage() {
     >
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <h1
-          style={{
-            fontSize: 44,
-            fontWeight: 400,
-            fontFamily: "var(--nv-font-display)",
-            color: "var(--nv-text-primary)",
-            letterSpacing: -1,
-            margin: "0 0 6px",
-            lineHeight: 1,
-          }}
-        >
-          Newen
-        </h1>
+        <LogoNewen height={52} />
         <p
           style={{
             fontSize: 10.5,
@@ -89,7 +78,7 @@ export default function HomePage() {
             letterSpacing: "0.26em",
             color: "var(--nv-accent)",
             textTransform: "uppercase",
-            margin: 0,
+            marginTop: 10,
           }}
         >
           ¿A qué área querés entrar?

@@ -1,5 +1,70 @@
 # Changelog — Newen
 
+## [0.34.0] — 2026-08-19
+
+### Tipo: FEATURE
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+Rediseñar el alta de empresa: subir imágenes de logo y banner, slogan, servicios escribibles
+y la apariencia (paleta/tipografía/tamaño) de Anima. Usar el logo de Newen.
+
+### Cambios realizados
+
+- [x] Columnas `slogan`, `font_id`, `font_size` + bucket público `organizations`
+- [x] Alta con subida de logo y banner (Supabase Storage)
+- [x] Slogan y servicios como texto libre (una especialidad por línea)
+- [x] Paleta/tipografía/tamaño de Anima en el alta + vista previa en vivo
+- [x] Página pública aplica slogan, tipografía, tamaño, logo y banner
+- [x] Componente `LogoNewen` (imagen con fallback a texto) en hub/login/magic-link
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.34.0_empresas_storage.sql` | NUEVO |
+| `app/empresas/crear/page.tsx` | RECREADO |
+| `app/e/[slug]/page.tsx` | RECREADO |
+| `app/api/organizations/route.ts` | MODIFICADO |
+| `components/LogoNewen.tsx` | NUEVO |
+| `app/page.tsx`, `auth/login`, `auth/magic-link` | MODIFICADOS |
+
+---
+
+## [0.33.0] — 2026-08-19
+
+### Tipo: FEATURE + FIX
+### Autor: Clr. Ari Mangini (asistido por DeepSeek V4 Pro — GitHub Copilot)
+### Estado: COMPLETADO
+
+---
+
+### Motivación
+La apariencia de Anima no persistía al guardar (no había policy UPDATE en `users`) y solo
+aplicaba al consultorio. Se arregla y se globaliza, moviendo el ajuste a un menú general.
+
+### Cambios realizados
+
+- [x] Policy UPDATE de `users` (self) + trigger anti-escalación de rol/es_admin
+- [x] `ThemeProvider` movido al shell counselor (aplica a todo el perfil)
+- [x] Nueva página `/panel/apariencia` + pestaña "Apariencia" en la barra
+- [x] Se quita la apariencia de Ajustes del consultorio (queda perfil + contraseña)
+
+### Archivos modificados
+
+| Archivo | Tipo de cambio |
+|---|---|
+| `spec/init_v0.33.0_apariencia_global.sql` | NUEVO |
+| `app/(counselor)/layout.tsx` | RECREADO |
+| `app/(counselor)/panel/apariencia/page.tsx` | NUEVO |
+| `app/(counselor)/panel/consultorio/layout.tsx` | MODIFICADO |
+| `app/(counselor)/panel/consultorio/ajustes/page.tsx` | MODIFICADO |
+
+---
+
 ## [0.32.0] — 2026-08-17
 
 ### Tipo: FIX

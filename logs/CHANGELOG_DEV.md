@@ -19,6 +19,35 @@
 
 ## Historial
 
+### [2026-08-19] — feat: v0.33.0 + v0.34.0 — apariencia global + rediseño alta empresa
+
+**Prompt**: (1) Arreglar que la apariencia de Anima no persiste y aplicarla a todo el perfil,
+sacándola del consultorio a un menú general de la barra. (2) Rediseñar el alta de empresa: subir
+imágenes de logo/banner, slogan, servicios escribibles, paleta/tipografía/tamaño de Anima.
+(3) Usar el logo de Newen adjunto.
+
+**Acción esperada**: policy UPDATE en users + trigger anti-escalación; ThemeProvider movido al
+shell counselor; nueva página `/panel/apariencia`; alta de empresa con storage, slogan y
+apariencia; componente `LogoNewen`.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `spec/init_v0.33.0_apariencia_global.sql` (NUEVO)
+- `spec/init_v0.34.0_empresas_storage.sql` (NUEVO)
+- `app/(counselor)/layout.tsx` (RECREADO — ThemeProvider global)
+- `app/(counselor)/panel/apariencia/page.tsx` (NUEVO)
+- `app/(counselor)/panel/consultorio/layout.tsx` + `ajustes/page.tsx` (MODIFICADOS)
+- `app/empresas/crear/page.tsx` (RECREADO — uploads/slogan/apariencia)
+- `app/e/[slug]/page.tsx` (RECREADO — slogan/font/logo/banner)
+- `app/api/organizations/route.ts` (MODIFICADO)
+- `components/LogoNewen.tsx` (NUEVO) + hub/login/magic-link
+
+**Commit**: (COMPLETAR)
+
+**Próximo paso**: Ejecutar v0.33.0 y v0.34.0 en Supabase; guardar el logo como
+`public/logo-newen.png`; probar alta y apariencia.
+
 ### [2026-08-17] — fix: v0.32.0 — alta de organización vía API (crea o reclama)
 
 **Prompt**: Error al crear: duplicate key value violates unique constraint "organizations_slug_key".

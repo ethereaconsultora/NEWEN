@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import LogoNewen from "@/components/LogoNewen";
 
 export default function MagicLinkPage() {
   const supabase = createClient();
@@ -34,8 +35,8 @@ export default function MagicLinkPage() {
     <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "var(--nv-font-body)" }}>
       <div style={{ background: "var(--nv-bg-card)", borderRadius: "var(--nv-radius-xl)", padding: 32, width: "100%", maxWidth: 380, boxShadow: "var(--nv-shadow)", border: "1px solid var(--nv-border)" }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <div style={{ fontSize: 44, fontWeight: 400, fontFamily: "var(--nv-font-display)", color: "var(--nv-text-primary)", letterSpacing: -1 }}>Newen</div>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 4 }}>Buscanos</div>
+          <LogoNewen height={44} />
+          <div style={{ fontSize: 11, letterSpacing: 4, color: "var(--nv-accent)", textTransform: "uppercase", marginTop: 10 }}>Buscanos</div>
         </div>
 
         {success ? (

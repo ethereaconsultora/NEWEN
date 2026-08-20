@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getTipografia, getTamano } from "@/lib/consultorio-apariencia";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,11 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
   const primary = org.primary_color || "#0a0806";
   const accent = org.accent_color || "#c4a87e";
   const servicios: string[] = org.servicios ?? [];
+  const font = getTipografia(org.font_id);
+  const tamano = getTamano(org.font_size);
+  const coverGradient =
+    org.cover_gradient ||
+    `linear-gradient(135deg, ${primary} 0%, #1a1710 60%, ${accent}22 130%)`;
 
   return (
     <div
@@ -27,11 +33,19 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
         background: primary,
         color: "#f2ede4",
         minHeight: "100vh",
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: font.fb,
         fontWeight: 300,
         lineHeight: 1.7,
+        zoom: tamano.zoom,
       }}
     >
+      {font.gFont && (
+        <link
+          rel="stylesheet"
+          href={`https://fonts.googleapis.com/css2?family=${font.gFont}&display=swap`}
+        />
+      )}
+
       {/* Barra newen */}
       <div
         style={{
@@ -56,21 +70,25 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 34,
-              height: 34,
-              border: `1px solid ${accent}`,
-              color: accent,
-              display: "grid",
-              placeItems: "center",
-              fontFamily: "Georgia, serif",
-              fontSize: 15,
-            }}
-          >
-            {(org.nombre ?? "E").charAt(0)}
-          </div>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+          {org.logo_url ? (
+            <img src={org.logo_url} alt={org.nombre} style={{ width: 36, height: 36, objectFit: "contain" }} />
+          ) : (
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                border: `1px solid ${accent}`,
+                color: accent,
+                display: "grid",
+                placeItems: "center",
+                fontFamily: font.fh,
+                fontSize: 15,
+              }}
+            >
+              {(org.nombre ?? "E").charAt(0)}
+            </div>
+          )}
+          <span style={{ fontFamily: font.fh, fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase" }}>
             {org.nombre}
           </span>
         </div>
@@ -89,15 +107,14 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
         </span>
       </nav>
 
-      {/* Cover + identidad */}
-      <div
-        style={{
-          height: 140,
-          background:
-            org.cover_gradient ||
-            `linear-gradient(135deg, ${primary} 0%, #1a1710 60%, ${accent}22 130%)`,
-        }}
-      />
+      {/* Cover */}
+      {org.cover_url ? (
+        <img src={org.cover_url} alt="" style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }} />
+      ) : (
+        <div style={{ height: 140, background: coverGradient }} />
+      )}
+
+      {/* Identidad */}
       <header style={{ background: BONE, color: "#241d12", padding: "12px 32px 40px" }}>
         <div
           style={{
@@ -109,17 +126,27 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
             border: `4px solid ${BONE}`,
             display: "grid",
             placeItems: "center",
-            fontFamily: "Georgia, serif",
+            fontFamily: font.fh,
             fontSize: 34,
+            overflow: "hidden",
           }}
         >
-          {(org.nombre ?? "E").charAt(0)}
+          {org.logo_url ? (
+            <img src={org.logo_url} alt={org.nombre} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          ) : (
+            (org.nombre ?? "E").charAt(0)
+          )}
         </div>
-        <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(30px,4vw,46px)", fontWeight: 400, lineHeight: 1.05, marginTop: 14 }}>
+        <h1 style={{ fontFamily: font.fh, fontSize: "clamp(30px,4vw,46px)", fontWeight: 400, lineHeight: 1.05, marginTop: 14 }}>
           {org.nombre}
         </h1>
+        {org.slogan && (
+          <p style={{ fontFamily: font.fb, fontSize: 15, fontStyle: "italic", color: "#6b5f4a", marginTop: 8, maxWidth: 620 }}>
+            {org.slogan}
+          </p>
+        )}
         {org.tagline && (
-          <p style={{ fontSize: 13, letterSpacing: "0.08em", color: "#6b5f4a", textTransform: "uppercase", marginTop: 4 }}>
+          <p style={{ fontSize: 13, letterSpacing: "0.08em", color: "#6b5f4a", textTransform: "uppercase", marginTop: 6 }}>
             {org.tagline}
           </p>
         )}
@@ -136,10 +163,7 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {servicios.length ? (
             servicios.map((s) => (
-              <span
-                key={s}
-                style={{ fontSize: 12, padding: "8px 14px", border: "1px solid rgba(255,255,255,0.15)", color: "#f2ede4" }}
-              >
+              <span key={s} style={{ fontSize: 12, padding: "8px 14px", border: "1px solid rgba(255,255,255,0.15)", color: "#f2ede4" }}>
                 {s}
               </span>
             ))
@@ -151,7 +175,7 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
 
       {/* Contacto */}
       <section style={{ padding: "56px 32px" }}>
-        <div style={{ fontFamily: "Georgia, serif", fontSize: 30, fontWeight: 300, marginBottom: 20 }}>
+        <div style={{ fontFamily: font.fh, fontSize: 30, fontWeight: 300, marginBottom: 20 }}>
           Hablemos de tu <em style={{ color: accent }}>organización</em>
         </div>
         <div style={{ fontSize: 13, color: "#b8ae9c" }}>

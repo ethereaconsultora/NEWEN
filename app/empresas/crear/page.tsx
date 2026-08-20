@@ -4,29 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
-const SERVICIOS = [
-  "Liderazgo Sostenible",
-  "Fortalecimiento de Equipos",
-  "Recuperación del Clima",
-  "Gestión de Conflictos",
-  "Prevención de Burnout",
-  "Onboarding",
-  "Campus Digital",
-];
-
-const ACCENTS = ["#c4a87e", "#c4a882", "#7fb2c4", "#7dba8f", "#b79bc4", "#8fa3d6", "#e08e7f", "#b8bec4"];
-
-const BANNERS: { name: string; css: string }[] = [
-  { name: "Carbón & Oro", css: "linear-gradient(135deg,#1a1710 0%,#0a0806 60%,#3e3528 130%)" },
-  { name: "Tierra", css: "linear-gradient(135deg,#3e2e23 0%,#241a12 55%,#6b5038 130%)" },
-  { name: "Océano", css: "linear-gradient(135deg,#0d2130 0%,#0a1820 55%,#1e4254 130%)" },
-  { name: "Bosque", css: "linear-gradient(135deg,#14261b 0%,#0c1a12 55%,#2b4a36 130%)" },
-  { name: "Malva", css: "linear-gradient(135deg,#251a2e 0%,#18111e 55%,#453157 130%)" },
-  { name: "Noche", css: "linear-gradient(135deg,#101426 0%,#0a0e1a 55%,#26315c 130%)" },
-  { name: "Coral", css: "linear-gradient(135deg,#2e1715 0%,#1d100e 55%,#5c2f28 130%)" },
-  { name: "Niebla", css: "linear-gradient(135deg,#1d1f21 0%,#121416 55%,#3a3e42 130%)" },
-];
+import {
+  TEMAS,
+  TIPOGRAFIAS,
+  TAMANOS,
+  getTema,
+  getTipografia,
+  getTamano,
+} from "@/lib/consultorio-apariencia";
+import FontLoader from "@/components/consultorio/FontLoader";
 
 function slugify(s: string) {
   return s
@@ -44,6 +30,8 @@ function initialsOf(nombre: string) {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
+const FALLBACK_COVER = "linear-gradient(135deg, #1a1710 0%, #0a0806 60%, #3e3528 130%)";
+
 export default function CrearEspacioPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -52,19 +40,28 @@ export default function CrearEspacioPage() {
   const [nombre, setNombre] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
+  const [slogan, setSlogan] = useState("");
   const [tagline, setTagline] = useState("");
   const [rubro, setRubro] = useState("");
   const [sede, setSede] = useState("");
   const [contacto, setContacto] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [servicios, setServicios] = useState<string[]>([]);
-  const [accent, setAccent] = useState(ACCENTS[0]);
-  const [banner, setBanner] = useState(BANNERS[0].css);
+  const [servicios, setServicios] = useState("");
+  const [temaId, setTemaId] = useState("newen");
+  const [fontId, setFontId] = useState("newen");
+  const [sizeId, setSizeId] = useState("mediana");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const initials = useMemo(() => initialsOf(nombre || "Espacio"), [nombre]);
+  const tema = getTema(temaId);
+  const tipografia = getTipografia(fontId);
+  const tamano = getTamano(sizeId);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null));
@@ -76,8 +73,27 @@ export default function CrearEspacioPage() {
     if (!slugTouched) setSlug(slugify(v));
   }
 
-  function toggleServicio(s: string) {
-    setServicios((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+  function onLogo(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setLogoFile(f);
+    setLogoPreview(URL.createObjectURL(f));
+  }
+
+  function onBanner(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setBannerFile(f);
+    setBannerPreview(URL.createObjectURL(f));
+  }
+
+  async function uploadFile(file: File, folder: string): Promise<string | null> {
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("organizations").upload(path, file, { upsert: true });
+    if (error) return null;
+    const { data } = supabase.storage.from("organizations").getPublicUrl(path);
+    return data.publicUrl;
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -97,22 +113,37 @@ export default function CrearEspacioPage() {
       return;
     }
 
+    let logo_url: string | null = null;
+    let cover_url: string | null = null;
+    if (logoFile) logo_url = await uploadFile(logoFile, "logos");
+    if (bannerFile) cover_url = await uploadFile(bannerFile, "banners");
+
+    const serviciosArr = servicios
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const res = await fetch("/api/organizations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         slug: finalSlug,
         nombre: nombre.trim(),
+        slogan: slogan.trim() || null,
         tagline: tagline.trim() || null,
         rubro: rubro.trim() || null,
         sede: sede.trim() || null,
         contacto: contacto.trim() || null,
         email: email.trim() || null,
         telefono: telefono.trim() || null,
-        servicios,
+        servicios: serviciosArr,
         primary_color: "#0a0806",
-        accent_color: accent,
-        cover_gradient: banner,
+        accent_color: tema.accent,
+        cover_gradient: bannerFile ? null : FALLBACK_COVER,
+        logo_url,
+        cover_url,
+        font_id: fontId,
+        font_size: sizeId,
       }),
     });
     const data = await res.json();
@@ -137,17 +168,23 @@ export default function CrearEspacioPage() {
     outline: "none",
   };
 
+  const uploadBoxStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    border: "1px dashed var(--nv-border-strong)",
+    borderRadius: "var(--nv-radius-md)",
+    padding: "16px",
+    cursor: "pointer",
+    color: "var(--nv-text-secondary)",
+    fontSize: 13,
+    background: "var(--nv-bg-input)",
+  };
+
   if (user === undefined) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "var(--nv-bg-base)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span className="spinner" />
       </div>
     );
@@ -155,34 +192,12 @@ export default function CrearEspacioPage() {
 
   if (user === null) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "var(--nv-bg-base)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 16,
-          padding: 24,
-          textAlign: "center",
-        }}
-      >
+      <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 24, textAlign: "center" }}>
         <h1 style={{ fontFamily: "var(--nv-font-display)", fontSize: 28 }}>Necesitás iniciar sesión</h1>
         <p style={{ color: "var(--nv-text-secondary)", maxWidth: 420 }}>
           Para crear el espacio comercial de tu organización, primero iniciá sesión en newen.
         </p>
-        <Link
-          href="/auth/login"
-          style={{
-            background: "var(--nv-accent)",
-            color: "#fff",
-            textDecoration: "none",
-            padding: "12px 24px",
-            borderRadius: "var(--nv-radius-md)",
-            fontWeight: 600,
-          }}
-        >
+        <Link href="/auth/login" style={{ background: "var(--nv-accent)", color: "#fff", textDecoration: "none", padding: "12px 24px", borderRadius: "var(--nv-radius-md)", fontWeight: 600 }}>
           Iniciar sesión
         </Link>
       </div>
@@ -190,74 +205,38 @@ export default function CrearEspacioPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "var(--nv-bg-base)",
-        color: "var(--nv-text-primary)",
-        fontFamily: "var(--nv-font-body)",
-        padding: "48px 24px 96px",
-      }}
-    >
+    <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", color: "var(--nv-text-primary)", fontFamily: "var(--nv-font-body)", padding: "48px 24px 96px" }}>
+      <FontLoader gFont={tipografia.gFont} />
       <div style={{ maxWidth: 1040, margin: "0 auto" }}>
         <Link href="/empresas" style={{ fontSize: 13, color: "var(--nv-text-muted)", textDecoration: "none" }}>
           ← Volver a la vidriera
         </Link>
-        <h1
-          style={{
-            fontFamily: "var(--nv-font-display)",
-            fontSize: "clamp(26px,4vw,38px)",
-            lineHeight: 1.1,
-            margin: "16px 0 6px",
-          }}
-        >
+        <h1 style={{ fontFamily: "var(--nv-font-display)", fontSize: "clamp(26px,4vw,38px)", lineHeight: 1.1, margin: "16px 0 6px" }}>
           Creá el espacio de tu organización
         </h1>
         <p style={{ color: "var(--nv-text-secondary)", marginBottom: 28, fontSize: 14 }}>
-          Elegí el banner y los colores; la vista previa se actualiza al instante.
+          Subí tu logo y banner, y elegí la apariencia. La vista previa se actualiza al instante.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24, alignItems: "start" }}>
           {/* Formulario */}
-          <form
-            onSubmit={onSubmit}
-            style={{
-              background: "var(--nv-bg-card)",
-              border: "1px solid var(--nv-border)",
-              borderRadius: "var(--nv-radius-lg)",
-              padding: 24,
-            }}
-          >
+          <form onSubmit={onSubmit} style={{ background: "var(--nv-bg-card)", border: "1px solid var(--nv-border)", borderRadius: "var(--nv-radius-lg)", padding: 24 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Nombre de la organización *</label>
-                <input
-                  style={inputStyle}
-                  value={nombre}
-                  onChange={(e) => onNombre(e.target.value)}
-                  placeholder="Ej: Espacio Crítico"
-                />
+                <input style={inputStyle} value={nombre} onChange={(e) => onNombre(e.target.value)} placeholder="Ej: Espacio Crítico" />
+              </div>
+              <div style={{ gridColumn: "1 / -1" }}>
+                <label style={labelStyle}>Slogan</label>
+                <input style={inputStyle} value={slogan} onChange={(e) => setSlogan(e.target.value)} placeholder="Ej: No vendemos servicios, desarrollamos capacidades" />
               </div>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Identificador (slug) — se completa solo</label>
-                <input
-                  style={inputStyle}
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setSlug(e.target.value);
-                  }}
-                  placeholder="espacio-critico"
-                />
+                <input style={inputStyle} value={slug} onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }} placeholder="espacio-critico" />
               </div>
               <div>
                 <label style={labelStyle}>Disciplina / tagline</label>
-                <input
-                  style={inputStyle}
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
-                  placeholder="Counseling organizacional"
-                />
+                <input style={inputStyle} value={tagline} onChange={(e) => setTagline(e.target.value)} placeholder="Counseling organizacional" />
               </div>
               <div>
                 <label style={labelStyle}>Rubro</label>
@@ -281,157 +260,122 @@ export default function CrearEspacioPage() {
               </div>
             </div>
 
-            {/* Banner */}
+            {/* Logo */}
             <div style={{ marginTop: 18 }}>
-              <label style={labelStyle}>Banner de portada</label>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
-                {BANNERS.map((b) => (
-                  <button
-                    key={b.name}
-                    type="button"
-                    onClick={() => setBanner(b.css)}
-                    title={b.name}
-                    style={{
-                      height: 44,
-                      borderRadius: 10,
-                      background: b.css,
-                      border: banner === b.css ? "3px solid var(--nv-accent)" : "2px solid transparent",
-                      cursor: "pointer",
-                    }}
-                  />
+              <label style={labelStyle}>Logo de la empresa (imagen)</label>
+              {logoPreview ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <img src={logoPreview} alt="Logo" style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 8, border: "1px solid var(--nv-border)", background: "#fff" }} />
+                  <button type="button" onClick={() => { setLogoFile(null); setLogoPreview(null); }} style={{ fontSize: 12, color: "var(--nv-state-error)", background: "none", border: "none", cursor: "pointer" }}>
+                    Quitar
+                  </button>
+                </div>
+              ) : (
+                <label style={uploadBoxStyle}>
+                  <input type="file" accept="image/*" onChange={onLogo} style={{ display: "none" }} />
+                  📷 Subir logo
+                </label>
+              )}
+            </div>
+
+            {/* Banner */}
+            <div style={{ marginTop: 14 }}>
+              <label style={labelStyle}>Banner de fondo (imagen)</label>
+              {bannerPreview ? (
+                <div style={{ position: "relative", borderRadius: 10, overflow: "hidden" }}>
+                  <img src={bannerPreview} alt="Banner" style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }} />
+                  <button type="button" onClick={() => { setBannerFile(null); setBannerPreview(null); }} style={{ position: "absolute", top: 8, right: 8, fontSize: 12, color: "#fff", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>
+                    Quitar
+                  </button>
+                </div>
+              ) : (
+                <label style={uploadBoxStyle}>
+                  <input type="file" accept="image/*" onChange={onBanner} style={{ display: "none" }} />
+                  🖼️ Subir banner
+                </label>
+              )}
+            </div>
+
+            {/* Paleta */}
+            <div style={{ marginTop: 18 }}>
+              <label style={labelStyle}>Paleta de colores</label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 }}>
+                {TEMAS.map((t) => (
+                  <button key={t.id} type="button" onClick={() => setTemaId(t.id)}
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 11px", borderRadius: "var(--nv-radius-md)", border: temaId === t.id ? "2px solid var(--nv-accent)" : "1px solid var(--nv-border)", background: "var(--nv-bg-input)", color: "var(--nv-text-primary)", cursor: "pointer", fontFamily: "inherit", fontSize: 12.5 }}>
+                    <span style={{ width: 14, height: 14, borderRadius: "50%", background: t.accent, flexShrink: 0 }} />
+                    {t.nombre}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Color de acento */}
-            <div style={{ marginTop: 18 }}>
-              <label style={labelStyle}>Color de acento (también es el color del logo)</label>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {ACCENTS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setAccent(c)}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      background: c,
-                      border: accent === c ? "3px solid var(--nv-accent)" : "2px solid transparent",
-                      boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
-                      cursor: "pointer",
-                    }}
-                  />
+            {/* Tipografía */}
+            <div style={{ marginTop: 14 }}>
+              <label style={labelStyle}>Tipografía</label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
+                {TIPOGRAFIAS.map((f) => (
+                  <button key={f.id} type="button" onClick={() => setFontId(f.id)}
+                    style={{ padding: "10px 12px", borderRadius: "var(--nv-radius-md)", border: fontId === f.id ? "2px solid var(--nv-accent)" : "1px solid var(--nv-border)", background: "var(--nv-bg-input)", color: "var(--nv-text-primary)", cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 600 }}>{f.nombre}</div>
+                    <div style={{ fontSize: 11.5, color: "var(--nv-text-muted)", fontFamily: f.fh }}>{f.preview}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Tamaño */}
+            <div style={{ marginTop: 14 }}>
+              <label style={labelStyle}>Tamaño de letra</label>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {TAMANOS.map((s) => (
+                  <button key={s.id} type="button" onClick={() => setSizeId(s.id)}
+                    style={{ padding: "8px 16px", borderRadius: "var(--nv-radius-full)", border: sizeId === s.id ? "2px solid var(--nv-accent)" : "1px solid var(--nv-border)", background: sizeId === s.id ? "var(--nv-accent-soft)" : "var(--nv-bg-input)", color: "var(--nv-text-primary)", cursor: "pointer", fontSize: s.zoom * 12, fontFamily: "inherit" }}>
+                    {s.nombre}
+                  </button>
                 ))}
               </div>
             </div>
 
             {/* Servicios */}
             <div style={{ marginTop: 18 }}>
-              <label style={labelStyle}>Servicios que ofrecés</label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {SERVICIOS.map((s) => (
-                  <label
-                    key={s}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      fontSize: 13.5,
-                      padding: "9px 12px",
-                      border: "1px solid var(--nv-border)",
-                      borderRadius: "var(--nv-radius-sm)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={servicios.includes(s)}
-                      onChange={() => toggleServicio(s)}
-                      style={{ accentColor: "var(--nv-accent)" }}
-                    />
-                    {s}
-                  </label>
-                ))}
-              </div>
+              <label style={labelStyle}>Servicios / especialidades (uno por línea)</label>
+              <textarea
+                value={servicios}
+                onChange={(e) => setServicios(e.target.value)}
+                placeholder={"Counseling organizacional\nDesarrollo de liderazgo\nPrevención de burnout"}
+                style={{ ...inputStyle, minHeight: 100, resize: "vertical", lineHeight: 1.6 }}
+              />
             </div>
 
             {error && <p style={{ color: "var(--nv-state-error)", fontSize: 13, marginTop: 18 }}>{error}</p>}
 
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                width: "100%",
-                marginTop: 22,
-                background: "var(--nv-accent)",
-                color: "#fff",
-                border: "none",
-                borderRadius: "var(--nv-radius-md)",
-                padding: "14px",
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: "pointer",
-                opacity: saving ? 0.6 : 1,
-              }}
-            >
+            <button type="submit" disabled={saving}
+              style={{ width: "100%", marginTop: 22, background: "var(--nv-accent)", color: "#fff", border: "none", borderRadius: "var(--nv-radius-md)", padding: "14px", fontSize: 15, fontWeight: 600, cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
               {saving ? "Creando…" : "Crear mi espacio"}
             </button>
           </form>
 
-          {/* Vista previa en vivo */}
+          {/* Vista previa */}
           <div style={{ position: "sticky", top: 24 }}>
-            <div
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "var(--nv-text-muted)",
-                marginBottom: 8,
-              }}
-            >
+            <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--nv-text-muted)", marginBottom: 8 }}>
               Vista previa en vivo
             </div>
-            <div
-              style={{
-                background: "#0a0806",
-                color: "#f2ede4",
-                borderRadius: 14,
-                overflow: "hidden",
-                border: "1px solid var(--nv-border)",
-                boxShadow: "var(--nv-shadow)",
-              }}
-            >
-              <div style={{ height: 90, background: banner, backgroundSize: "cover" }} />
+            <div style={{ background: "#0a0806", color: "#f2ede4", borderRadius: 14, overflow: "hidden", border: "1px solid var(--nv-border)", boxShadow: "var(--nv-shadow)", zoom: tamano.zoom }}>
+              <div style={{ height: 90, background: bannerPreview ? `url(${bannerPreview}) center/cover` : FALLBACK_COVER }} />
               <div style={{ background: "#f4efe6", color: "#241d12", padding: "10px 18px 18px" }}>
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    marginTop: -30,
-                    background: accent,
-                    color: "#241d12",
-                    border: "3px solid #f4efe6",
-                    display: "grid",
-                    placeItems: "center",
-                    fontFamily: "Georgia, serif",
-                    fontSize: 22,
-                  }}
-                >
-                  {initials}
+                <div style={{ width: 56, height: 56, marginTop: -30, background: logoPreview ? "#fff" : tema.accent, color: "#241d12", border: "3px solid #f4efe6", display: "grid", placeItems: "center", fontFamily: tipografia.fh, fontSize: 22, overflow: "hidden" }}>
+                  {logoPreview ? <img src={logoPreview} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : initials}
                 </div>
-                <div style={{ fontFamily: "Georgia, serif", fontSize: 20, marginTop: 10 }}>
+                <div style={{ fontFamily: tipografia.fh, fontSize: 20, marginTop: 10 }}>
                   {nombre || "Nombre de tu organización"}
                 </div>
-                <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#6b5f4a" }}>
+                {slogan && <div style={{ fontFamily: tipografia.fb, fontSize: 11.5, fontStyle: "italic", color: "#6b5f4a", marginTop: 4 }}>{slogan}</div>}
+                <div style={{ fontFamily: tipografia.fb, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: tema.accent, marginTop: 6 }}>
                   {tagline || "Tagline"}
                 </div>
               </div>
             </div>
-            <p style={{ fontSize: 11.5, color: "var(--nv-text-muted)", marginTop: 10 }}>
-              El logo usa las iniciales del nombre con tu color de acento. La subida de una imagen
-              de logo vendrá en un próximo paso.
-            </p>
           </div>
         </div>
       </div>

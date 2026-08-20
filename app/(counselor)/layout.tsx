@@ -1,11 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { useEsMultiRol } from "@/hooks/useEsMultiRol";
 import RoleSwitch from "@/components/RoleSwitch";
+import ThemeProvider from "@/components/consultorio/ThemeProvider";
+
+const DEFAULT_PREFS = { themeId: "newen", fontId: "newen", sizeId: "mediana" };
 
 const TABS = [
   { href: "/panel/consultorio", label: "Consultorio", icon: "consultorio" },
@@ -13,11 +17,12 @@ const TABS = [
   { href: "/panel/notificaciones", label: "Notif.", icon: "bell" },
   { href: "/panel/muro", label: "Muro", icon: "users" },
   { href: "/panel/talleres", label: "Talleres", icon: "workshop" },
+  { href: "/panel/apariencia", label: "Apariencia", icon: "palette" },
 ];
 
 function Icon({ name, active }: { name: string; active: boolean }) {
-  const color = active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)";
-  const stroke = active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)";
+  const color = active ? "var(--nv-accent)" : "var(--nv-text-muted)";
+  const stroke = active ? "var(--nv-accent)" : "var(--nv-text-muted)";
 
   switch (name) {
     case "consultorio":
@@ -41,13 +46,6 @@ function Icon({ name, active }: { name: string; active: boolean }) {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
       );
-    case "calendar":
-      return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-          <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-      );
     case "users":
       return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -63,6 +61,13 @@ function Icon({ name, active }: { name: string; active: boolean }) {
           <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
         </svg>
       );
+    case "palette":
+      return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22a10 10 0 1 1 10-10c0 2-1 3-2.5 3-1.5 0-2-1-3-1.5-.8-.4-1.5-.5-2.5-.5a4 4 0 0 0 0 8c1 0 1 .4 0 1z" />
+          <circle cx="7.5" cy="11.5" r="1" /><circle cx="10.5" cy="7.5" r="1" /><circle cx="15" cy="7.5" r="1" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -73,17 +78,53 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const supabase = createClient();
 
+  const [prefs, setPrefs] = useState(DEFAULT_PREFS);
+  const [ready, setReady] = useState(false);
+
   // Auto-logout después de 10 min de inactividad
   useAutoLogout();
   const { isAdmin, isEmpresa } = useEsMultiRol();
+
+  useEffect(() => {
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setReady(true);
+        return;
+      }
+      const { data: u } = await supabase
+        .from("users")
+        .select("theme_id, font_id, font_size")
+        .eq("id", user.id)
+        .single();
+      if (u) {
+        setPrefs({
+          themeId: u.theme_id ?? "newen",
+          fontId: u.font_id ?? "newen",
+          sizeId: u.font_size ?? "mediana",
+        });
+      }
+      setReady(true);
+    })();
+  }, [supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/auth/login");
   };
 
+  if (!ready) {
+    return (
+      <div style={{ minHeight: "100vh", background: "var(--nv-bg-base)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span className="spinner" />
+      </div>
+    );
+  }
+
   return (
-    <>
+    <ThemeProvider initial={prefs}>
       {children}
       <nav
         style={{
@@ -91,8 +132,8 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
           bottom: 0,
           left: 0,
           right: 0,
-          background: "#FFFFFF",
-          borderTop: "1px solid rgba(0,0,0,0.06)",
+          background: "var(--nv-bg-card)",
+          borderTop: "1px solid var(--nv-border)",
           display: "flex",
           justifyContent: "space-around",
           padding: "6px 0 10px",
@@ -116,17 +157,14 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
                 textDecoration: "none",
                 fontSize: 10,
                 fontWeight: active ? 600 : 500,
-                color: active ? "var(--nv-accent)" : "rgba(28,18,8,0.35)",
-                minWidth: 60,
+                color: active ? "var(--nv-accent)" : "var(--nv-text-muted)",
+                minWidth: 56,
               }}
             >
               <Icon name={tab.icon} active={active} />
               {tab.label}
               {active && (
-                <span style={{
-                  width: 4, height: 4, borderRadius: "50%",
-                  background: "var(--nv-accent)", marginTop: -2,
-                }} />
+                <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--nv-accent)", marginTop: -2 }} />
               )}
             </Link>
           );
@@ -146,13 +184,13 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
             cursor: "pointer",
             fontSize: 10,
             fontWeight: 500,
-            color: "rgba(28,18,8,0.35)",
-            minWidth: 60,
+            color: "var(--nv-text-muted)",
+            minWidth: 56,
             fontFamily: "var(--nv-font-body)",
             padding: 0,
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--nv-text-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
@@ -160,6 +198,6 @@ export default function CounselorLayout({ children }: { children: React.ReactNod
           Salir
         </button>
       </nav>
-    </>
+    </ThemeProvider>
   );
 }
