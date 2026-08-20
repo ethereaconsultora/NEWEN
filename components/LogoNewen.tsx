@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 /**
- * Logo de Newen. Muestra la imagen /logo-newen.png; si no existe todavía,
+ * Logo de Newen. Muestra la imagen /logo-newen.jpg; si no existe todavía,
  * cae al texto "Newen" para no romper la UI.
  */
 export default function LogoNewen({ height = 44 }: { height?: number }) {
@@ -28,7 +28,7 @@ export default function LogoNewen({ height = 44 }: { height?: number }) {
 
   return (
     <img
-      src="/logo-newen.png"
+      src="/logo-newen.jpg"
       alt="Newen"
       onError={() => setOk(false)}
       style={{ height, width: "auto", objectFit: "contain" }}
