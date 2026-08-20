@@ -69,7 +69,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const prebuiltUrl = `https://${domain}.daily.co/prebuilt?roomUrl=${encodeURIComponent(data.url)}`;
+  // Normaliza el dominio: acepta "newen", "newen.daily.co" o una URL completa,
+  // y siempre produce https://<dominio>.daily.co/prebuilt...
+  const base = domain
+    .trim()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/+$/, "")
+    .replace(/\.daily\.co$/i, "");
+
+  const prebuiltUrl = `https://${base}.daily.co/prebuilt?roomUrl=${encodeURIComponent(data.url)}`;
 
   return NextResponse.json({ url: prebuiltUrl, roomUrl: data.url, name: data.name });
 }

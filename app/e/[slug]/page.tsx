@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTipografia, getTamano } from "@/lib/consultorio-apariencia";
+import OjoVistaEmpresa from "@/components/empresa/OjoVistaEmpresa";
 
 export const dynamic = "force-dynamic";
 
@@ -194,6 +195,9 @@ export default async function EspacioPublicoPage({ params }: { params: Promise<{
       <footer style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "28px 32px", fontSize: 11, color: "#9e9382" }}>
         Espacio de <strong style={{ color: accent }}>{org.nombre}</strong> gestionado en newen · Etherea
       </footer>
+
+      {/* Ojo de vista clientes: solo lo ve el dueño/miembro para volver a /empresa */}
+      <OjoVistaEmpresa slug={org.slug} />
     </div>
   );
 }

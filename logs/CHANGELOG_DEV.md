@@ -19,6 +19,27 @@
 
 ## Historial
 
+### [2026-08-20] — fix: URL Daily.co duplicada + ojo de vuelta al espacio empresa
+
+**Prompt**: (1) Desde la página pública no se podía volver al espacio empresa; se quiere un "ojo" de
+vista clientes que al activarse/desactivarse devuelva al espacio empresa. (2) Al crear la sala 1-1
+la URL de Daily queda `newen.daily.co.daily.co/prebuilt...` (dominio duplicado).
+
+**Acción esperada**: Normalizar el dominio en `/api/daily/room` (acepta `newen`, `newen.daily.co` o
+URL completa); componente flotante `OjoVistaEmpresa` en `/e/[slug]` visible solo para el dueño/miembro
+que navega a `/empresa`.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/api/daily/room/route.ts` (MODIFICADO — normalización del dominio)
+- `components/empresa/OjoVistaEmpresa.tsx` (NUEVO)
+- `app/e/[slug]/page.tsx` (MODIFICADO)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar la sala 1-1 (URL correcta) y el ojo en `/e/espacio-critico`.
+
 ### [2026-08-20] — feat: v0.37.0 — Campus digital real + videollamadas (Jitsi grupal / Daily 1-1)
 
 **Prompt**: Diseñar el campus según la maqueta y la necesidad de videollamada: Daily.co para el
