@@ -19,6 +19,25 @@
 
 ## Historial
 
+### [2026-08-20] — feat: v0.38.0 — rediseño panel Empresa (maqueta v2): sidebar + KPIs grandes
+
+**Prompt**: "Así era la maqueta del espacio empresas. Me gusta que tenga el KPI más grande
+rectangular y me gusta el menú de la izquierda."
+
+**Acción esperada**: Replicar `espacio_critico_admin_dashboard_v2.html` en `/empresa`: sidebar NEWEN OS
+(secciones + selector de cliente), KPIs rectangulares grandes en el tablero, panel de contrato +
+próximos hitos, conservando clientes/empleados/bitácora/informes/campus.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**:
+- `app/(empresa)/empresa/page.tsx` (RECREADO)
+- `app/(empresa)/empresa.module.css` (MODIFICADO)
+
+**Commit**: por registrar
+
+**Próximo paso**: probar el nuevo panel tras el deploy.
+
 ### [2026-08-20] — feat: sala 1-1 — reutilizar sala propia + borrar salas no usadas (sin colisiones)
 
 **Prompt**: (1) Sí a optimizar: borrar salas no usadas y reutilizar siempre que eso no genere que
