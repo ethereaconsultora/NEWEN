@@ -38,7 +38,7 @@ importadas.
 **Archivos tocados**: `app/(empresa)/empresa/campus/campus.module.css` (nuevo),
 `app/(empresa)/empresa/campus/page.tsx` (reescrito con clases del módulo).
 
-**Commit**: por registrar
+**Commit**: `7329e9a`
 
 **Próximo paso**: push a master → deploy Vercel → el usuario entra a `/empresa/campus` y compara con
 la imagen 3 de la maqueta (animaciones de botones, biblioteca split, números terracota).
