@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import LogoNewen from "@/components/LogoNewen";
+import SidebarIcon from "@/components/empresa/SidebarIcon";
 import styles from "../empresa.module.css";
 
 const FASES = ["Diagnóstico", "Intervención", "Medición", "Seguimiento", "Consolidación", "Mantenimiento"];
@@ -458,13 +460,13 @@ export default function EmpresaDashboard() {
   const derivsEmp = modal?.type === "mensajes" ? derivaciones.filter((d) => d.employee_id === modal.data?.id) : [];
 
   const SIDEBAR: { section?: Section; link?: string; label: string; icon: string }[] = [
-    { section: "general", label: "Tablero Principal", icon: "🏛️" },
-    { section: "sistemas", label: "Sistemas Activos", icon: "⚙️" },
-    { section: "informes", label: "Informes & Diagnósticos", icon: "📑" },
-    { link: "/empresa/campus", label: "Campus Virtual", icon: "🎓" },
-    { section: "agenda", label: "Calendario de Talleres", icon: "🗓️" },
-    { section: "seguimiento", label: "Bitácora de Counseling", icon: "💬" },
-    { section: "empleados", label: "Empleados", icon: "👥" },
+    { section: "general", label: "Tablero Principal", icon: "dashboard" },
+    { section: "sistemas", label: "Sistemas Activos", icon: "sistemas" },
+    { section: "informes", label: "Informes & Diagnósticos", icon: "informes" },
+    { link: "/empresa/campus", label: "Campus Virtual", icon: "campus" },
+    { section: "agenda", label: "Calendario de Talleres", icon: "agenda" },
+    { section: "seguimiento", label: "Bitácora de Counseling", icon: "bitacora" },
+    { section: "empleados", label: "Empleados", icon: "empleados" },
   ];
 
   return (
@@ -473,9 +475,9 @@ export default function EmpresaDashboard() {
       <div className={styles.topbar}>
         <div className={styles.brandRow}>
           {org.logo_url ? (
-            <img src={org.logo_url} alt={org.nombre} className={styles.orgLogo} />
+            <img src={org.logo_url} alt={org.nombre} className={styles.topOrgLogo} />
           ) : (
-            <div className={styles.brandMark}>{(org.nombre ?? "E").charAt(0)}</div>
+            <div className={styles.brandMarkLg}>{(org.nombre ?? "E").charAt(0)}</div>
           )}
           <div className={styles.badge}>🛡️ PANEL DE ADMINISTRACIÓN — {org.nombre.toUpperCase()}</div>
         </div>
@@ -505,17 +507,21 @@ export default function EmpresaDashboard() {
         {/* Sidebar (como la captura) */}
         <aside className={styles.sidebar}>
           <div className={styles.brand}>
-            {org.logo_url ? (
-              <div className={styles.brandIcon}>
-                <img src={org.logo_url} alt="" />
-              </div>
-            ) : (
-              <div className={styles.brandIcon}>N</div>
-            )}
+            <LogoNewen height={24} />
             <div>
               <div className={styles.brandTitle}>Newen OS</div>
               <div className={styles.brandSub}>{org.nombre} Workspace</div>
             </div>
+          </div>
+
+          <div className={styles.orgHero}>
+            {org.logo_url ? (
+              <img src={org.logo_url} alt={org.nombre} className={styles.orgHeroLogo} />
+            ) : (
+              <div className={styles.orgHeroMark}>{(org.nombre ?? "E").charAt(0)}</div>
+            )}
+            <div className={styles.orgHeroName}>{org.nombre}</div>
+            <div className={styles.orgHeroSub}>Espacio comercial · multicliente</div>
           </div>
 
           <div className={styles.navSection}>Gobierno Organizacional</div>
@@ -525,13 +531,13 @@ export default function EmpresaDashboard() {
               className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
               onClick={() => item.section && setSection(item.section)}
             >
-              <span>{item.icon}</span> {item.label}
+              <SidebarIcon name={item.icon} /> {item.label}
             </button>
           ))}
 
           <div className={styles.navSection}>Operaciones & Campus</div>
           <Link className={styles.navItem} href="/empresa/campus">
-            <span>🎓</span> Campus Virtual
+            <SidebarIcon name="campus" /> Campus Virtual
           </Link>
           {SIDEBAR.slice(4, 6).map((item) => (
             <button
@@ -539,7 +545,7 @@ export default function EmpresaDashboard() {
               className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
               onClick={() => item.section && setSection(item.section)}
             >
-              <span>{item.icon}</span> {item.label}
+              <SidebarIcon name={item.icon} /> {item.label}
             </button>
           ))}
 
@@ -550,7 +556,7 @@ export default function EmpresaDashboard() {
               className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
               onClick={() => item.section && setSection(item.section)}
             >
-              <span>{item.icon}</span> {item.label}
+              <SidebarIcon name={item.icon} /> {item.label}
             </button>
           ))}
 
@@ -570,11 +576,18 @@ export default function EmpresaDashboard() {
         <div className={styles.adminMain}>
           <div className={styles.headerArea}>
             <div className={styles.headerTop}>
-              <div className={styles.pageTitle}>
-                <h1>{active ? `${active.nombre} — Sistema de Desarrollo Organizacional` : org.nombre}</h1>
-                <p>
-                  Fase {fase} — {FASES[fase - 1]} · Monitoreo de capacidad instalada, intervenciones y métricas de impacto de {org.nombre}.
-                </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0 }}>
+                {org.logo_url ? (
+                  <img src={org.logo_url} alt={org.nombre} className={styles.topOrgLogo} />
+                ) : (
+                  <div className={styles.brandMarkLg}>{(org.nombre ?? "E").charAt(0)}</div>
+                )}
+                <div className={styles.pageTitle}>
+                  <h1>{active ? `${active.nombre} — Sistema de Desarrollo Organizacional` : org.nombre}</h1>
+                  <p>
+                    Fase {fase} — {FASES[fase - 1]} · Monitoreo de capacidad instalada, intervenciones y métricas de impacto de {org.nombre}.
+                  </p>
+                </div>
               </div>
               <div className={styles.headerBtns}>
                 {active && (

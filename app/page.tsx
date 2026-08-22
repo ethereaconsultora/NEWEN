@@ -7,21 +7,44 @@ import LogoNewen from "@/components/LogoNewen";
 
 type Access = { counselor: boolean; admin: boolean; empresa: boolean };
 
-const AREAS: { key: keyof Access; label: string; desc: string; href: string; icon: string }[] = [
-  {
-    key: "counselor",
-    label: "PROFESIONAL",
-    desc: "Panel del counselor · consultorio, agenda y comunidad",
-    href: "/panel",
-    icon: "🩺",
-  },
-  {
-    key: "empresa",
-    label: "EMPRESA",
-    desc: "Espacio comercial multicliente de tu organización",
-    href: "/empresa",
-    icon: "🏛️",
-  },
+function AreaIcon({ name }: { name: "user" | "building" }) {
+  const p = {
+    width: 22,
+    height: 22,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  if (name === "user")
+    return (
+      <svg {...p}>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    );
+  return (
+    <svg {...p}>
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <path d="M9 22v-4h6v4" />
+      <path d="M8 6h.01" />
+      <path d="M16 6h.01" />
+      <path d="M12 6h.01" />
+      <path d="M12 10h.01" />
+      <path d="M12 14h.01" />
+      <path d="M16 10h.01" />
+      <path d="M16 14h.01" />
+      <path d="M8 10h.01" />
+      <path d="M8 14h.01" />
+    </svg>
+  );
+}
+
+const AREAS: { key: keyof Access; label: string; desc: string; href: string; iconKey: "user" | "building" }[] = [
+  { key: "counselor", label: "Profesional", desc: "Panel del counselor · consultorio, agenda y comunidad", href: "/panel", iconKey: "user" },
+  { key: "empresa", label: "Empresa", desc: "Espacio comercial multicliente de tu organización", href: "/empresa", iconKey: "building" },
 ];
 
 export default function HomePage() {
@@ -32,9 +55,7 @@ export default function HomePage() {
 
   useEffect(() => {
     (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setLoading(false);
         return;
@@ -61,89 +82,114 @@ export default function HomePage() {
       style={{
         minHeight: "100vh",
         background: "var(--nv-bg-base)",
+        color: "var(--nv-text-primary)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "48px 20px 56px",
+        justifyContent: "center",
+        padding: "40px 20px",
         fontFamily: "var(--nv-font-body)",
       }}
     >
-      {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <LogoNewen height={52} />
-        <p
+      {/* Marca */}
+      <div style={{ textAlign: "center", marginBottom: 34 }}>
+        <LogoNewen height={64} />
+        <div
           style={{
-            fontSize: 10.5,
+            marginTop: 18,
+            fontSize: 11,
             fontWeight: 600,
-            letterSpacing: "0.26em",
-            color: "var(--nv-accent)",
+            letterSpacing: "0.28em",
+            color: "var(--nv-text-muted)",
             textTransform: "uppercase",
-            marginTop: 10,
           }}
         >
-          ¿A qué área querés entrar?
-        </p>
+          Acceso por área
+        </div>
+        <div
+          style={{
+            width: 48,
+            height: 1,
+            background: "var(--nv-border-strong)",
+            margin: "18px auto 0",
+          }}
+        />
       </div>
 
       {/* Áreas */}
       {loading ? (
         <span className="spinner" />
       ) : (
-        <div style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ width: "100%", maxWidth: 420, display: "flex", flexDirection: "column", gap: 14 }}>
           {AREAS.map((a) => {
             const enabled = access[a.key];
             const clickable = !logged || enabled;
-            const href = logged
-              ? enabled
-                ? a.href
-                : null
-              : `/auth/login?redirect=${encodeURIComponent(a.href)}`;
+            const href = logged ? (enabled ? a.href : null) : `/auth/login?redirect=${encodeURIComponent(a.href)}`;
 
             const inner = (
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 14,
+                  gap: 16,
                   width: "100%",
-                  padding: "18px 20px",
+                  padding: "20px 22px",
                   borderRadius: "var(--nv-radius-lg)",
-                  background: enabled ? "var(--nv-accent)" : "var(--nv-bg-card)",
-                  border: enabled ? "1.5px solid var(--nv-accent)" : "1px solid var(--nv-border)",
-                  color: enabled ? "#fff" : "var(--nv-text-primary)",
-                  opacity: clickable ? 1 : 0.5,
+                  background: "var(--nv-bg-card)",
+                  border: enabled ? "1px solid var(--nv-accent)" : "1px solid var(--nv-border)",
+                  color: "var(--nv-text-primary)",
+                  opacity: clickable ? 1 : 0.45,
+                  transition: "border-color .15s, transform .15s",
                 }}
               >
-                <span style={{ fontSize: 26 }}>{a.icon}</span>
-                <span style={{ flex: 1 }}>
+                <span
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 12,
+                    display: "grid",
+                    placeItems: "center",
+                    background: enabled ? "var(--nv-accent)" : "var(--nv-accent-soft, rgba(196,168,126,0.12))",
+                    color: enabled ? "#fff" : "var(--nv-accent)",
+                    flexShrink: 0,
+                  }}
+                >
+                  <AreaIcon name={a.iconKey} />
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
                   <span
                     style={{
                       display: "block",
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: 700,
-                      letterSpacing: "0.04em",
+                      letterSpacing: "0.02em",
+                      color: enabled ? "var(--nv-text-primary)" : "var(--nv-text-secondary)",
                     }}
                   >
                     {a.label}
                     {logged && !enabled && (
-                      <span style={{ fontSize: 11, fontWeight: 500, marginLeft: 8, opacity: 0.7 }}>
+                      <span style={{ fontSize: 11, fontWeight: 500, marginLeft: 8, color: "var(--nv-text-muted)" }}>
                         · sin acceso
                       </span>
                     )}
                   </span>
-                  <span
-                    style={{
-                      display: "block",
-                      fontSize: 12.5,
-                      opacity: 0.8,
-                      marginTop: 2,
-                      fontWeight: 400,
-                    }}
-                  >
+                  <span style={{ display: "block", fontSize: 12.5, color: "var(--nv-text-secondary)", marginTop: 3 }}>
                     {a.desc}
                   </span>
                 </span>
-                <span style={{ fontSize: 18 }}>→</span>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: enabled ? "var(--nv-accent)" : "var(--nv-text-muted)", flexShrink: 0 }}
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </div>
             );
 
@@ -158,8 +204,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Acceso consultante */}
-      <div style={{ marginTop: 28, textAlign: "center" }}>
+      {/* Consultante */}
+      <div style={{ marginTop: 30, textAlign: "center" }}>
         <Link
           href="/buscar"
           style={{

@@ -19,6 +19,26 @@
 
 ## Historial
 
+### [2026-08-22] — feat: v0.41.0 — branding: sidebar alineado + íconos SVG sobrios, logos protagonistas, hub sobrio
+
+**Prompt**: El menú de la izquierda sigue feo; alinearlo a la izquierda, mejorar los íconos
+(emojis horribles/ infantiles), poner el logo de NEWEN en todo lugar, hacer el logo de Espacio
+Crítico mucho más visible, logo de Newen en el login, y rediseñar la pantalla de elegir
+Empresa/Profesional con la paleta de Newen (sobria y profesional).
+
+**Acción esperada**: Íconos SVG de línea (lucide/MIT) en el sidebar; sidebar con LogoNewen + logo de
+la org protagonista (76px); logo de la org 40px en topbar y header; hub rediseñado sobrio con paleta
+Newen y sin emojis; LogoNewen más grande en login/magic-link.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: `components/empresa/SidebarIcon.tsx` (NUEVO), `app/(empresa)/empresa/page.tsx`,
+`app/(empresa)/empresa.module.css`, `app/page.tsx` (RECREADO), login + magic-link.
+
+**Commit**: por registrar
+
+**Próximo paso**: revisar visualmente el sidebar, el hub y el login tras el deploy.
+
 ### [2026-08-21] — refactor: v0.40.0 — renombrar sesiones.daily_room_url → jitsi_room_url
 
 **Prompt**: "CAMBIALE VOS EL NOMBRE A ESA COLUMNA." (limpieza tras migrar sesiones a Jitsi).
