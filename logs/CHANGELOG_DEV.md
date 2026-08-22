@@ -45,7 +45,7 @@ restantes (🎓🎥🔗) quitados. `import * as React` añadido para los tipos `
 (nuevo, recortado), `public/logo-newen.jpg` (eliminado), `components/LogoNewen.tsx` (src → png,
 comentario).
 
-**Commit**: por registrar
+**Commit**: `b60174c`
 
 **Próximo paso**: push a master → deploy Vercel → confirmar visualmente con el usuario (logo en hub/
 login/campus, campus igual a la imagen 3 de la maqueta, menú sin emojis).
