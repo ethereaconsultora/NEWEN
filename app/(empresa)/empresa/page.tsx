@@ -479,7 +479,7 @@ export default function EmpresaDashboard() {
           ) : (
             <div className={styles.brandMarkLg}>{(org.nombre ?? "E").charAt(0)}</div>
           )}
-          <div className={styles.badge}>🛡️ PANEL DE ADMINISTRACIÓN — {org.nombre.toUpperCase()}</div>
+          <div className={styles.badge}>PANEL DE ADMINISTRACIÓN — {org.nombre.toUpperCase()}</div>
         </div>
         <div className={styles.selector}>
           <span className={styles.selectorLabel}>Cliente seleccionado</span>
@@ -496,19 +496,19 @@ export default function EmpresaDashboard() {
             + Cargar Cliente
           </button>
           <button className={styles.btnOutline} onClick={openArchivados}>
-            🗂 Archivados
+            Archivados
           </button>
           <Link className={styles.btnOutline} href="/empresas/crear?edit=1">
-            🖼 Editar mi espacio
+            Editar mi espacio
           </Link>
           <Link className={styles.btnOutline} href={`/e/${org.slug}`} target="_blank">
-            🌐 Sitio público
+            Sitio público
           </Link>
           <button className={styles.btnPdf} onClick={() => downloadReport("Informe Ejecutivo", reportEjecutivo())}>
-            📄 Informe PDF
+            Informe PDF
           </button>
           <Link className={styles.btn} href="/empresa/campus" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            🎓 Campus
+            Campus
           </Link>
         </div>
       </div>
@@ -517,21 +517,20 @@ export default function EmpresaDashboard() {
         {/* Sidebar (como la captura) */}
         <aside className={styles.sidebar}>
           <div className={styles.brand}>
-            <LogoNewen height={24} />
-            <div>
-              <div className={styles.brandTitle}>Newen OS</div>
-              <div className={styles.brandSub}>{org.nombre} Workspace</div>
-            </div>
+            <LogoNewen height={20} />
+            <span className={styles.brandTitle}>NEWEN OS</span>
           </div>
 
-          <div className={styles.orgHero}>
+          <div className={styles.orgRow}>
             {org.logo_url ? (
-              <img src={org.logo_url} alt={org.nombre} className={styles.orgHeroLogo} />
+              <img src={org.logo_url} alt={org.nombre} className={styles.orgRowLogo} />
             ) : (
-              <div className={styles.orgHeroMark}>{(org.nombre ?? "E").charAt(0)}</div>
+              <div className={styles.orgRowMark}>{(org.nombre ?? "E").charAt(0)}</div>
             )}
-            <div className={styles.orgHeroName}>{org.nombre}</div>
-            <div className={styles.orgHeroSub}>Espacio comercial · multicliente</div>
+            <div style={{ minWidth: 0 }}>
+              <div className={styles.orgRowName}>{org.nombre}</div>
+              <div className={styles.orgRowSub}>Espacio comercial</div>
+            </div>
           </div>
 
           <div className={styles.navSection}>Gobierno Organizacional</div>
@@ -592,13 +591,13 @@ export default function EmpresaDashboard() {
                 {active && (
                   <>
                     <button className={styles.btnOutline} onClick={() => setModal({ type: "ficha" })}>
-                      👤 Ficha
+                      Ficha
                     </button>
                     <button className={styles.btnOutline} onClick={() => setModal({ type: "editar" })}>
-                      ✏️ Editar
+                      Editar
                     </button>
                     <button className={styles.btnOutline} onClick={() => setModal({ type: "archivar" })}>
-                      🗂 Archivar
+                      Archivar
                     </button>
                   </>
                 )}
@@ -607,12 +606,12 @@ export default function EmpresaDashboard() {
 
             <div className={styles.tabsNav}>
               {[
-                { id: "general" as Section, label: "📊 Visión General & KPIs" },
-                { id: "sistemas" as Section, label: "⚙️ Sistemas (6 Fases)" },
-                { id: "informes" as Section, label: "📑 Informes & Diagnósticos" },
-                { id: "agenda" as Section, label: "🗓️ Agenda de Talleres" },
-                { id: "seguimiento" as Section, label: "📋 Seguimiento & Tareas" },
-                { id: "empleados" as Section, label: "👥 Empleados" },
+                { id: "general" as Section, label: "Visión General" },
+                { id: "sistemas" as Section, label: "Sistemas (6 Fases)" },
+                { id: "informes" as Section, label: "Informes & Diagnósticos" },
+                { id: "agenda" as Section, label: "Agenda de Talleres" },
+                { id: "seguimiento" as Section, label: "Seguimiento & Tareas" },
+                { id: "empleados" as Section, label: "Empleados" },
               ].map((t) => (
                 <button
                   key={t.id}
@@ -670,7 +669,7 @@ export default function EmpresaDashboard() {
                       Servicios contratados: {(active?.servicios ?? []).join(", ") || "Sin servicios asignados"}.
                     </p>
                     <div className={styles.adminNote}>
-                      <strong>📝 Bitácora interna (solo admin):</strong>
+                      <strong>Bitácora interna (solo admin):</strong>
                       {tasks.length
                         ? tasks.slice(0, 2).map((t) => `${t.titulo}${(t.anotaciones ?? []).length ? ` — ${t.anotaciones[0]}` : ""}`).join(" · ")
                         : "Sin anotaciones de seguimiento todavía. Cargá tareas en la Bitácora de Counseling."}
@@ -797,7 +796,7 @@ export default function EmpresaDashboard() {
               <div className={styles.systemCard}>
                 <div className={styles.systemHead}>
                   <div>
-                    <h3>🗓️ Calendario de Talleres & Encuentros</h3>
+                    <h3>Calendario de Talleres & Encuentros</h3>
                     <p>Próximas intervenciones grupales de {active?.nombre ?? "—"}.</p>
                   </div>
                   <Link className={styles.btn} href="/empresa/campus">
@@ -826,7 +825,7 @@ export default function EmpresaDashboard() {
                 <div className={styles.systemCard}>
                   <div className={styles.systemHead}>
                     <div>
-                      <h3>📝 Bitácora de Counseling & Seguimiento por Tarea</h3>
+                      <h3>Bitácora de Counseling & Seguimiento por Tarea</h3>
                       <p>Anotaciones y avances de la intervención de {active?.nombre ?? "—"}.</p>
                     </div>
                     <button className={styles.btn} onClick={() => setModal({ type: "tarea" })}>
@@ -874,7 +873,7 @@ export default function EmpresaDashboard() {
 
                 <div className={styles.systemCard}>
                   <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "var(--ec-ac)", fontWeight: "normal" }}>
-                    💬 Solicitudes de counseling
+                    Solicitudes de counseling
                   </h3>
                   {derivaciones.length === 0 ? (
                     <p className={styles.empty} style={{ marginTop: 10 }}>

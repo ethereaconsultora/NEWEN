@@ -18,7 +18,24 @@
 ```
 
 ## Historial
+### [2026-08-22] — feat: v0.42.0 — limpieza visual: logo Newen en chip blanco, sidebar minimalista, sin emojis
 
+**Prompt**: El menú izquierdo no se ve bien (duda de alineación/íconos), el logo de Newen en el hub
+"no anda" (el jpg es 3000×3000 con fondo oscuro → se pierde), y el bloque del logo grande está
+"amontonado / bardo visual". Pedido: lindo, estético, fino, minimalista.
+
+**Acción esperada**: LogoNewen en un chip blanco redondeado (visible en cualquier fondo); sidebar
+minimalista (marca NEWEN OS pequeña + fila de logo de la org 44px sin caja + nav fina a la izquierda);
+quitar emojis de pestañas, topbar y encabezados.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: `components/LogoNewen.tsx`, `app/(empresa)/empresa/page.tsx`,
+`app/(empresa)/empresa.module.css`.
+
+**Commit**: por registrar
+
+**Próximo paso**: revisar visualmente tras el deploy (hub, login, sidebar).
 ### [2026-08-22] — fix: panel empresa — selector de cliente arriba (como v1), sidebar a la izquierda estricta, logo sin borde blanco
 
 **Prompt**: En el panel (lo llama "perfil profesional"): cliente seleccionado arriba de todo como la

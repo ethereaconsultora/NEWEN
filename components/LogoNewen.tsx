@@ -3,8 +3,9 @@
 import { useState } from "react";
 
 /**
- * Logo de Newen. Muestra la imagen /logo-newen.jpg; si no existe todavía,
- * cae al texto "Newen" para no romper la UI.
+ * Logo de Newen. Muestra la imagen /logo-newen.jpg sobre un chip blanco
+ * redondeado (el logo es oscuro; así se ve en cualquier fondo). Si la
+ * imagen no existe, cae al texto "Newen".
  */
 export default function LogoNewen({ height = 44 }: { height?: number }) {
   const [ok, setOk] = useState(true);
@@ -27,11 +28,22 @@ export default function LogoNewen({ height = 44 }: { height?: number }) {
   }
 
   return (
-    <img
-      src="/logo-newen.jpg"
-      alt="Newen"
-      onError={() => setOk(false)}
-      style={{ height, width: "auto", objectFit: "contain" }}
-    />
+    <span
+      style={{
+        display: "inline-flex",
+        background: "#fff",
+        borderRadius: Math.max(6, height * 0.18),
+        padding: `${Math.max(2, height * 0.06)}px ${Math.max(8, height * 0.2)}px`,
+        overflow: "hidden",
+        lineHeight: 0,
+      }}
+    >
+      <img
+        src="/logo-newen.jpg"
+        alt="Newen"
+        onError={() => setOk(false)}
+        style={{ height, width: "auto", objectFit: "contain", display: "block" }}
+      />
+    </span>
   );
 }
