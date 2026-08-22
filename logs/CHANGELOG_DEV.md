@@ -18,6 +18,30 @@
 ```
 
 ## Historial
+### [2026-08-22] — feat: v0.43.1 — campus fiel a la maqueta: CSS module con animaciones y detalles exactos
+
+**Prompt**: "FIJATE QUE ESTAS IMITANDO PERO NO ES IGUAL, LOS BOTONES TIENE PEQUEÑA ANIMACION Y
+TODO ES MAS LINDO EN LA MAQUETA" (abrió `campus-maqueta.html#biblioteca`).
+
+**Acción esperada**: Los estilos inline no pueden reproducir hover/transition. Se pasa el campus a un
+CSS module (`campus.module.css`) que porta fielmente `campus-maqueta.css`: botones con
+`transition: transform/box-shadow/background` + `:hover { translateY(-1px) }`, primario verde con
+sombra, secundario blanco con borde terracota `#d8baa6`, neutral; sidebar con hover `#f0efe8`;
+números terracota `#c87d55` en stats; eyebrow, h1 clamp Merriweather, paddings/radios/sombras
+exactos; sección Biblioteca con layout split (course-card + sidebar Categorías/Lectura actual);
+encuentros con hover `translateY(-2px)`; modales con animación `modalIn`; fuentes Inter + Merriweather
+importadas.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK; CSS compilado verificado (font
+@import presente, clases hasheadas, transiciones). Dev server sin errores; login renderiza logo OK.
+
+**Archivos tocados**: `app/(empresa)/empresa/campus/campus.module.css` (nuevo),
+`app/(empresa)/empresa/campus/page.tsx` (reescrito con clases del módulo).
+
+**Commit**: por registrar
+
+**Próximo paso**: push a master → deploy Vercel → el usuario entra a `/empresa/campus` y compara con
+la imagen 3 de la maqueta (animaciones de botones, biblioteca split, números terracota).
 ### [2026-08-22] — feat: v0.43.0 — campus rediseñado (maqueta CV, sin emojis, botones verdes) + logo Newen recortado (PNG)
 
 **Prompt**: "LOGO SIN ANDAR AUN, QUITA LOS EMOJIS DEL MENU DEL CAMPUS QUE ES INFANTIL, QUIERO LA
