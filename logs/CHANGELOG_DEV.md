@@ -39,7 +39,7 @@ preview en vivo en `/empresa/public-site`; onboarding: tras crear el espacio →
 `app/(empresa)/empresa/page.tsx`, `app/(empresa)/layout.tsx`, `components/empresa/SidebarIcon.tsx`;
 `app/api/organizations/route.ts`, `app/empresas/crear/page.tsx`; `spec/init_v0.44.0_site_config.sql`.
 
-**Commit**: por registrar
+**Commit**: `4d41f39`
 
 **Próximo paso**: usuario corre la migración v0.44.0 en Supabase → deploy → crear/editar espacio y
 configurar la página comercial desde el panel.
