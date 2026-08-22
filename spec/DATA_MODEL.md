@@ -62,7 +62,7 @@ empleados_empresa ─── users (N:1)
 | tipo | enum(individual, corporativa) | |
 | precio_usd | DECIMAL(8,2) | Default: 18 |
 | precio_empresa_usd | DECIMAL(8,2) | Lo que pagó la empresa (si aplica). No se expone al counselor |
-| daily_room_url | TEXT | |
+| jitsi_room_url | TEXT | |
 | evaluacion_enviada | BOOLEAN | Default: false |
 | created_at | TIMESTAMPTZ | |
 

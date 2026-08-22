@@ -75,12 +75,12 @@ export async function POST(request: Request) {
     }
 
     // Crear sala de videollamada 1-1 (Jitsi): URL determinística, sin API
-    // externa ni tarjeta. Se guarda en daily_room_url (nombre histórico).
+    // externa ni tarjeta. Se guarda en jitsi_room_url.
     const jitsiBase = process.env.NEXT_PUBLIC_JITSI_BASE || "https://meet.jit.si";
     const roomUrl = sesionRoomUrl(jitsiBase, sesionId);
     await supabase
       .from("sesiones")
-      .update({ daily_room_url: roomUrl })
+      .update({ jitsi_room_url: roomUrl })
       .eq("id", sesionId);
 
     // Incrementar contador de sesiones del counselor

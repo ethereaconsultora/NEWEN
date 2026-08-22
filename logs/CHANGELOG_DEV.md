@@ -19,6 +19,21 @@
 
 ## Historial
 
+### [2026-08-21] — refactor: v0.40.0 — renombrar sesiones.daily_room_url → jitsi_room_url
+
+**Prompt**: "CAMBIALE VOS EL NOMBRE A ESA COLUMNA." (limpieza tras migrar sesiones a Jitsi).
+
+**Acción esperada**: Migración idempotente de rename (preserva datos) + actualizar todo el código
+(mi-cuenta, sesion/[id] ×2, api/pagos, types, init_schema, DATA_MODEL, comentarios).
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. Sin referencias viejas.
+
+**Archivos tocados**: `spec/init_v0.40.0_renombrar_daily_room_url.sql` (NUEVO) + 8 archivos de código/docs.
+
+**Commit**: por registrar
+
+**Próximo paso**: ejecutar `init_v0.40.0` en Supabase.
+
 ### [2026-08-21] — fix: migrar sesiones pagadas de Daily.co a Jitsi (aprobado)
 
 **Prompt**: "OK, AHORA SI, DALE. HACE LOS CAMBIOS" (migrar el flujo de sesiones pagadas a Jitsi).

@@ -44,7 +44,7 @@ export interface Sesion {
   tipo: "individual" | "corporativa";
   precio_usd: number;
   precio_empresa_usd: number | null;
-  daily_room_url: string | null;
+  jitsi_room_url: string | null;
   evaluacion_enviada: boolean;
   created_at: string;
   // Joined

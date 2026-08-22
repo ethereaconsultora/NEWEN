@@ -9,8 +9,8 @@ interface VideoRoomProps {
 
 /**
  * Componente de videollamada embebido en Newen (Jitsi Meet).
- * Se carga el iframe con la sala ya generada (guardada en daily_room_url,
- * nombre histórico). Sin dependencias extra — usa el iframe nativo de Jitsi.
+ * Se carga el iframe con la sala ya generada (guardada en jitsi_room_url).
+ * Sin dependencias extra — usa el iframe nativo de Jitsi.
  */
 export default function VideoRoom({ roomUrl, onLeave }: VideoRoomProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);

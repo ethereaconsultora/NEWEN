@@ -12,7 +12,7 @@ interface SesionItem {
   modalidad: string;
   precio_usd: number;
   evaluacion_enviada: boolean;
-  daily_room_url: string | null;
+  jitsi_room_url: string | null;
   counselorNombre: string;
 }
 
@@ -38,7 +38,7 @@ export default function MiCuentaPage() {
 
       const { data } = await supabase
         .from("sesiones")
-        .select("id, fecha_hora, estado, modalidad, precio_usd, evaluacion_enviada, daily_room_url, counselor:counselor_id(users(nombre))")
+        .select("id, fecha_hora, estado, modalidad, precio_usd, evaluacion_enviada, jitsi_room_url, counselor:counselor_id(users(nombre))")
         .order("fecha_hora", { ascending: false });
 
       if (data) {
@@ -130,7 +130,7 @@ export default function MiCuentaPage() {
                   <div style={{ fontSize: 11, color: "var(--nv-text-muted)" }}>{s.modalidad === "online" ? "💻 Online" : "🏠 Presencial"} · 50 min</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
-                  {s.daily_room_url && <Link href={`/sesion/${s.id}`} className="btn-primary" style={{ fontSize: 11, padding: "5px 12px", textDecoration: "none" }}>Entrar</Link>}
+                  {s.jitsi_room_url && <Link href={`/sesion/${s.id}`} className="btn-primary" style={{ fontSize: 11, padding: "5px 12px", textDecoration: "none" }}>Entrar</Link>}
                   {horasRestantes(s.fecha_hora) > 24 && (
                     <button onClick={() => setReprogramandoId(reprogramandoId === s.id ? null : s.id)} className="btn-ghost" style={{ fontSize: 10, padding: "3px 8px" }}>Reprogramar</button>
                   )}

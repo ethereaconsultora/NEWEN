@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS sesiones (
   tipo TEXT CHECK (tipo IN ('individual','corporativa')) DEFAULT 'individual',
   precio_usd DECIMAL(8,2) DEFAULT 18,
   precio_empresa_usd DECIMAL(8,2),
-  daily_room_url TEXT,
+  jitsi_room_url TEXT,
   evaluacion_enviada BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

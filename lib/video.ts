@@ -12,7 +12,7 @@ export function roomUrl(jitsiBase: string | null | undefined, userId: string, id
 /**
  * Genera la URL de la sala de videollamada (Jitsi) de una sesión pagada 1-1.
  * Es determinística (sin API externa): newen-sesion-<id>. Se guarda en la
- * columna `sesiones.daily_room_url` (nombre histórico, ahora guarda Jitsi).
+ * columna `sesiones.jitsi_room_url`.
  */
 export function sesionRoomUrl(jitsiBase: string | null | undefined, sesionId: string) {
   const base = (jitsiBase || "https://meet.jit.si").trim().replace(/\/+$/, "");

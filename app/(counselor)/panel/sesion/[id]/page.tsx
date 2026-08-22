@@ -28,7 +28,7 @@ export default function SesionCounselorPage({ params }: PageProps) {
     async function load() {
       const { data, error } = await supabase
         .from("sesiones")
-        .select("daily_room_url, estado")
+        .select("jitsi_room_url, estado")
         .eq("id", id)
         .single();
 
@@ -38,13 +38,13 @@ export default function SesionCounselorPage({ params }: PageProps) {
         return;
       }
 
-      if (!data.daily_room_url) {
+      if (!data.jitsi_room_url) {
         setError("La sala de videollamada aún no está disponible.");
         setLoading(false);
         return;
       }
 
-      setRoomUrl(data.daily_room_url);
+      setRoomUrl(data.jitsi_room_url);
 
       if (data.estado === "confirmada") {
         await supabase
