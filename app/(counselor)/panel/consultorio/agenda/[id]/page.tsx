@@ -3,16 +3,18 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import styles from "../../pages.module.css";
 import CambiarEstadoButton from "./CambiarEstadoButton";
+import { roomUrl } from "@/lib/video";
 
 const DAYS_FULL = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const MONTHS_FULL = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
-function buildWaReminder(nombre: string, fecha: string, hora: string) {
+function buildWaReminder(nombre: string, fecha: string, hora: string, link: string) {
   const primerNombre = nombre.split(" ")[0];
   const d = new Date(fecha + "T12:00:00");
   const fechaStr = `${DAYS_FULL[d.getDay()]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]}`;
   const horaStr = (hora ?? "").slice(0, 5);
-  return `Hola ${primerNombre}\n\nTe recuerdo nuestro encuentro agendado para el ${fechaStr} a las ${horaStr}hs.\n\n¿Podés confirmar tu asistencia?\n\n¡Hasta pronto!`;
+  const linkTxt = link ? `\n\n🔗 Enlace de videollamada (Jitsi):\n${link}` : "";
+  return `Hola ${primerNombre}\n\nTe recuerdo nuestro encuentro agendado para el ${fechaStr} a las ${horaStr}hs.\n\n¿Podés confirmar tu asistencia?\n\n¡Hasta pronto!${linkTxt}`;
 }
 
 export default async function TurnoPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,9 +35,12 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
 
   const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
+  const { data: u } = await supabase.from("users").select("jitsi_base").eq("id", user.id).single();
+
   const nombreTurno = turno.pacientes?.nombre ?? turno.patient_name ?? "";
   const phone = (turno.patient_phone || turno.pacientes?.telefono || "").replace(/\D/g, "");
-  const waMsg = nombreTurno && turno.fecha ? buildWaReminder(nombreTurno, turno.fecha, turno.hora) : "";
+  const vid = roomUrl(u?.jitsi_base || "", user.id, turno.id);
+  const waMsg = nombreTurno && turno.fecha ? buildWaReminder(nombreTurno, turno.fecha, turno.hora, vid) : "";
 
   return (
     <div>
@@ -61,6 +66,16 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
+      <a
+        href={vid}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn-primary"
+        style={{ width: "100%", justifyContent: "center", display: "inline-flex", marginBottom: 12, background: "var(--nv-accent)" }}
+      >
+        🎥 Iniciar videollamada del turno
+      </a>
+
       {phone && waMsg && (
         <a
           href={`https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}`}
@@ -69,7 +84,7 @@ export default async function TurnoPage({ params }: { params: Promise<{ id: stri
           className="btn-primary"
           style={{ width: "100%", justifyContent: "center", display: "inline-flex", marginBottom: 12 }}
         >
-          📲 Recordar por WhatsApp
+          📲 Recordar por WhatsApp (con enlace de video)
         </a>
       )}
 

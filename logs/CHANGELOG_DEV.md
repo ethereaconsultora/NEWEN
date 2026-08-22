@@ -19,6 +19,29 @@
 
 ## Historial
 
+### [2026-08-21] — fix: v0.39.0 — topbar de antes + sidebar captura, Jitsi 1-1, link de video en turnos, campus con acceso independiente
+
+**Prompt**: No le gustó el rediseño v0.38 (no era igual a la captura). Pide: barra horizontal
+superior como antes + menú vertical izquierdo de la captura + KPIs grandes + Campus arriba a la
+derecha destacado. Videollamadas del perfil profesional a Jitsi (sin Daily/tarjeta). Link de video
+configurable por espacio, con el recordatorio de WhatsApp y al lado del turno del día. Campus con
+espacios alquilables y acceso independiente (talleres/cursos/workshops/masterclass), anfitrión
+organizado.
+
+**Acción esperada**: Restaurar topbar (Campus destacado) + sidebar captura + KPIs; sala-1-1 a Jitsi
+(determinística por profesional); quitar Daily (API + lib); `users.jitsi_base` configurable en
+Ajustes; 🎥 en agenda + link en WhatsApp; página pública `/sala/[room]` por espacio; campus Jitsi-only
+con 🔗 link del espacio y anfitrión = 1° en ingresar.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: ver `logs/2026-08-21-fix-v0.39.0.md` (12 archivos).
+
+**Commit**: por registrar
+
+**Próximo paso**: ejecutar `init_v0.39.0_consultorio_video.sql`; decidir si se migra el flujo viejo de
+`sesiones` pagadas (sigue con Daily).
+
 ### [2026-08-20] — feat: v0.38.0 — rediseño panel Empresa (maqueta v2): sidebar + KPIs grandes
 
 **Prompt**: "Así era la maqueta del espacio empresas. Me gusta que tenga el KPI más grande

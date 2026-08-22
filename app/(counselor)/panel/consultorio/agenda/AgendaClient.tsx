@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from "../pages.module.css";
+import { roomUrl } from "@/lib/video";
 
 const FILTROS = [
   { id: "proximos", label: "Próximos" },
@@ -22,12 +23,13 @@ function fmtFecha(iso: string) {
   return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
 }
 
-function buildWaMsg(nombre: string, fecha: string, hora: string) {
+function buildWaMsg(nombre: string, fecha: string, hora: string, link: string) {
   const primerNombre = nombre.split(" ")[0];
   const d = new Date(fecha + "T12:00:00");
   const fechaStr = `${DAYS_FULL[d.getDay()]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]}`;
   const horaStr = (hora ?? "").slice(0, 5);
-  return `Hola ${primerNombre}\n\nTe recuerdo nuestro encuentro agendado para el ${fechaStr} a las ${horaStr}hs.\n\n¿Podés confirmar tu asistencia?\n\n¡Hasta pronto!`;
+  const linkTxt = link ? `\n\n🔗 Enlace de videollamada (Jitsi):\n${link}` : "";
+  return `Hola ${primerNombre}\n\nTe recuerdo nuestro encuentro agendado para el ${fechaStr} a las ${horaStr}hs.\n\n¿Podés confirmar tu asistencia?\n\n¡Hasta pronto!${linkTxt}`;
 }
 
 const ESTADO_BADGE: Record<string, string> = {
@@ -37,7 +39,17 @@ const ESTADO_BADGE: Record<string, string> = {
   ausente: "badgeWarn",
 };
 
-export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: string }) {
+export default function AgendaClient({
+  turnos,
+  hoy,
+  jitsiBase,
+  userId,
+}: {
+  turnos: any[];
+  hoy: string;
+  jitsiBase: string;
+  userId: string;
+}) {
   const [filtro, setFiltro] = useState("proximos");
 
   const filtered = turnos.filter((t) => {
@@ -91,7 +103,8 @@ export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: stri
               {grouped[fecha].map((t: any) => {
                 const nombre = t.patient_name || t.pacientes?.nombre || "—";
                 const phone = (t.patient_phone || t.pacientes?.telefono || "").replace(/\D/g, "");
-                const msg = buildWaMsg(nombre, t.fecha, t.hora ?? "");
+                const vid = roomUrl(jitsiBase, userId, t.id);
+                const msg = buildWaMsg(nombre, t.fecha, t.hora ?? "", vid);
                 const badgeClass = styles[ESTADO_BADGE[t.estado] ?? "badgeMuted"];
                 return (
                   <div key={t.id} className="card" style={{ padding: "14px 16px" }}>
@@ -111,6 +124,16 @@ export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: stri
                       <Link href={`/panel/consultorio/agenda/${t.id}`} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 11 }}>
                         Ver
                       </Link>
+                      <a
+                        href={vid}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-ghost"
+                        style={{ padding: "4px 10px", fontSize: 13, color: "var(--nv-accent)" }}
+                        title="Videollamada del turno (Jitsi)"
+                      >
+                        🎥
+                      </a>
                       {phone && (
                         <a
                           href={`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`}
@@ -118,7 +141,7 @@ export default function AgendaClient({ turnos, hoy }: { turnos: any[]; hoy: stri
                           rel="noopener noreferrer"
                           className="btn-ghost"
                           style={{ padding: "4px 10px", fontSize: 13 }}
-                          title="Confirmar por WhatsApp"
+                          title="Recordatorio por WhatsApp (incluye el enlace de video)"
                         >
                           📲
                         </a>

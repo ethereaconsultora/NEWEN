@@ -13,6 +13,8 @@ export default async function AgendaPage() {
 
   const hoy = new Date().toISOString().split("T")[0];
 
+  const { data: u } = await supabase.from("users").select("jitsi_base").eq("id", user.id).single();
+
   const { data: turnos } = await supabase
     .from("turnos")
     .select("id,fecha,hora,duracion,modalidad,tipo,estado,notas,patient_name,patient_phone,pacientes(nombre,telefono)")
@@ -31,7 +33,7 @@ export default async function AgendaPage() {
         </Link>
       </div>
 
-      <AgendaClient turnos={turnos ?? []} hoy={hoy} />
+      <AgendaClient turnos={turnos ?? []} hoy={hoy} jitsiBase={u?.jitsi_base || ""} userId={user.id} />
     </div>
   );
 }

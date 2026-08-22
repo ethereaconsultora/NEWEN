@@ -59,9 +59,7 @@ export default function CampusPage() {
   const [encounters, setEncounters] = useState<any[]>([]);
   const [section, setSection] = useState<Section>("inicio");
   const [loading, setLoading] = useState(true);
-  const [room, setRoom] = useState<{ titulo: string; room: string; kind: "jitsi" | "daily" } | null>(null);
-  const [dailyUrl, setDailyUrl] = useState("");
-  const [creatingDaily, setCreatingDaily] = useState(false);
+  const [room, setRoom] = useState<{ titulo: string; room: string } | null>(null);
   const [showAgendar, setShowAgendar] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -132,27 +130,13 @@ export default function CampusPage() {
   }
 
   async function abrirSala(enc: any) {
-    if (enc.room_type === "jitsi") {
-      setRoom({ titulo: enc.titulo, room: enc.room_slug, kind: "jitsi" });
-      return;
-    }
-    // Daily.co (1-1): creamos la sala vía API y la abrimos cuando está lista.
-    setCreatingDaily(true);
-    setDailyUrl("");
-    setRoom({ titulo: enc.titulo, room: enc.room_slug, kind: "daily" });
-    const res = await fetch("/api/daily/room", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: enc.room_slug }),
-    });
-    const data = await res.json();
-    setCreatingDaily(false);
-    if (!res.ok) {
-      setRoom(null);
-      notify(data.error || "No se pudo abrir la sala 1-1.");
-      return;
-    }
-    setDailyUrl(data.url);
+    setRoom({ titulo: enc.titulo, room: enc.room_slug });
+  }
+
+  function copiarLink(room: string) {
+    const url = `${window.location.origin}/sala/${room}`;
+    navigator.clipboard?.writeText(url);
+    notify("Link del espacio copiado: " + url);
   }
 
   async function guardarEncuentro() {
@@ -164,7 +148,7 @@ export default function CampusPage() {
     const fecha = (document.getElementById("ce-fecha") as HTMLInputElement)?.value || null;
     const hora = (document.getElementById("ce-hora") as HTMLInputElement)?.value || null;
     const tipo = (document.getElementById("ce-tipo") as HTMLSelectElement)?.value || "encuentro";
-    const room_type = (document.getElementById("ce-room") as HTMLSelectElement)?.value || "jitsi";
+    const room_type = "jitsi";
     const duracion = parseInt((document.getElementById("ce-duracion") as HTMLInputElement)?.value || "60", 10) || 60;
     const descripcion = (document.getElementById("ce-desc") as HTMLTextAreaElement)?.value?.trim() || null;
     const room_slug = slugify(`${org.slug}-${titulo}`).slice(0, 60);
@@ -277,7 +261,8 @@ export default function CampusPage() {
                   <h2>Tu campus digital está activo</h2>
                   <p>
                     Cursos, rutas de aprendizaje, encuentros con video y certificaciones para los equipos de tu
-                    organización. Las salas grupales usan Jitsi; las sesiones 1-1 usan Daily.co.
+                    organización. Cada espacio de video (Jitsi) se accede de forma independiente con su propio
+                    link (/sala/…), ideal para talleres, cursos, workshops y masterclasses.
                   </p>
                 </div>
               </div>
@@ -463,7 +448,7 @@ export default function CampusPage() {
               <h3>🩺 Supervisión</h3>
               <p className={styles.cvEmpty}>
                 Supervisión profesional de casos y prácticas de counseling. Las sesiones 1-1 se realizan por
-                videollamada (Daily.co) desde el panel del profesional.
+                videollamada (Jitsi) desde el panel del profesional.
               </p>
             </div>
           )}
@@ -494,19 +479,20 @@ export default function CampusPage() {
                     <div>
                       <div className={styles.cvRoomTitle}>
                         {e.titulo}{" "}
-                        <span style={{ fontSize: 10.5, color: e.room_type === "daily" ? "#b0773a" : "#3f6b4e", fontWeight: 600 }}>
-                          {e.room_type === "daily" ? "· 1-1 (Daily)" : "· Grupal (Jitsi)"}
-                        </span>
+                        <span style={{ fontSize: 10.5, color: "#3f6b4e", fontWeight: 600 }}>· Video (Jitsi)</span>
                       </div>
                       <div className={styles.cvRoomMeta}>
                         {TIPO_LABEL[e.tipo] ?? e.tipo} · {e.fecha || "fecha a definir"} {e.hora ? `· ${e.hora}` : ""} ·{" "}
-                        {e.duracion_min || 60} min · {ESTADO_LABEL[e.estado] ?? e.estado}
+                        {e.duracion_min || 60} min · {ESTADO_LABEL[e.estado] ?? e.estado} · <strong>Anfitrión: 1° en ingresar</strong>
                       </div>
                       {e.descripcion && <div className={styles.cvRoomMeta}>{e.descripcion}</div>}
                     </div>
                     <div className={styles.cvRoomActions}>
+                      <button className={styles.cvBtnGhost} onClick={() => copiarLink(e.room_slug)}>
+                        🔗 Link del espacio
+                      </button>
                       <button className={styles.cvBtn} onClick={() => abrirSala(e)}>
-                        ▶ Ingresar a sala
+                        ▶ Ingresar
                       </button>
                     </div>
                   </div>
@@ -535,8 +521,7 @@ export default function CampusPage() {
           <div style={{ width: "100%", maxWidth: 1000, background: "#fff", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #e3e7e0" }}>
               <strong style={{ color: "#1f2a24", fontSize: 14 }}>
-                {room.kind === "daily" ? "📞 " : "🎥 "}
-                {room.titulo}
+                🎥 {room.titulo}
               </strong>
               <button
                 onClick={() => setRoom(null)}
@@ -546,36 +531,20 @@ export default function CampusPage() {
               </button>
             </div>
             <div style={{ padding: 20 }}>
-              {room.kind === "jitsi" ? (
-                <>
-                  <div className={styles.cvRoomMetaBox}>
-                    Sala grupal (Jitsi). Compartí la sala con los participantes del encuentro.
-                  </div>
-                  <iframe
-                    src={`${JITSI_BASE}/${room.room}`}
-                    allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write"
-                    className={styles.cvRoomFrame}
-                    allowFullScreen
-                  />
-                </>
-              ) : creatingDaily ? (
-                <div style={{ textAlign: "center", padding: "60px 0", color: "#4a5d4f" }}>
-                  <span className="spinner" />
-                  <p style={{ marginTop: 12, fontSize: 13 }}>Creando sala 1-1 en Daily.co…</p>
-                </div>
-              ) : dailyUrl ? (
-                <>
-                  <div className={styles.cvRoomMetaBox}>
-                    Sesión 1-1 (Daily.co). Compartí esta sala con la persona indicada.
-                  </div>
-                  <iframe
-                    src={dailyUrl}
-                    allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write"
-                    className={styles.cvRoomFrame}
-                    allowFullScreen
-                  />
-                </>
-              ) : null}
+              <div className={styles.cvRoomMetaBox}>
+                Espacio de video (Jitsi). El primero en ingresar es el <strong>anfitrión/moderador</strong>.
+              </div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+                <button className={styles.cvBtnGhost} onClick={() => copiarLink(room.room)}>
+                  🔗 Copiar link del espacio (/sala/{room.room})
+                </button>
+              </div>
+              <iframe
+                src={`${JITSI_BASE}/${room.room}`}
+                allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write"
+                className={styles.cvRoomFrame}
+                allowFullScreen
+              />
             </div>
           </div>
         </div>
@@ -628,11 +597,10 @@ export default function CampusPage() {
                   </select>
                 </div>
                 <div className={styles.cvField}>
-                  <label>Sala de video</label>
-                  <select id="ce-room" defaultValue="jitsi">
-                    <option value="jitsi">Grupal (Jitsi)</option>
-                    <option value="daily">1-1 (Daily.co)</option>
-                  </select>
+                  <label>Espacio de video</label>
+                  <div style={{ fontSize: 12, color: "#4a5d4f", background: "#f7f6f2", border: "1px solid #e3e7e0", borderRadius: 8, padding: "10px 12px" }}>
+                    Jitsi Meet — el espacio se accede de forma independiente por su propio link (/sala/…)
+                  </div>
                 </div>
               </div>
               <div className={styles.cvField}>

@@ -48,7 +48,7 @@ const ESTADO_LABEL: Record<string, string> = {
   cancelado: "Cancelado",
 };
 
-type Section = "tablero" | "sistemas" | "informes" | "campus" | "agenda" | "bitacora" | "empleados";
+type Section = "general" | "sistemas" | "informes" | "agenda" | "seguimiento" | "empleados";
 
 function hoy() {
   return new Date().toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
@@ -61,7 +61,6 @@ function cortarFecha(f: string) {
   return d.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
 }
 
-/** Abre una ventana de impresión con un informe formateado (el usuario elige "Guardar como PDF"). */
 function downloadReport(title: string, body: string) {
   const w = window.open("", "_blank", "width=860,height=920");
   if (!w) return;
@@ -87,7 +86,7 @@ export default function EmpresaDashboard() {
   const [derivaciones, setDerivaciones] = useState<any[]>([]);
   const [encounters, setEncounters] = useState<any[]>([]);
   const [archived, setArchived] = useState<any[]>([]);
-  const [section, setSection] = useState<Section>("tablero");
+  const [section, setSection] = useState<Section>("general");
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ type: string; data?: any } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -162,16 +161,13 @@ export default function EmpresaDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.id]);
 
-  /* ── Clientes ── */
   async function saveCliente() {
     const nombre = val("nc-nombre");
     if (!nombre) {
       notify("Ingresá el nombre de la empresa");
       return;
     }
-    const servicios = Array.from(
-      document.querySelectorAll<HTMLInputElement>("#nc-servicios input:checked")
-    ).map((i) => i.value);
+    const servicios = Array.from(document.querySelectorAll<HTMLInputElement>("#nc-servicios input:checked")).map((i) => i.value);
     const { error } = await supabase.from("organization_clients").insert({
       organization_id: org.id,
       nombre,
@@ -195,9 +191,7 @@ export default function EmpresaDashboard() {
 
   async function saveEdicion() {
     if (!active) return;
-    const servicios = Array.from(
-      document.querySelectorAll<HTMLInputElement>("#ec-servicios input:checked")
-    ).map((i) => i.value);
+    const servicios = Array.from(document.querySelectorAll<HTMLInputElement>("#ec-servicios input:checked")).map((i) => i.value);
     const { error } = await supabase
       .from("organization_clients")
       .update({
@@ -232,12 +226,7 @@ export default function EmpresaDashboard() {
   }
 
   async function openArchivados() {
-    const { data } = await supabase
-      .from("organization_clients")
-      .select("*")
-      .eq("organization_id", org.id)
-      .eq("archivado", true)
-      .order("nombre");
+    const { data } = await supabase.from("organization_clients").select("*").eq("organization_id", org.id).eq("archivado", true).order("nombre");
     setArchived(data ?? []);
     setModal({ type: "archivados" });
   }
@@ -265,7 +254,6 @@ export default function EmpresaDashboard() {
     notify(`Cliente avanzó a Fase ${next} (${FASES[next - 1]})`);
   }
 
-  /* ── Empleados ── */
   async function saveEmpleado() {
     const nombre = val("ne-nombre");
     if (!nombre) {
@@ -291,9 +279,7 @@ export default function EmpresaDashboard() {
   }
 
   async function derivar(emp: any) {
-    const temas = Array.from(
-      document.querySelectorAll<HTMLInputElement>("#dv-temas input:checked")
-    ).map((i) => i.value);
+    const temas = Array.from(document.querySelectorAll<HTMLInputElement>("#dv-temas input:checked")).map((i) => i.value);
     if (!temas.length) {
       notify("Seleccioná al menos un tema");
       return;
@@ -323,7 +309,6 @@ export default function EmpresaDashboard() {
     notify("Derivación enviada a Newen");
   }
 
-  /* ── Tareas ── */
   async function saveTarea() {
     const titulo = val("nt-titulo");
     if (!titulo) {
@@ -331,11 +316,7 @@ export default function EmpresaDashboard() {
       return;
     }
     const estado = (val("nt-estado") as any) || "pendiente";
-    const { error } = await supabase.from("organization_tasks").insert({
-      client_id: active.id,
-      titulo,
-      estado,
-    });
+    const { error } = await supabase.from("organization_tasks").insert({ client_id: active.id, titulo, estado });
     if (error) {
       notify("Error: " + error.message);
       return;
@@ -369,13 +350,8 @@ export default function EmpresaDashboard() {
     await reloadActive();
   }
 
-  /* ── Mensajería ── */
   async function loadMsgs(derivId: string) {
-    const { data } = await supabase
-      .from("organization_mensajes")
-      .select("*")
-      .eq("derivacion_id", derivId)
-      .order("created_at");
+    const { data } = await supabase.from("organization_mensajes").select("*").eq("derivacion_id", derivId).order("created_at");
     setMsgs(data ?? []);
   }
 
@@ -391,11 +367,7 @@ export default function EmpresaDashboard() {
   async function enviarMensaje() {
     const texto = msgInput.trim();
     if (!texto || !selDerivId) return;
-    const { error } = await supabase.from("organization_mensajes").insert({
-      derivacion_id: selDerivId,
-      de: "espacio",
-      texto,
-    });
+    const { error } = await supabase.from("organization_mensajes").insert({ derivacion_id: selDerivId, de: "espacio", texto });
     if (error) {
       notify("Error al enviar: " + error.message);
       return;
@@ -404,7 +376,6 @@ export default function EmpresaDashboard() {
     await loadMsgs(selDerivId);
   }
 
-  /* ── Informes ── */
   function reportEjecutivo(): string {
     const n = active?.nombre ?? org?.nombre ?? "—";
     const fase = active?.fase ?? 1;
@@ -429,12 +400,8 @@ export default function EmpresaDashboard() {
   }
 
   function reportAvance(): string {
-    const avg = employees.length
-      ? Math.round(employees.reduce((s, e) => s + (e.avance ?? 0), 0) / employees.length)
-      : 0;
-    const rows = employees
-      .map((e) => `<tr><td>${e.nombre}</td><td>${e.area ?? "—"}</td><td>${e.rol ?? "—"}</td><td>${e.avance ?? 0}%</td></tr>`)
-      .join("");
+    const avg = employees.length ? Math.round(employees.reduce((s, e) => s + (e.avance ?? 0), 0) / employees.length) : 0;
+    const rows = employees.map((e) => `<tr><td>${e.nombre}</td><td>${e.area ?? "—"}</td><td>${e.rol ?? "—"}</td><td>${e.avance ?? 0}%</td></tr>`).join("");
     return (
       `<h1>Reporte Trimestral de Avance</h1><div class="meta">${org?.nombre ?? ""} · ${hoy()}</div>` +
       `<p>Avance promedio del equipo: <strong>${avg}%</strong>. Fase actual: ${active?.fase ?? 1} (${FASES[(active?.fase ?? 1) - 1]}).</p>` +
@@ -444,10 +411,7 @@ export default function EmpresaDashboard() {
 
   function reportRiesgos(): string {
     const rows = derivaciones
-      .map(
-        (d) =>
-          `<tr><td>${d.persona}</td><td>${(d.temas ?? []).join(", ")}</td><td>${d.counselor ?? "—"}</td><td>${d.quien_deriva}</td></tr>`
-      )
+      .map((d) => `<tr><td>${d.persona}</td><td>${(d.temas ?? []).join(", ")}</td><td>${d.counselor ?? "—"}</td><td>${d.quien_deriva}</td></tr>`)
       .join("");
     return (
       `<h1>Evaluación de Riesgos Psicosociales</h1><div class="meta">${org?.nombre ?? ""} · Confidencial · ${hoy()}</div>` +
@@ -488,498 +452,479 @@ export default function EmpresaDashboard() {
   }
 
   const fase = active?.fase ?? 1;
-  const avanceProm = employees.length
-    ? Math.round(employees.reduce((s, e) => s + (e.avance ?? 0), 0) / employees.length)
-    : 0;
+  const avanceProm = employees.length ? Math.round(employees.reduce((s, e) => s + (e.avance ?? 0), 0) / employees.length) : 0;
   const hitos = encounters.filter((x) => x.estado === "programado" || x.estado === "en_vivo").slice(0, 3);
   const talleres = encounters.filter((x) => (x.tipo ?? "encuentro") === "taller");
   const derivsEmp = modal?.type === "mensajes" ? derivaciones.filter((d) => d.employee_id === modal.data?.id) : [];
 
   const SIDEBAR: { section?: Section; link?: string; label: string; icon: string }[] = [
-    { section: "tablero", label: "Tablero Principal", icon: "🏛️" },
+    { section: "general", label: "Tablero Principal", icon: "🏛️" },
     { section: "sistemas", label: "Sistemas Activos", icon: "⚙️" },
     { section: "informes", label: "Informes & Diagnósticos", icon: "📑" },
     { link: "/empresa/campus", label: "Campus Virtual", icon: "🎓" },
     { section: "agenda", label: "Calendario de Talleres", icon: "🗓️" },
-    { section: "bitacora", label: "Bitácora de Counseling", icon: "💬" },
+    { section: "seguimiento", label: "Bitácora de Counseling", icon: "💬" },
     { section: "empleados", label: "Empleados", icon: "👥" },
   ];
 
   return (
-    <div className={styles.adminShell}>
-      {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>
+    <>
+      {/* Topbar horizontal (como antes) */}
+      <div className={styles.topbar}>
+        <div className={styles.brandRow}>
           {org.logo_url ? (
-            <div className={styles.brandIcon}>
-              <img src={org.logo_url} alt="" />
-            </div>
+            <img src={org.logo_url} alt={org.nombre} className={styles.orgLogo} />
           ) : (
-            <div className={styles.brandIcon}>N</div>
+            <div className={styles.brandMark}>{(org.nombre ?? "E").charAt(0)}</div>
           )}
-          <div>
-            <div className={styles.brandTitle}>Newen OS</div>
-            <div className={styles.brandSub}>{org.nombre} Workspace</div>
-          </div>
+          <div className={styles.badge}>🛡️ PANEL DE ADMINISTRACIÓN — {org.nombre.toUpperCase()}</div>
         </div>
-
-        <div className={styles.navSection}>Gobierno Organizacional</div>
-        {SIDEBAR.slice(0, 3).map((item) => (
-          <button
-            key={item.label}
-            className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
-            onClick={() => item.section && setSection(item.section)}
-          >
-            <span>{item.icon}</span> {item.label}
+        <div className={styles.actions}>
+          <button className={styles.btn} onClick={() => setModal({ type: "nuevo" })}>
+            + Cargar Cliente
           </button>
-        ))}
-
-        <div className={styles.navSection}>Operaciones & Campus</div>
-        <Link className={styles.navItem} href="/empresa/campus">
-          <span>🎓</span> Campus Virtual
-        </Link>
-        {SIDEBAR.slice(4, 6).map((item) => (
-          <button
-            key={item.label}
-            className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
-            onClick={() => item.section && setSection(item.section)}
-          >
-            <span>{item.icon}</span> {item.label}
+          <button className={styles.btnOutline} onClick={openArchivados}>
+            🗂 Archivados
           </button>
-        ))}
-
-        <div className={styles.navSection}>Equipos</div>
-        {SIDEBAR.slice(6, 7).map((item) => (
-          <button
-            key={item.label}
-            className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
-            onClick={() => item.section && setSection(item.section)}
-          >
-            <span>{item.icon}</span> {item.label}
+          <Link className={styles.btnOutline} href="/empresas/crear?edit=1">
+            🖼 Editar mi espacio
+          </Link>
+          <Link className={styles.btnOutline} href={`/e/${org.slug}`} target="_blank">
+            🌐 Sitio público
+          </Link>
+          <button className={styles.btnPdf} onClick={() => downloadReport("Informe Ejecutivo", reportEjecutivo())}>
+            📄 Informe PDF
           </button>
-        ))}
-
-        <div className={styles.clientSel}>
-          <div className={styles.clientLabel}>Cliente seleccionado</div>
-          <select value={active?.id ?? ""} onChange={(e) => setSelected(e.target.value)}>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}
-              </option>
-            ))}
-          </select>
+          <Link className={styles.btn} href="/empresa/campus" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            🎓 Campus
+          </Link>
         </div>
-      </aside>
+      </div>
 
-      {/* Main */}
-      <div className={styles.adminMain}>
-        <div className={styles.headerArea}>
-          <div className={styles.headerTop}>
-            <div className={styles.pageTitle}>
-              <h1>
-                {active ? `${active.nombre} — Sistema de Desarrollo Organizacional` : org.nombre}
-              </h1>
-              <p>
-                Monitoreo de capacidad instalada, intervenciones y métricas de impacto de {org.nombre}.
-              </p>
-            </div>
-            <div className={styles.headerBtns}>
-              <button className={styles.btn} onClick={() => setModal({ type: "nuevo" })}>
-                + Cargar Cliente
-              </button>
-              <button className={styles.btnOutline} onClick={openArchivados}>
-                🗂 Archivados
-              </button>
-              <Link className={styles.btnOutline} href="/empresas/crear?edit=1">
-                🖼 Editar mi espacio
-              </Link>
-              <button className={styles.btnPdf} onClick={() => downloadReport("Informe Ejecutivo", reportEjecutivo())}>
-                📄 Informe PDF
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.tabsNav}>
-            {[
-              { id: "tablero" as Section, label: "📊 1. Visión General" },
-              { id: "sistemas" as Section, label: "⚙️ 2. Sistemas en Ejecución (6 Fases)" },
-              { id: "informes" as Section, label: "📑 3. Informes & Diagnósticos" },
-              { id: "campus" as Section, label: "🎓 4. Campus & Operaciones" },
-            ].map((t) => (
-              <button
-                key={t.id}
-                className={`${styles.tabBtn}${section === t.id ? ` ${styles.tabBtnActive}` : ""}`}
-                onClick={() => setSection(t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.workspace}>
-          {/* TABLERO */}
-          {section === "tablero" && (
-            <>
-              <div className={styles.kpiGrid}>
-                <div className={styles.kpi}>
-                  <div className={styles.kpiLabel}>Adherencia del Liderazgo</div>
-                  <div className={styles.kpiVal}>
-                    {avanceProm}
-                    <em>%</em>
-                  </div>
-                  <div className={styles.kpiTrend}>↑ +{avanceProm}% vs. diagnóstico inicial</div>
-                </div>
-                <div className={styles.kpi}>
-                  <div className={styles.kpiLabel}>Índice de Seguridad Psicológica</div>
-                  <div className={styles.kpiVal}>
-                    7.8 <em>/ 10</em>
-                  </div>
-                  <div className={styles.kpiTrend}>↑ Nivel óptimo para innovación</div>
-                </div>
-                <div className={styles.kpi}>
-                  <div className={styles.kpiLabel}>Sistemas Instalados</div>
-                  <div className={styles.kpiVal}>
-                    {fase} <em>de 6</em>
-                  </div>
-                  <div className={styles.kpiTrendGold}>Fase actual: {FASES[fase - 1]}</div>
-                </div>
+      <div className={styles.adminShell}>
+        {/* Sidebar (como la captura) */}
+        <aside className={styles.sidebar}>
+          <div className={styles.brand}>
+            {org.logo_url ? (
+              <div className={styles.brandIcon}>
+                <img src={org.logo_url} alt="" />
               </div>
+            ) : (
+              <div className={styles.brandIcon}>N</div>
+            )}
+            <div>
+              <div className={styles.brandTitle}>Newen OS</div>
+              <div className={styles.brandSub}>{org.nombre} Workspace</div>
+            </div>
+          </div>
 
-              <div className={styles.mainSplit}>
-                <div className={styles.systemCard}>
-                  <div className={styles.systemHead}>
-                    <div>
-                      <h3>Estado del Contrato & Avance Global</h3>
-                      <p>Programa Anual de Transformación de Clima y Liderazgo Constructivo.</p>
-                    </div>
-                    <button className={styles.btnOutline} onClick={avanzarFase} disabled={fase >= 6}>
-                      ⚙️ Admin: Avanzar de fase
+          <div className={styles.navSection}>Gobierno Organizacional</div>
+          {SIDEBAR.slice(0, 3).map((item) => (
+            <button
+              key={item.label}
+              className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
+              onClick={() => item.section && setSection(item.section)}
+            >
+              <span>{item.icon}</span> {item.label}
+            </button>
+          ))}
+
+          <div className={styles.navSection}>Operaciones & Campus</div>
+          <Link className={styles.navItem} href="/empresa/campus">
+            <span>🎓</span> Campus Virtual
+          </Link>
+          {SIDEBAR.slice(4, 6).map((item) => (
+            <button
+              key={item.label}
+              className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
+              onClick={() => item.section && setSection(item.section)}
+            >
+              <span>{item.icon}</span> {item.label}
+            </button>
+          ))}
+
+          <div className={styles.navSection}>Equipos</div>
+          {SIDEBAR.slice(6, 7).map((item) => (
+            <button
+              key={item.label}
+              className={`${styles.navItem}${section === item.section ? ` ${styles.navItemActive}` : ""}`}
+              onClick={() => item.section && setSection(item.section)}
+            >
+              <span>{item.icon}</span> {item.label}
+            </button>
+          ))}
+
+          <div className={styles.clientSel}>
+            <div className={styles.clientLabel}>Cliente seleccionado</div>
+            <select value={active?.id ?? ""} onChange={(e) => setSelected(e.target.value)}>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div className={styles.adminMain}>
+          <div className={styles.headerArea}>
+            <div className={styles.headerTop}>
+              <div className={styles.pageTitle}>
+                <h1>{active ? `${active.nombre} — Sistema de Desarrollo Organizacional` : org.nombre}</h1>
+                <p>
+                  Fase {fase} — {FASES[fase - 1]} · Monitoreo de capacidad instalada, intervenciones y métricas de impacto de {org.nombre}.
+                </p>
+              </div>
+              <div className={styles.headerBtns}>
+                {active && (
+                  <>
+                    <button className={styles.btnOutline} onClick={() => setModal({ type: "ficha" })}>
+                      👤 Ficha
                     </button>
-                  </div>
-                  <p style={{ color: "var(--ec-muted)", fontSize: 13 }}>
-                    La organización se encuentra en la <strong style={{ color: "var(--ec-ac)" }}>Fase {fase} ({FASES[fase - 1]})</strong>.
-                    Servicios contratados: {(active?.servicios ?? []).join(", ") || "Sin servicios asignados"}.
-                  </p>
-                  <div className={styles.adminNote}>
-                    <strong>📝 Bitácora interna (solo admin):</strong>
-                    {tasks.length
-                      ? tasks.slice(0, 2).map((t) => `${t.titulo}${(t.anotaciones ?? []).length ? ` — ${t.anotaciones[0]}` : ""}`).join(" · ")
-                      : "Sin anotaciones de seguimiento todavía. Cargá tareas en la Bitácora de Counseling."}
-                  </div>
-                </div>
-
-                <div className={styles.systemCard}>
-                  <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "var(--ec-ac)", fontWeight: "normal" }}>
-                    Próximos Hitos
-                  </h3>
-                  <ul className={styles.milestones}>
-                    {hitos.length ? (
-                      hitos.map((h) => (
-                        <li key={h.id}>
-                          <strong>{cortarFecha(h.fecha)}:</strong> {h.titulo}
-                        </li>
-                      ))
-                    ) : (
-                      <li>Sin hitos programados. Agendá encuentros en el campus.</li>
-                    )}
-                  </ul>
-                </div>
+                    <button className={styles.btnOutline} onClick={() => setModal({ type: "editar" })}>
+                      ✏️ Editar
+                    </button>
+                    <button className={styles.btnOutline} onClick={() => setModal({ type: "archivar" })}>
+                      🗂 Archivar
+                    </button>
+                  </>
+                )}
               </div>
-            </>
-          )}
+            </div>
 
-          {/* SISTEMAS */}
-          {section === "sistemas" && (
-            <div className={styles.systemCard}>
-              <div className={styles.systemHead}>
-                <div>
-                  <h3>Sistema 1: {FASES[fase - 1]} Organizacional</h3>
-                  <p>Ciclo metodológico de 6 fases para instalar la capacidad en la organización.</p>
-                </div>
-                <div>
-                  <span style={{ fontSize: 11, color: "var(--ec-ac)", fontWeight: 600 }}>
-                    FASE ACTUAL: {fase} DE 6
-                  </span>
-                </div>
-              </div>
-              <div className={styles.phasesGrid}>
-                {FASES.map((f, i) => {
-                  const n = i + 1;
-                  const cls =
-                    n < fase ? styles.phaseBoxDone : n === fase ? styles.phaseBoxCurrent : "";
-                  const status =
-                    n < fase ? "Completado ✓" : n === fase ? "En Curso" : "Pendiente";
-                  return (
-                    <div key={f} className={`${styles.phaseBox} ${cls}`}>
-                      <div className={styles.phaseNum}>Fase {n}</div>
-                      <div className={styles.phaseBoxTitle}>{f}</div>
-                      <div className={styles.phaseBoxStatus}>{status}</div>
+            <div className={styles.tabsNav}>
+              {[
+                { id: "general" as Section, label: "📊 Visión General & KPIs" },
+                { id: "sistemas" as Section, label: "⚙️ Sistemas (6 Fases)" },
+                { id: "informes" as Section, label: "📑 Informes & Diagnósticos" },
+                { id: "agenda" as Section, label: "🗓️ Agenda de Talleres" },
+                { id: "seguimiento" as Section, label: "📋 Seguimiento & Tareas" },
+                { id: "empleados" as Section, label: "👥 Empleados" },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  className={`${styles.tabBtn}${section === t.id ? ` ${styles.tabBtnActive}` : ""}`}
+                  onClick={() => setSection(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.workspace}>
+            {/* VISIÓN GENERAL / TABLERO */}
+            {section === "general" && (
+              <>
+                <div className={styles.kpiGrid}>
+                  <div className={styles.kpi}>
+                    <div className={styles.kpiLabel}>Adherencia del Liderazgo</div>
+                    <div className={styles.kpiVal}>
+                      {avanceProm}
+                      <em>%</em>
                     </div>
-                  );
-                })}
-              </div>
-              <div style={{ marginTop: 18, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-                <span style={{ fontSize: 11, color: "var(--ec-dim)" }}>Última actualización por Counselor: {hoy()}</span>
-                <button className={styles.btn} onClick={avanzarFase} disabled={fase >= 6}>
-                  {fase >= 6 ? "Completado" : `Avanzar a Fase ${fase + 1} (${FASES[Math.min(fase, 5)]}) ➔`}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* INFORMES */}
-          {section === "informes" && (
-            <div className={styles.systemCard}>
-              <div className={styles.systemHead}>
-                <h3>Repositorio Oficial de Entregables Técnico-Clínicos</h3>
-                <button className={styles.btn} onClick={() => notify("Carga de informes próximamente")}>
-                  + Cargar Nuevo Informe PDF
-                </button>
-              </div>
-              <table className={styles.docTable}>
-                <thead>
-                  <tr>
-                    <th>Nombre del documento</th>
-                    <th>Tipo / Fase</th>
-                    <th>Fecha</th>
-                    <th>Visibilidad</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>📑 Informe de Diagnóstico Inicial y Mapeo de Clima</td>
-                    <td>Informe de Fase 1</td>
-                    <td>{hoy()}</td>
-                    <td><span style={{ color: "#7cb385" }}>Visible para Cliente</span></td>
-                    <td>
-                      <button className={styles.btnPdf} onClick={() => downloadReport("Informe de Diagnóstico Inicial", reportDiagnostico())}>
-                        📄 PDF
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>
-                      🔒 Notas_Privadas_Counseling <span className={styles.badgeTag}>PRIVADO ADMIN</span>
-                    </td>
-                    <td>Bitácora Confidencial</td>
-                    <td>{hoy()}</td>
-                    <td><span style={{ color: "var(--ec-ac)" }}>Solo {org.nombre}</span></td>
-                    <td>
-                      <button className={styles.btnPdf} onClick={() => downloadReport("Evaluación de Riesgos Psicosociales", reportRiesgos())}>
-                        📄 PDF
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>📊 Reporte de Avance y Métricas de Impacto</td>
-                    <td>Reporte Ejecutivo C-Level</td>
-                    <td>{hoy()}</td>
-                    <td><span style={{ color: "#7cb385" }}>Visible para Cliente</span></td>
-                    <td>
-                      <button className={styles.btnPdf} onClick={() => downloadReport("Reporte Trimestral de Avance", reportAvance())}>
-                        📄 PDF
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* CAMPUS & OPERACIONES */}
-          {section === "campus" && (
-            <div className={styles.systemCard}>
-              <div className={styles.systemHead}>
-                <div>
-                  <h3>Integración con Campus Virtual & Sesiones 1 a 1</h3>
-                  <p>Administración de talleres y turnos de counseling confidencial.</p>
+                    <div className={styles.kpiTrend}>↑ +{avanceProm}% vs. diagnóstico inicial</div>
+                  </div>
+                  <div className={styles.kpi}>
+                    <div className={styles.kpiLabel}>Índice de Seguridad Psicológica</div>
+                    <div className={styles.kpiVal}>
+                      7.8 <em>/ 10</em>
+                    </div>
+                    <div className={styles.kpiTrend}>↑ Nivel óptimo para innovación</div>
+                  </div>
+                  <div className={styles.kpi}>
+                    <div className={styles.kpiLabel}>Sistemas Instalados</div>
+                    <div className={styles.kpiVal}>
+                      {fase} <em>de 6</em>
+                    </div>
+                    <div className={styles.kpiTrendGold}>Fase actual: {FASES[fase - 1]}</div>
+                  </div>
                 </div>
-                <Link className={styles.btn} href="/empresa/campus">
-                  🔗 Abrir Campus Virtual ↗
-                </Link>
-              </div>
-              <div className={styles.mainSplit} style={{ marginBottom: 0 }}>
-                <div>
-                  <h4 style={{ color: "var(--ec-ac)", fontFamily: "Georgia, serif", marginBottom: 12 }}>Talleres Programados</h4>
-                  {talleres.length === 0 ? (
-                    <p className={styles.empty}>No hay talleres programados. Agendalos en el campus.</p>
-                  ) : (
-                    talleres.slice(0, 4).map((t) => (
-                      <div key={t.id} className={styles.agendaItem}>
-                        <strong>{t.titulo}</strong>
-                        <div className={styles.agendaWhen}>
-                          {cortarFecha(t.fecha)} {t.hora ? `· ${t.hora}` : ""} · {t.duracion_min || 60} min
-                        </div>
+
+                <div className={styles.mainSplit}>
+                  <div className={styles.systemCard}>
+                    <div className={styles.systemHead}>
+                      <div>
+                        <h3>Estado del Contrato & Avance Global</h3>
+                        <p>Programa Anual de Transformación de Clima y Liderazgo Constructivo.</p>
                       </div>
-                    ))
-                  )}
-                </div>
-                <div>
-                  <h4 style={{ color: "var(--ec-ac)", fontFamily: "Georgia, serif", marginBottom: 12 }}>
-                    Turnos de Counseling Confidencial
-                  </h4>
-                  <div className={styles.agendaItem}>
-                    <div style={{ fontSize: 12.5, color: "var(--ec-text)" }}>
-                      {derivaciones.length} sesión(es) solicitada(s) para este cliente.
+                      <button className={styles.btnOutline} onClick={avanzarFase} disabled={fase >= 6}>
+                        ⚙️ Admin: Avanzar de fase
+                      </button>
                     </div>
-                    <div style={{ fontSize: 11, color: "var(--ec-dim)", marginTop: 4 }}>
-                      Los datos del colaborador permanecen confidenciales ante el cliente.
-                    </div>
-                  </div>
-                  <button className={styles.btnOutline} style={{ marginTop: 10 }} onClick={() => setSection("empleados")}>
-                    👥 Ver empleados y derivar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* AGENDA / CALENDARIO DE TALLERES */}
-          {section === "agenda" && (
-            <div className={styles.systemCard}>
-              <div className={styles.systemHead}>
-                <div>
-                  <h3>🗓️ Calendario de Talleres & Encuentros</h3>
-                  <p>Próximas intervenciones grupales de {active?.nombre ?? "—"}.</p>
-                </div>
-                <button className={styles.btn} onClick={() => setSection("campus")}>
-                  + Agendar en el campus
-                </button>
-              </div>
-              {encounters.length === 0 ? (
-                <p className={styles.empty}>No hay encuentros agendados. Programá el primero en el campus.</p>
-              ) : (
-                encounters.map((e) => (
-                  <div key={e.id} className={styles.agendaItem}>
-                    <strong>{e.titulo}</strong>
-                    <div className={styles.agendaWhen}>
-                      {TIPO_LABEL[e.tipo] ?? e.tipo} · {cortarFecha(e.fecha)} {e.hora ? `· ${e.hora}` : ""} · {e.duracion_min || 60} min ·{" "}
-                      {ESTADO_LABEL[e.estado] ?? e.estado} · {e.room_type === "daily" ? "1-1 (Daily)" : "Grupal (Jitsi)"}
+                    <p style={{ color: "var(--ec-muted)", fontSize: 13 }}>
+                      La organización se encuentra en la <strong style={{ color: "var(--ec-ac)" }}>Fase {fase} ({FASES[fase - 1]})</strong>.
+                      Servicios contratados: {(active?.servicios ?? []).join(", ") || "Sin servicios asignados"}.
+                    </p>
+                    <div className={styles.adminNote}>
+                      <strong>📝 Bitácora interna (solo admin):</strong>
+                      {tasks.length
+                        ? tasks.slice(0, 2).map((t) => `${t.titulo}${(t.anotaciones ?? []).length ? ` — ${t.anotaciones[0]}` : ""}`).join(" · ")
+                        : "Sin anotaciones de seguimiento todavía. Cargá tareas en la Bitácora de Counseling."}
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-          )}
 
-          {/* BITÁCORA */}
-          {section === "bitacora" && (
-            <>
+                  <div className={styles.systemCard}>
+                    <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "var(--ec-ac)", fontWeight: "normal" }}>
+                      Próximos Hitos
+                    </h3>
+                    <ul className={styles.milestones}>
+                      {hitos.length ? (
+                        hitos.map((h) => (
+                          <li key={h.id}>
+                            <strong>{cortarFecha(h.fecha)}:</strong> {h.titulo}
+                          </li>
+                        ))
+                      ) : (
+                        <li>Sin hitos programados. Agendá encuentros en el campus.</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* SISTEMAS */}
+            {section === "sistemas" && (
               <div className={styles.systemCard}>
                 <div className={styles.systemHead}>
                   <div>
-                    <h3>📝 Bitácora de Counseling & Seguimiento por Tarea</h3>
-                    <p>Anotaciones y avances de la intervención de {active?.nombre ?? "—"}.</p>
+                    <h3>Sistema 1: {FASES[fase - 1]} Organizacional</h3>
+                    <p>Ciclo metodológico de 6 fases para instalar la capacidad en la organización.</p>
                   </div>
-                  <button className={styles.btn} onClick={() => setModal({ type: "tarea" })}>
-                    + Nueva tarea
-                  </button>
+                  <div>
+                    <span style={{ fontSize: 11, color: "var(--ec-ac)", fontWeight: 600 }}>FASE ACTUAL: {fase} DE 6</span>
+                  </div>
                 </div>
-                {tasks.length === 0 ? (
-                  <p className={styles.empty}>No hay tareas cargadas para este cliente.</p>
-                ) : (
-                  tasks.map((t) => {
-                    const est = ESTADOS_TAREA[t.estado] ?? ESTADOS_TAREA.pendiente;
-                    const nextEstado = t.estado === "pendiente" ? "encurso" : t.estado === "encurso" ? "completada" : "pendiente";
+                <div className={styles.phasesGrid}>
+                  {FASES.map((f, i) => {
+                    const n = i + 1;
+                    const cls = n < fase ? styles.phaseBoxDone : n === fase ? styles.phaseBoxCurrent : "";
+                    const status = n < fase ? "Completado ✓" : n === fase ? "En Curso" : "Pendiente";
                     return (
-                      <div key={t.id} className={styles.taskRow}>
-                        <div className={styles.taskHead}>
-                          <div className={styles.taskTitle}>{t.titulo}</div>
-                          <span
-                            className={`${styles.badge} ${styles[est.cls as "badgePend"]}`}
-                            title="Click para cambiar estado"
-                            onClick={() => changeTaskState(t.id, nextEstado)}
-                          >
-                            {est.label}
-                          </span>
-                        </div>
-                        {(t.anotaciones ?? []).length > 0 && (
-                          <div className={styles.anotList}>
-                            {(t.anotaciones as string[]).map((a, i) => (
-                              <div key={i} className={styles.anot}>
-                                {a}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <div className={styles.anotForm}>
-                          <input id={`anot-${t.id}`} className={styles.anotInput} placeholder="Agregar anotación de seguimiento…" />
-                          <button className={styles.btnOutline} onClick={() => addAnotacion(t.id)}>
-                            Agregar
-                          </button>
-                        </div>
+                      <div key={f} className={`${styles.phaseBox} ${cls}`}>
+                        <div className={styles.phaseNum}>Fase {n}</div>
+                        <div className={styles.phaseBoxTitle}>{f}</div>
+                        <div className={styles.phaseBoxStatus}>{status}</div>
                       </div>
                     );
-                  })
-                )}
+                  })}
+                </div>
+                <div style={{ marginTop: 18, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+                  <span style={{ fontSize: 11, color: "var(--ec-dim)" }}>Última actualización por Counselor: {hoy()}</span>
+                  <button className={styles.btn} onClick={avanzarFase} disabled={fase >= 6}>
+                    {fase >= 6 ? "Completado" : `Avanzar a Fase ${fase + 1} (${FASES[Math.min(fase, 5)]}) ➔`}
+                  </button>
+                </div>
               </div>
+            )}
 
+            {/* INFORMES */}
+            {section === "informes" && (
               <div className={styles.systemCard}>
-                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "var(--ec-ac)", fontWeight: "normal" }}>
-                  💬 Solicitudes de counseling
-                </h3>
-                {derivaciones.length === 0 ? (
-                  <p className={styles.empty} style={{ marginTop: 10 }}>
-                    Todavía no hay solicitudes de counseling para este cliente.
-                  </p>
+                <div className={styles.systemHead}>
+                  <h3>Repositorio Oficial de Entregables Técnico-Clínicos</h3>
+                  <button className={styles.btn} onClick={() => notify("Carga de informes próximamente")}>
+                    + Cargar Nuevo Informe PDF
+                  </button>
+                </div>
+                <table className={styles.docTable}>
+                  <thead>
+                    <tr>
+                      <th>Nombre del documento</th>
+                      <th>Tipo / Fase</th>
+                      <th>Fecha</th>
+                      <th>Visibilidad</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>📑 Informe de Diagnóstico Inicial y Mapeo de Clima</td>
+                      <td>Informe de Fase 1</td>
+                      <td>{hoy()}</td>
+                      <td><span style={{ color: "#7cb385" }}>Visible para Cliente</span></td>
+                      <td>
+                        <button className={styles.btnPdf} onClick={() => downloadReport("Informe de Diagnóstico Inicial", reportDiagnostico())}>
+                          📄 PDF
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>
+                        🔒 Notas_Privadas_Counseling <span className={styles.badgeTag}>PRIVADO ADMIN</span>
+                      </td>
+                      <td>Bitácora Confidencial</td>
+                      <td>{hoy()}</td>
+                      <td><span style={{ color: "var(--ec-ac)" }}>Solo {org.nombre}</span></td>
+                      <td>
+                        <button className={styles.btnPdf} onClick={() => downloadReport("Evaluación de Riesgos Psicosociales", reportRiesgos())}>
+                          📄 PDF
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: "var(--ec-text)", fontWeight: 500 }}>📊 Reporte de Avance y Métricas de Impacto</td>
+                      <td>Reporte Ejecutivo C-Level</td>
+                      <td>{hoy()}</td>
+                      <td><span style={{ color: "#7cb385" }}>Visible para Cliente</span></td>
+                      <td>
+                        <button className={styles.btnPdf} onClick={() => downloadReport("Reporte Trimestral de Avance", reportAvance())}>
+                          📄 PDF
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* AGENDA DE TALLERES */}
+            {section === "agenda" && (
+              <div className={styles.systemCard}>
+                <div className={styles.systemHead}>
+                  <div>
+                    <h3>🗓️ Calendario de Talleres & Encuentros</h3>
+                    <p>Próximas intervenciones grupales de {active?.nombre ?? "—"}.</p>
+                  </div>
+                  <Link className={styles.btn} href="/empresa/campus">
+                    + Agendar en el campus
+                  </Link>
+                </div>
+                {encounters.length === 0 ? (
+                  <p className={styles.empty}>No hay encuentros agendados. Programá el primero en el campus.</p>
                 ) : (
-                  derivaciones.map((d) => (
-                    <div key={d.id} className={styles.agendaItem}>
-                      <strong>Sesión confidencial — {d.persona}</strong>
+                  encounters.map((e) => (
+                    <div key={e.id} className={styles.agendaItem}>
+                      <strong>{e.titulo}</strong>
                       <div className={styles.agendaWhen}>
-                        Temas: {(d.temas ?? []).join(", ")} · Profesional: {d.counselor ?? "a designar"} · Derivado por {d.quien_deriva}
+                        {TIPO_LABEL[e.tipo] ?? e.tipo} · {cortarFecha(e.fecha)} {e.hora ? `· ${e.hora}` : ""} · {e.duracion_min || 60} min ·{" "}
+                        {ESTADO_LABEL[e.estado] ?? e.estado} · Video (Jitsi)
                       </div>
                     </div>
                   ))
                 )}
               </div>
-            </>
-          )}
+            )}
 
-          {/* EMPLEADOS */}
-          {section === "empleados" && (
-            <div className={styles.systemCard}>
-              <div className={styles.systemHead}>
-                <h3>Empleados con ficha personal</h3>
-                <button className={styles.btn} onClick={() => setModal({ type: "empleado" })}>
-                  + Cargar Empleado
-                </button>
-              </div>
-              {employees.length === 0 ? (
-                <p className={styles.empty}>No hay empleados cargados para este cliente.</p>
-              ) : (
-                <div className={styles.empGrid}>
-                  {employees.map((e) => (
-                    <div key={e.id} className={styles.empCard}>
-                      <div className={styles.empName}>{e.nombre}</div>
-                      <div className={styles.empMeta}>
-                        {e.area ?? "—"} · {e.rol ?? "—"}
-                      </div>
-                      <div className={styles.progress}>
-                        <i style={{ width: `${e.avance ?? 0}%` }} />
-                      </div>
-                      <div className={styles.empMeta} style={{ marginTop: 8 }}>
-                        Avance: {e.avance ?? 0}%
-                      </div>
-                      <div className={styles.empActions}>
-                        <button className={styles.btnOutline} onClick={() => setModal({ type: "fichaEmpleado", data: e })}>
-                          👤 Ficha
-                        </button>
-                        <button className={styles.btn} onClick={() => setModal({ type: "derivar", data: e })}>
-                          ↗ Derivar a Newen
-                        </button>
-                        <button className={styles.btnOutline} onClick={() => openMensajes(e)}>
-                          💬 Mensajes
-                        </button>
-                      </div>
+            {/* SEGUIMIENTO / BITÁCORA */}
+            {section === "seguimiento" && (
+              <>
+                <div className={styles.systemCard}>
+                  <div className={styles.systemHead}>
+                    <div>
+                      <h3>📝 Bitácora de Counseling & Seguimiento por Tarea</h3>
+                      <p>Anotaciones y avances de la intervención de {active?.nombre ?? "—"}.</p>
                     </div>
-                  ))}
+                    <button className={styles.btn} onClick={() => setModal({ type: "tarea" })}>
+                      + Nueva tarea
+                    </button>
+                  </div>
+                  {tasks.length === 0 ? (
+                    <p className={styles.empty}>No hay tareas cargadas para este cliente.</p>
+                  ) : (
+                    tasks.map((t) => {
+                      const est = ESTADOS_TAREA[t.estado] ?? ESTADOS_TAREA.pendiente;
+                      const nextEstado = t.estado === "pendiente" ? "encurso" : t.estado === "encurso" ? "completada" : "pendiente";
+                      return (
+                        <div key={t.id} className={styles.taskRow}>
+                          <div className={styles.taskHead}>
+                            <div className={styles.taskTitle}>{t.titulo}</div>
+                            <span
+                              className={`${styles.badge} ${styles[est.cls as "badgePend"]}`}
+                              title="Click para cambiar estado"
+                              onClick={() => changeTaskState(t.id, nextEstado)}
+                            >
+                              {est.label}
+                            </span>
+                          </div>
+                          {(t.anotaciones ?? []).length > 0 && (
+                            <div className={styles.anotList}>
+                              {(t.anotaciones as string[]).map((a, i) => (
+                                <div key={i} className={styles.anot}>
+                                  {a}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className={styles.anotForm}>
+                            <input id={`anot-${t.id}`} className={styles.anotInput} placeholder="Agregar anotación de seguimiento…" />
+                            <button className={styles.btnOutline} onClick={() => addAnotacion(t.id)}>
+                              Agregar
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
-              )}
-            </div>
-          )}
+
+                <div className={styles.systemCard}>
+                  <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "var(--ec-ac)", fontWeight: "normal" }}>
+                    💬 Solicitudes de counseling
+                  </h3>
+                  {derivaciones.length === 0 ? (
+                    <p className={styles.empty} style={{ marginTop: 10 }}>
+                      Todavía no hay solicitudes de counseling para este cliente.
+                    </p>
+                  ) : (
+                    derivaciones.map((d) => (
+                      <div key={d.id} className={styles.agendaItem}>
+                        <strong>Sesión confidencial — {d.persona}</strong>
+                        <div className={styles.agendaWhen}>
+                          Temas: {(d.temas ?? []).join(", ")} · Profesional: {d.counselor ?? "a designar"} · Derivado por {d.quien_deriva}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* EMPLEADOS */}
+            {section === "empleados" && (
+              <div className={styles.systemCard}>
+                <div className={styles.systemHead}>
+                  <h3>Empleados con ficha personal</h3>
+                  <button className={styles.btn} onClick={() => setModal({ type: "empleado" })}>
+                    + Cargar Empleado
+                  </button>
+                </div>
+                {employees.length === 0 ? (
+                  <p className={styles.empty}>No hay empleados cargados para este cliente.</p>
+                ) : (
+                  <div className={styles.empGrid}>
+                    {employees.map((e) => (
+                      <div key={e.id} className={styles.empCard}>
+                        <div className={styles.empName}>{e.nombre}</div>
+                        <div className={styles.empMeta}>
+                          {e.area ?? "—"} · {e.rol ?? "—"}
+                        </div>
+                        <div className={styles.progress}>
+                          <i style={{ width: `${e.avance ?? 0}%` }} />
+                        </div>
+                        <div className={styles.empMeta} style={{ marginTop: 8 }}>
+                          Avance: {e.avance ?? 0}%
+                        </div>
+                        <div className={styles.empActions}>
+                          <button className={styles.btnOutline} onClick={() => setModal({ type: "fichaEmpleado", data: e })}>
+                            👤 Ficha
+                          </button>
+                          <button className={styles.btn} onClick={() => setModal({ type: "derivar", data: e })}>
+                            ↗ Derivar a Newen
+                          </button>
+                          <button className={styles.btnOutline} onClick={() => openMensajes(e)}>
+                            💬 Mensajes
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1187,8 +1132,7 @@ export default function EmpresaDashboard() {
               {modal.type === "archivar" && active && (
                 <>
                   <p>
-                    ¿Archivar <strong style={{ color: "var(--ec-ac)" }}>{active.nombre}</strong>? Dejará de aparecer
-                    en la lista activa pero quedará guardado.
+                    ¿Archivar <strong style={{ color: "var(--ec-ac)" }}>{active.nombre}</strong>? Dejará de aparecer en la lista activa pero quedará guardado.
                   </p>
                   <div className={styles.modalFooter}>
                     <button className={styles.btnOutline} onClick={() => setModal(null)}>
@@ -1305,8 +1249,7 @@ export default function EmpresaDashboard() {
               {modal.type === "derivar" && (
                 <>
                   <p style={{ marginBottom: 14 }}>
-                    Elegí los temas a tratar. Sugerimos un counselor específico y la persona recibe un acceso para
-                    seleccionarlo en Newen.
+                    Elegí los temas a tratar. Sugerimos un counselor específico y la persona recibe un acceso para seleccionarlo en Newen.
                   </p>
                   <div className={styles.field}>
                     <label>Temas a tratar</label>
@@ -1340,9 +1283,7 @@ export default function EmpresaDashboard() {
               {modal.type === "mensajes" && (
                 <>
                   {derivsEmp.length === 0 ? (
-                    <p className={styles.empty}>
-                      Esta persona todavía no tiene derivaciones. Primero usá «↗ Derivar a Newen».
-                    </p>
+                    <p className={styles.empty}>Esta persona todavía no tiene derivaciones. Primero usá «↗ Derivar a Newen».</p>
                   ) : (
                     <>
                       <div className={styles.field}>
@@ -1435,6 +1376,6 @@ export default function EmpresaDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
