@@ -12,7 +12,7 @@ interface PageProps {
 
 /**
  * Pantalla de sesión para el consultante.
- * Muestra la videollamada de Daily.co.
+ * Muestra la videollamada de Jitsi Meet (URL generada al pagar).
  */
 export default function SesionConsultantePage({ params }: PageProps) {
   const { id } = use(params);

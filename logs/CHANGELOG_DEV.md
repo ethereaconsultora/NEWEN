@@ -19,6 +19,24 @@
 
 ## Historial
 
+### [2026-08-21] — fix: migrar sesiones pagadas de Daily.co a Jitsi (aprobado)
+
+**Prompt**: "OK, AHORA SI, DALE. HACE LOS CAMBIOS" (migrar el flujo de sesiones pagadas a Jitsi).
+
+**Acción esperada**: Reemplazar `createDailyRoom` (API Daily) por un generador determinístico de
+Jitsi (`lib/video.ts#sesionRoomUrl`), guardar la URL en `daily_room_url` (sin migración), eliminar
+`lib/daily.ts`, actualizar `.env.local.example`. El pago (Mercado Pago) no cambia.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. Sin Daily en el flujo de pagos.
+
+**Archivos tocados**: `lib/video.ts`, `app/api/pagos/route.ts`, `components/sesion/VideoRoom.tsx`,
+`app/(consultante)/sesion/[id]/page.tsx`, `.env.local.example`, `lib/daily.ts` (ELIMINADO).
+
+**Commit**: por registrar
+
+**Próximo paso**: probar un pago → sesión → videollamada (Jitsi). Opcional: renombrar columna
+`daily_room_url` → `jitsi_room_url`.
+
 ### [2026-08-21] — fix: v0.39.0 — topbar de antes + sidebar captura, Jitsi 1-1, link de video en turnos, campus con acceso independiente
 
 **Prompt**: No le gustó el rediseño v0.38 (no era igual a la captura). Pide: barra horizontal

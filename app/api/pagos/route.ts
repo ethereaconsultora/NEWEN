@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createDailyRoom } from "@/lib/daily";
+import { sesionRoomUrl } from "@/lib/video";
 import { enviarConfirmacionConsultante, enviarConfirmacionCounselor } from "@/lib/resend";
 
 /**
@@ -74,17 +74,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Crear sala de videollamada
-    try {
-      const roomUrl = await createDailyRoom(sesionId);
-      await supabase
-        .from("sesiones")
-        .update({ daily_room_url: roomUrl })
-        .eq("id", sesionId);
-    } catch (dailyError) {
-      console.error("Error creando sala Daily.co:", dailyError);
-      // No bloqueamos: la sesión sigue confirmada, la sala se puede crear después
-    }
+    // Crear sala de videollamada 1-1 (Jitsi): URL determinística, sin API
+    // externa ni tarjeta. Se guarda en daily_room_url (nombre histórico).
+    const jitsiBase = process.env.NEXT_PUBLIC_JITSI_BASE || "https://meet.jit.si";
+    const roomUrl = sesionRoomUrl(jitsiBase, sesionId);
+    await supabase
+      .from("sesiones")
+      .update({ daily_room_url: roomUrl })
+      .eq("id", sesionId);
 
     // Incrementar contador de sesiones del counselor
     const { data: sesion } = await supabase

@@ -8,9 +8,9 @@ interface VideoRoomProps {
 }
 
 /**
- * Componente de videollamada Daily.co embebido en Newen.
- * Se carga el iframe de Daily.co con la sala ya creada.
- * Sin dependencias extra — usa el modo iframe nativo de Daily.
+ * Componente de videollamada embebido en Newen (Jitsi Meet).
+ * Se carga el iframe con la sala ya generada (guardada en daily_room_url,
+ * nombre histórico). Sin dependencias extra — usa el iframe nativo de Jitsi.
  */
 export default function VideoRoom({ roomUrl, onLeave }: VideoRoomProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
