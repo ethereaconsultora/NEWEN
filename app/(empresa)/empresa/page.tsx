@@ -501,6 +501,9 @@ export default function EmpresaDashboard() {
           <Link className={styles.btnOutline} href="/empresas/crear?edit=1">
             Editar mi espacio
           </Link>
+          <Link className={styles.btnOutline} href="/empresa/public-site">
+            Página comercial
+          </Link>
           <Link className={styles.btnOutline} href={`/e/${org.slug}`} target="_blank">
             Sitio público
           </Link>
@@ -568,6 +571,11 @@ export default function EmpresaDashboard() {
               <SidebarIcon name={item.icon} /> {item.label}
             </button>
           ))}
+
+          <div className={styles.navSection}>Presencia</div>
+          <Link className={styles.navItem} href="/empresa/public-site">
+            <SidebarIcon name="pagina" /> Página Comercial
+          </Link>
         </aside>
 
         {/* Main */}

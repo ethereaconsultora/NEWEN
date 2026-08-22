@@ -200,7 +200,8 @@ export default function CrearEspacioPage() {
       return;
     }
 
-    router.push("/empresa");
+    // Primer paso tras comprar/crear el espacio: configurar la página comercial.
+    router.push(org ? "/empresa" : "/empresa/public-site?bienvenido=1");
   }
 
   const inputStyle: React.CSSProperties = {

@@ -18,6 +18,31 @@
 ```
 
 ## Historial
+### [2026-08-22] — feat: v0.44.0 — sistema de plantillas comerciales: página pública configurable por empresa
+
+**Prompt**: "EJECUTA ESTE PROMT EN CODIGO ACORDE A LO QUE SE VIENE ESCRIBIENDO Y ACORDE A TODOS LOS
+PROTOCOLOS DE LOS ARCHIVOS RAIZ PARA LAS PLANTILLAS DEL ESPACIO EMPRESAS Y QUE ES LO PRIMERO QUE VEN
+LAS EMPRESAS CUANDO COMPRAN UN ESPACIO EMPRESA DE NEWEN" — implementar `PLANTILLA_COMERCIAL_EMPRESA_STANDARD.md`.
+
+**Acción esperada**: Motor `TenantSiteConfig` (paleta completa, tipografía, brand, layout, variantes)
+con fallbacks §4; 5 plantillas base como componentes de LAYOUT puro (editorial, vitrina,
+panel-comercial, minimal, modular); ningún color/fuente/radio hardcodeado en `components/public-site/*`;
+logo solo en 3 zonas; validador (normalize.ts, reemplaza zod); `/e/[slug]` reescrito; editor con
+preview en vivo en `/empresa/public-site`; onboarding: tras crear el espacio → `/empresa/public-site?bienvenido=1`.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK. Previews en browser verificadas
+(Editorial, Panel comercial, Minimal con la config de Espacio Crítico §5). Pendiente: correr
+`spec/init_v0.44.0_site_config.sql` en Supabase (columna `site_config JSONB`).
+
+**Archivos tocados**: `lib/public-site/*`, `components/public-site/*` (nuevos);
+`app/e/[slug]/page.tsx` (reescrito); `app/(empresa)/empresa/public-site/*` (nuevos);
+`app/(empresa)/empresa/page.tsx`, `app/(empresa)/layout.tsx`, `components/empresa/SidebarIcon.tsx`;
+`app/api/organizations/route.ts`, `app/empresas/crear/page.tsx`; `spec/init_v0.44.0_site_config.sql`.
+
+**Commit**: por registrar
+
+**Próximo paso**: usuario corre la migración v0.44.0 en Supabase → deploy → crear/editar espacio y
+configurar la página comercial desde el panel.
 ### [2026-08-22] — feat: v0.43.1 — campus fiel a la maqueta: CSS module con animaciones y detalles exactos
 
 **Prompt**: "FIJATE QUE ESTAS IMITANDO PERO NO ES IGUAL, LOS BOTONES TIENE PEQUEÑA ANIMACION Y

@@ -9,6 +9,7 @@ import styles from "./empresa.module.css";
 const TABS = [
   { href: "/empresa", label: "Workspace", icon: "🏛️" },
   { href: "/empresa/campus", label: "Campus", icon: "🎓" },
+  { href: "/empresa/public-site", label: "Página", icon: "◈" },
 ];
 
 /**

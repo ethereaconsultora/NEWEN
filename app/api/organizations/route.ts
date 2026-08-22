@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizeSiteConfig } from "@/lib/public-site/normalize";
 
 /**
  * POST /api/organizations
@@ -202,6 +203,10 @@ export async function PATCH(request: Request) {
   if (body.font_size !== undefined) upd.font_size = body.font_size;
   if (body.logo_url !== undefined) upd.logo_url = body.logo_url || null;
   if (body.cover_url !== undefined) upd.cover_url = body.cover_url || null;
+  if (body.site_config !== undefined) {
+    // Normalizamos en el servidor: nunca guardamos config sin validar (trust no one).
+    upd.site_config = normalizeSiteConfig(body.site_config);
+  }
 
   const { error } = await admin.from("organizations").update(upd).eq("id", memb.organization_id);
   if (error) {
