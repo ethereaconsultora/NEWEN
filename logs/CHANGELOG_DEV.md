@@ -19,6 +19,24 @@
 
 ## Historial
 
+### [2026-08-22] — fix: panel empresa — selector de cliente arriba (como v1), sidebar a la izquierda estricta, logo sin borde blanco
+
+**Prompt**: En el panel (lo llama "perfil profesional"): cliente seleccionado arriba de todo como la
+primera versión; la barra izquierda sigue con alineación central (pedido: izquierda); íconos en la
+misma línea que las palabras; el logo grande de la empresa más grande y sin bordes blancos.
+
+**Acción esperada**: Mover el selector de cliente del sidebar al topbar (entre marca y botones);
+`justify-content: flex-start` + `white-space: nowrap` en `.navItem` (izquierda estricta, ícono+texto
+en una línea); logo hero de la organización a 108px y sin fondo/borde blanco.
+
+**Resultado**: Éxito. `npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: `app/(empresa)/empresa/page.tsx`, `app/(empresa)/empresa.module.css`.
+
+**Commit**: por registrar
+
+**Próximo paso**: revisar visualmente tras el deploy.
+
 ### [2026-08-22] — feat: v0.41.0 — branding: sidebar alineado + íconos SVG sobrios, logos protagonistas, hub sobrio
 
 **Prompt**: El menú de la izquierda sigue feo; alinearlo a la izquierda, mejorar los íconos

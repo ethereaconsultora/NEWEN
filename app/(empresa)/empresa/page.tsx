@@ -481,6 +481,16 @@ export default function EmpresaDashboard() {
           )}
           <div className={styles.badge}>🛡️ PANEL DE ADMINISTRACIÓN — {org.nombre.toUpperCase()}</div>
         </div>
+        <div className={styles.selector}>
+          <span className={styles.selectorLabel}>Cliente seleccionado</span>
+          <select className={styles.select} value={active?.id ?? ""} onChange={(e) => setSelected(e.target.value)}>
+            {clients.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className={styles.actions}>
           <button className={styles.btn} onClick={() => setModal({ type: "nuevo" })}>
             + Cargar Cliente
@@ -559,17 +569,6 @@ export default function EmpresaDashboard() {
               <SidebarIcon name={item.icon} /> {item.label}
             </button>
           ))}
-
-          <div className={styles.clientSel}>
-            <div className={styles.clientLabel}>Cliente seleccionado</div>
-            <select value={active?.id ?? ""} onChange={(e) => setSelected(e.target.value)}>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
         </aside>
 
         {/* Main */}
