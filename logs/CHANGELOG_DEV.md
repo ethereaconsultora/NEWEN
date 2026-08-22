@@ -18,6 +18,37 @@
 ```
 
 ## Historial
+### [2026-08-22] — feat: v0.43.0 — campus rediseñado (maqueta CV, sin emojis, botones verdes) + logo Newen recortado (PNG)
+
+**Prompt**: "LOGO SIN ANDAR AUN, QUITA LOS EMOJIS DEL MENU DEL CAMPUS QUE ES INFANTIL, QUIERO LA
+LETRA INCIAL DE ESE CAMPUS EN LA NUEVA VERSION LOS BOTONES COMO LA IMAGEN 3 DEL CAMPUS Y LA ESTETICA
+COMO ESA PORQUE ME GUSTA MAS" — replicar la estética de `campus-maqueta.html` (fondo beige `#f0efe8`,
+verde bosque `#2e4a3d`, serif Merriweather + Inter, logo de letras iniciales "CV", botones verdes
+primarios / blancos secundarios).
+
+**Acción esperada**: Reescribir `app/(empresa)/empresa/campus/page.tsx` (delete + create) con la
+paleta y layout de la maqueta: logo de iniciales del campus en la topbar, buscador "Buscar curso,
+ruta o módulo", sidebar sin emojis (Inicio, Mi recorrido, Mi experiencia, Comunidad, Biblioteca,
+Supervisión, Prácticas, Investigación, Encuentros, El lenguaje también educa), hero con botones
+"Ver mi recorrido" / "Explorar biblioteca", estadísticas, cards, encuentros con "Unirse al encuentro"
+y "Link del espacio", modal Jitsi y modal de agendar. Logo Newen: recortar `logo-newen.jpg` a su
+contenido (PowerShell System.Drawing, bbox 426×262) → `public/logo-newen.png`, eliminar el jpg y
+apuntar `LogoNewen.tsx` a `/logo-newen.png`.
+
+**Resultado**: Éxito. Limpieza post-reescritura: botones `btnPrimary/btnSecondary/btnNeutral` movidos
+a ámbito de módulo (antes se usaban antes de declararse → riesgo de ReferenceError), `modulosCount()`
+falso reemplazado por `modules.length`, bloque `<style>.cmp-grid</style>` inútil eliminado, emojis
+restantes (🎓🎥🔗) quitados. `import * as React` añadido para los tipos `React.CSSProperties`.
+`npx tsc --noEmit` y `npm run build` OK.
+
+**Archivos tocados**: `app/(empresa)/empresa/campus/page.tsx` (reescrito), `public/logo-newen.png`
+(nuevo, recortado), `public/logo-newen.jpg` (eliminado), `components/LogoNewen.tsx` (src → png,
+comentario).
+
+**Commit**: por registrar
+
+**Próximo paso**: push a master → deploy Vercel → confirmar visualmente con el usuario (logo en hub/
+login/campus, campus igual a la imagen 3 de la maqueta, menú sin emojis).
 ### [2026-08-22] — feat: v0.42.0 — limpieza visual: logo Newen en chip blanco, sidebar minimalista, sin emojis
 
 **Prompt**: El menú izquierdo no se ve bien (duda de alineación/íconos), el logo de Newen en el hub

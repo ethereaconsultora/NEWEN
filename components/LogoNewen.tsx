@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 /**
- * Logo de Newen. Muestra la imagen /logo-newen.jpg sobre un chip blanco
+ * Logo de Newen. Muestra la imagen /logo-newen.png sobre un chip blanco
  * redondeado (el logo es oscuro; así se ve en cualquier fondo). Si la
  * imagen no existe, cae al texto "Newen".
  */
@@ -39,7 +39,7 @@ export default function LogoNewen({ height = 44 }: { height?: number }) {
       }}
     >
       <img
-        src="/logo-newen.jpg"
+        src="/logo-newen.png"
         alt="Newen"
         onError={() => setOk(false)}
         style={{ height, width: "auto", objectFit: "contain", display: "block" }}
